@@ -1,0 +1,105 @@
+<Project>
+
+  <PropertyGroup>
+    <ArtifactsPath>$(MSBuildThisFileDirectory)artifacts</ArtifactsPath>
+    <NoLogo>true</NoLogo>
+    <RootNamespace>Adaptit.$(MSBuildProjectName)</RootNamespace>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PublishDocumentationFile>true</PublishDocumentationFile>
+    <NoWarn>$(NoWarn);1591;1701;1702;NU1507</NoWarn>
+    <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
+    <EnableNETAnalyzers>True</EnableNETAnalyzers>
+    <_SkipUpgradeNetAnalyzersNuGetWarning>true</_SkipUpgradeNetAnalyzersNuGetWarning>
+    <AnalysisLevel>preview</AnalysisLevel>
+    <AnalysisMode>All</AnalysisMode>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <Deterministic Condition="'$(ContinuousIntegrationBuild)' == 'True'">true</Deterministic>
+    <DeterministicSourcePaths Condition="'$(IsTestProject)' == 'true'">false</DeterministicSourcePaths>
+    <LangVersion>preview</LangVersion>
+    <ClsCompliant>false</ClsCompliant>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <CompilerGeneratedFilesOutputPath>obj/Generated</CompilerGeneratedFilesOutputPath>
+    <GenerateRequiresPreviewFeaturesAttribute>False</GenerateRequiresPreviewFeaturesAttribute>
+    <DefaultItemExcludes>$(DefaultItemExcludes);*.log;*.binlog</DefaultItemExcludes>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Dependency Handling">
+    <NuGetAudit>true</NuGetAudit>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <RestoreLockedMode Condition="'$(ContinuousIntegrationBuild)' == 'true'">true</RestoreLockedMode>
+    <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+  </PropertyGroup>
+
+  <ItemGroup Label="Readme" Condition="$(IsPackable) == 'True'">
+    <None Include="$(ProjectReadMe)" Pack="true" PackagePath="" Visible="true" />
+  </ItemGroup>
+
+  <PropertyGroup Label="SDK Functionality"
+    Condition="'$(UsingMicrosoftNETSdkWeb)' == 'True' OR '$(UsingMicrosoftNETSdkWorker)' == 'True'">
+    <IsPackable>false</IsPackable>
+    <PackAsTool>false</PackAsTool>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Disable Launch Settings for Worker Service"
+    Condition="'$(UsingMicrosoftNETSdkWorker)' == 'True'">
+    <NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Code Analysis Ruleset"
+    Condition="Exists('$(MSBuildThisFileDirectory)\dotnet.ruleset')">
+    <CodeAnalysisRuleset>$(MSBuildThisFileDirectory)\dotnet.ruleset</CodeAnalysisRuleset>
+  </PropertyGroup>
+
+  <PropertyGroup Label="OpenAPI Analyzers" Condition="'$(UsingMicrosoftNETSdkWeb)' == 'True'">
+    <IncludeOpenAPIAnalyzers>true</IncludeOpenAPIAnalyzers>
+    <OpenApiDocumentsDirectory>$(MSBuildProjectDirectory)/OpenApi</OpenApiDocumentsDirectory>
+  </PropertyGroup>
+
+  <ItemGroup Label="Code Analysis Configuration"
+    Condition="Exists('$(MSBuildThisFileDirectory)\stylecop')">
+    <AdditionalFiles Include="$(MSBuildThisFileDirectory)\stylecop" Link="stylecop"
+      Visible="false" />
+  </ItemGroup>
+
+  <ItemGroup Label="xUnit Configuration"
+    Condition="Exists('$(MSBuildThisFileDirectory)\xunit.runner') AND $(IsTestProject)=='True'">
+    <AdditionalFiles Include="$(MSBuildThisFileDirectory)\xunit.runner"
+      Link="xunit.runner" Visible="true">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AdditionalFiles>
+  </ItemGroup>
+
+  <PropertyGroup Condition="$(IsPackable) == 'true'" Label="CLS Compliance">
+    <ClsCompliant>true</ClsCompliant>
+  </PropertyGroup>
+  <ItemGroup>
+    <AssemblyAttribute Include="System.CLSCompliant">
+      <_Parameter1>$(ClsCompliant)</_Parameter1>
+      <_Parameter1_TypeName>System.Boolean</_Parameter1_TypeName>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+  <PropertyGroup Label="Package">
+    <PackageId>$(RootNamespace)</PackageId>
+    <Company>Adaptit</Company>
+    <Authors>Alexandros Kritikos</Authors>
+    <CurrentYear>$([System.DateTime]::Now.ToString(yyyy))</CurrentYear>
+    <Copyright>Copyright © 2017-$(CurrentYear) Kritikos IO. All rights reserved.</Copyright>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageOutputPath>$(MSBuildThisFileDirectory)/packages</PackageOutputPath>
+    <PublishDir>$(MSBuildThisFileDirectory)/upload/$(ProjectName)</PublishDir>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <EnablePackageValidation>true</EnablePackageValidation>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+  </PropertyGroup>
+
+</Project>

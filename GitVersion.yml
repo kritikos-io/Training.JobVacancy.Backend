@@ -1,0 +1,8 @@
+mode: ContinuousDelivery
+branches: {}
+ignore:
+  sha: []
+merge-message-formats: {}
+prevent-increment:
+  of-merged-branch: true
+  when-branch-merged: true
