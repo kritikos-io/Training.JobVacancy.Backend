@@ -7,8 +7,6 @@ using Scalar.AspNetCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<OpenIdConnectOptions>();
-builder.Services.AddTransient<OpenIdConnectOptions>();
-builder.Services.AddScoped<OpenIdConnectOptions>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
@@ -26,5 +24,7 @@ app.MapOpenApi();
 app.MapScalarApiReference();
 
 app.MapWeatherEndpoints();
+app.MapFeedEndpoint();
+app.MapFeedEntryEndpoint();
 
 app.Run();
