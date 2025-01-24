@@ -14,7 +14,13 @@
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
+      <PackageReference Include="Refit" />
+      <PackageReference Include="Refit.HttpClientFactory" />
       <PackageReference Include="Scalar.AspNetCore" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Training.JobVacancy.WebModels\Training.JobVacancy.WebModels.csproj" />
     </ItemGroup>
 
 </Project>
