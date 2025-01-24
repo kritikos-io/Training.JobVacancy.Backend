@@ -7,5 +7,5 @@ public class FeedEntry
 	public string Title { get; set; }
 	public string BusinessName { get; set; }
 	public string Municipal { get; set; }
-	public DateTime SistEndret { get; set; }
+	public string SistEndret { get; set; }
 }
