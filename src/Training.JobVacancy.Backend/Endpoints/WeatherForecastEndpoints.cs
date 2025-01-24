@@ -1,9 +1,9 @@
-﻿
-namespace Adaptit.Training.JobVacancy.Backend.Endpoints;
+﻿namespace Adaptit.Training.JobVacancy.Backend.Endpoints;
 
 using Adaptit.Training.JobVacancy.Backend.Dto;
 
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 
 public static class WeatherForecastEndpoints
 {
@@ -21,7 +21,7 @@ public static class WeatherForecastEndpoints
     return endpoints;
   }
 
-  public static async Task<List<WeatherForecast>> GetAllForecasts()
+  public static async Task<List<WeatherForecast>> GetAllForecasts([FromHeader]string ifNotModified)
   {
     var forecast = Enumerable.Range(1, 5)
         .Select(index =>
@@ -38,6 +38,8 @@ public static class WeatherForecastEndpoints
 
   public static async Task<Results<Ok<WeatherForecast>, BadRequest, NotFound<string>>> GetForecast(int id)
   {
+    var y = (WeatherForecast x) => x.Date;
+
     var forecast = new WeatherForecast(
         id,
         DateOnly.FromDateTime(DateTime.Now.AddDays(id)),

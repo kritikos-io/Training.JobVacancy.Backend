@@ -14,6 +14,7 @@
   </Folder>
   <Folder Name="/src/">
     <Project Path="src\Training.JobVacancy.Backend\Training.JobVacancy.Backend.csproj" Type="Classic C#" />
+    <Project Path="src\Training.JobVacancy.Data\Training.JobVacancy.Data.csproj" Type="Classic C#" />
   </Folder>
   <Folder Name="/tests/" />
 </Solution>

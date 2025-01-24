@@ -10,11 +10,19 @@
       <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
       <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" />
       <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
       <PackageReference Include="Microsoft.Extensions.ApiDescription.Server">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
       <PackageReference Include="Scalar.AspNetCore" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Training.JobVacancy.Data\Training.JobVacancy.Data.csproj" />
     </ItemGroup>
 
 </Project>
