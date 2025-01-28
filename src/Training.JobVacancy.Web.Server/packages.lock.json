@@ -498,6 +498,12 @@
           "Npgsql.EntityFrameworkCore.PostgreSQL": "[9.0.3, )"
         }
       },
+      "Adaptit.Training.JobVacancy.Web.Models": {
+        "type": "Project",
+        "dependencies": {
+          "Refit": "[8.0.0, )"
+        }
+      },
       "Npgsql.EntityFrameworkCore.PostgreSQL": {
         "type": "CentralTransitive",
         "requested": "[9.0.3, )",

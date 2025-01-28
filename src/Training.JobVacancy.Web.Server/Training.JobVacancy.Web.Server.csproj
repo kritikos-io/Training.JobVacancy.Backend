@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Training.JobVacancy.Data\Training.JobVacancy.Data.csproj"/>
+    <ProjectReference Include="..\Training.JobVacancy.Web.Models\Training.JobVacancy.Web.Models.csproj" />
   </ItemGroup>
 
 </Project>
