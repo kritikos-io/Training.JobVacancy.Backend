@@ -1,6 +1,13 @@
 {
   "version": 2,
   "dependencies": {
-    "net9.0": {}
+    "net9.0": {
+      "Refit": {
+        "type": "Direct",
+        "requested": "[8.0.0, )",
+        "resolved": "8.0.0",
+        "contentHash": "gXRmIy3Va0mwwr8usnqVRQFoFIJaJGlWTTXBlwxIkHB/xwXnq1Ybs1YNA2BM1O4G46JLLlGjg6YOwrTZusuY3Q=="
+      }
+    }
   }
 }
