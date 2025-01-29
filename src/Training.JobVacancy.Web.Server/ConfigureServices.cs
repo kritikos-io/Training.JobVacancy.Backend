@@ -1,8 +1,10 @@
 ﻿namespace Adaptit.Training.JobVacancy.Web.Server;
 
+using Adaptit.Training.JobVacancy.Data;
 using Adaptit.Training.JobVacancy.Web.Models;
 using Adaptit.Training.JobVacancy.Web.Server.Options;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 using Refit;
@@ -12,6 +14,9 @@ public static class ConfigureServices
   public static void AddJobVacancyServices(this WebApplicationBuilder builder)
   {
     builder.AddNavJobVacancyClient();
+    builder.Services.AddDbContext<JobVacancyDbContext>(options => options
+        .UseNpgsql(builder.Configuration.GetConnectionString("JobVacancyDatabase"))
+        .EnableSensitiveDataLogging());
   }
 
   public static void AddNavJobVacancyClient(this WebApplicationBuilder builder)
