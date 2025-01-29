@@ -15,5 +15,5 @@ public class Vacancy
   public DateTimeOffset ModifiedAt { get; set; }
 
   [JsonPropertyName("_feed_entry")]
-  public EntryDetailsDto EntryDetails { get; set; }
+  public EntryDetailsDto EntryDetails { get; set; } = null!;
 }

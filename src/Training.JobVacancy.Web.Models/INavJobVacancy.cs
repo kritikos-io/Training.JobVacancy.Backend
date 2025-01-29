@@ -30,8 +30,12 @@ public partial interface INavJobVacancy
   /// <param name="cancellationToken">A <see cref="T:System.Threading.CancellationToken" /> to observe while waiting for the task to complete.</param>
   /// <returns>A <see cref="FeedDto"/> modified after <paramref name="modifiedSince"/>. Passing a non null <paramref name="last"/> gets the most recent page.</returns>
   /// <remarks>Ads are never active for more than 6 months, according to API author there is never a point in asking ads older than that via <paramref name="modifiedSince"/>.</remarks>
-  Task<ApiResponse<FeedDto>> GetLatestFeedPageAsync(DateTimeOffset? modifiedSince = null, string? last = null, CancellationToken cancellationToken = default)
-    => GetLatestFeedPageAsync(modifiedSince?.ToString("R"), last, cancellationToken);
+  Task<ApiResponse<FeedDto>> GetLatestFeedPageAsync(DateTimeOffset? modifiedSince = null, bool? last = null, CancellationToken cancellationToken = default)
+    => GetLatestFeedPageAsync(modifiedSince?.ToString("R"),
+        last ?? false
+            ? "last"
+            : null,
+        cancellationToken);
 
   /// <summary>
   /// Gets the specified feed page.
