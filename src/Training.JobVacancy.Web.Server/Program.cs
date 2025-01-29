@@ -1,6 +1,10 @@
+using Adaptit.Training.JobVacancy.Web.Server;
+
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.AddJobVacancyServices();
 
 builder.Services.AddOpenApi();
 
