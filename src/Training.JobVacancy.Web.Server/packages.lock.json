@@ -2,6 +2,15 @@
   "version": 2,
   "dependencies": {
     "net9.0": {
+      "Asp.Versioning.Mvc.ApiExplorer": {
+        "type": "Direct",
+        "requested": "[8.1.0, )",
+        "resolved": "8.1.0",
+        "contentHash": "a90gW/4TF/14Bjiwg9LqNtdKGC4G3gu02+uynq3bCISfQm48km5chny4Yg5J4hixQPJUwwJJ9Do1G+jM8L9h3g==",
+        "dependencies": {
+          "Asp.Versioning.Mvc": "8.1.0"
+        }
+      },
       "Bogus": {
         "type": "Direct",
         "requested": "[35.6.1, )",
@@ -74,6 +83,30 @@
         "dependencies": {
           "Bogus": "35.6.1",
           "WaffleGenerator": "4.2.2"
+        }
+      },
+      "Asp.Versioning.Abstractions": {
+        "type": "Transitive",
+        "resolved": "8.1.0",
+        "contentHash": "mpeNZyMdvrHztJwR1sXIUQ+3iioEU97YMBnFA9WLbsPOYhGwDJnqJMmEd8ny7kcmS9OjTHoEuX/bSXXY3brIFA==",
+        "dependencies": {
+          "Microsoft.Extensions.Primitives": "8.0.0"
+        }
+      },
+      "Asp.Versioning.Http": {
+        "type": "Transitive",
+        "resolved": "8.1.0",
+        "contentHash": "Xu4xF62Cu9JqYi/CTa2TiK5kyHoa4EluPynj/bPFWDmlTIPzuJQbBI5RgFYVRFHjFVvWMoA77acRaFu7i7Wzqg==",
+        "dependencies": {
+          "Asp.Versioning.Abstractions": "8.1.0"
+        }
+      },
+      "Asp.Versioning.Mvc": {
+        "type": "Transitive",
+        "resolved": "8.1.0",
+        "contentHash": "BMAJM2sGsTUw5FQ9upKQt6GFoldWksePgGpYjl56WSRvIuE3UxKZh0gAL+wDTIfLshUZm97VCVxlOGyrcjWz9Q==",
+        "dependencies": {
+          "Asp.Versioning.Http": "8.1.0"
         }
       },
       "Humanizer.Core": {
@@ -513,14 +546,6 @@
         "resolved": "4.2.2",
         "contentHash": "Dczu80ZOWyT4LTV0ddOkfbVZSwMzJAa213jS70aP2ydiyUWYOdO1+4ny0b4r9TFiP4wfl6X15GXj0rlSrPNsbw=="
       },
-      "ZiggyCreatures.FusionCache": {
-        "type": "Transitive",
-        "resolved": "2.0.0",
-        "contentHash": "fwUwz4iS9Avq5oh7AI01/RktdG4yEp/jlCrlcq1ww6/mCoQzxq5dJDZhyhLVdx0s7MN22rUW3N+huGYXignrMA==",
-        "dependencies": {
-          "Microsoft.Extensions.Caching.Memory": "9.0.0"
-        }
-      },
       "Adaptit.Training.JobVacancy.Data": {
         "type": "Project",
         "dependencies": {
@@ -550,6 +575,15 @@
         "requested": "[8.0.0, )",
         "resolved": "8.0.0",
         "contentHash": "gXRmIy3Va0mwwr8usnqVRQFoFIJaJGlWTTXBlwxIkHB/xwXnq1Ybs1YNA2BM1O4G46JLLlGjg6YOwrTZusuY3Q=="
+      },
+      "ZiggyCreatures.FusionCache": {
+        "type": "CentralTransitive",
+        "requested": "[2.0.0, )",
+        "resolved": "2.0.0",
+        "contentHash": "fwUwz4iS9Avq5oh7AI01/RktdG4yEp/jlCrlcq1ww6/mCoQzxq5dJDZhyhLVdx0s7MN22rUW3N+huGYXignrMA==",
+        "dependencies": {
+          "Microsoft.Extensions.Caching.Memory": "9.0.0"
+        }
       }
     }
   }

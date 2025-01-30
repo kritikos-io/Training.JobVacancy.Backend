@@ -18,5 +18,5 @@ public class FeedDto
   [JsonPropertyName("home_page_url")]
   public Uri HomePageUrl { get; set; } = new Uri("about:blank");
 
-  public Vacancy[] Items { get; set; } = [];
+  public VacancyDto[] Items { get; set; } = [];
 }
