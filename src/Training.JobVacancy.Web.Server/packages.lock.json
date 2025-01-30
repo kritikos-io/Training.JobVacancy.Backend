@@ -513,10 +513,19 @@
         "resolved": "4.2.2",
         "contentHash": "Dczu80ZOWyT4LTV0ddOkfbVZSwMzJAa213jS70aP2ydiyUWYOdO1+4ny0b4r9TFiP4wfl6X15GXj0rlSrPNsbw=="
       },
+      "ZiggyCreatures.FusionCache": {
+        "type": "Transitive",
+        "resolved": "2.0.0",
+        "contentHash": "fwUwz4iS9Avq5oh7AI01/RktdG4yEp/jlCrlcq1ww6/mCoQzxq5dJDZhyhLVdx0s7MN22rUW3N+huGYXignrMA==",
+        "dependencies": {
+          "Microsoft.Extensions.Caching.Memory": "9.0.0"
+        }
+      },
       "Adaptit.Training.JobVacancy.Data": {
         "type": "Project",
         "dependencies": {
-          "Npgsql.EntityFrameworkCore.PostgreSQL": "[9.0.3, )"
+          "Npgsql.EntityFrameworkCore.PostgreSQL": "[9.0.3, )",
+          "ZiggyCreatures.FusionCache": "[2.0.0, )"
         }
       },
       "Adaptit.Training.JobVacancy.Web.Models": {

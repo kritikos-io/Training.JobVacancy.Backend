@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL"/>
+    <PackageReference Include="ZiggyCreatures.FusionCache" />
   </ItemGroup>
 
 </Project>
