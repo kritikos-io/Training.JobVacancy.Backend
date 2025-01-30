@@ -7,7 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Bogus" />
+    <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer"/>
+    <PackageReference Include="Bogus"/>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer"/>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect"/>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi"/>
@@ -15,18 +16,18 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.ApiDescription.Server">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Refit.HttpClientFactory" />
+<!--    <PackageReference Include="Microsoft.Extensions.ApiDescription.Server">-->
+<!--      <PrivateAssets>all</PrivateAssets>-->
+<!--      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>-->
+<!--    </PackageReference>-->
+    <PackageReference Include="Refit.HttpClientFactory"/>
     <PackageReference Include="Scalar.AspNetCore"/>
-    <PackageReference Include="WaffleGenerator.Bogus" />
+    <PackageReference Include="WaffleGenerator.Bogus"/>
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Training.JobVacancy.Data\Training.JobVacancy.Data.csproj"/>
-    <ProjectReference Include="..\Training.JobVacancy.Web.Models\Training.JobVacancy.Web.Models.csproj" />
+    <ProjectReference Include="..\Training.JobVacancy.Web.Models\Training.JobVacancy.Web.Models.csproj"/>
   </ItemGroup>
 
 </Project>
