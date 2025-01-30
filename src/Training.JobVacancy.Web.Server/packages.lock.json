@@ -53,6 +53,12 @@
           "Microsoft.EntityFrameworkCore.Design": "9.0.1"
         }
       },
+      "Microsoft.Extensions.ApiDescription.Server": {
+        "type": "Direct",
+        "requested": "[9.0.1, )",
+        "resolved": "9.0.1",
+        "contentHash": "TwgHEHv1/Q4jiaoCnZkqWl/WvpaHFXtKBKlUAv8OQRxG5yRGa+JDMz479KW5OmqMGOPYXHe+3pvHjgIUG2i1UA=="
+      },
       "Refit.HttpClientFactory": {
         "type": "Direct",
         "requested": "[8.0.0, )",

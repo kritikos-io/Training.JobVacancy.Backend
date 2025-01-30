@@ -1,9 +1,8 @@
 ﻿namespace Adaptit.Training.JobVacancy.Web.Server;
 
-using Adaptit.Training.JobVacancy.Web.Server.Endpoints;
 using Adaptit.Training.JobVacancy.Web.Server.Endpoints.V1;
-
 using Asp.Versioning;
+
 
 public static class ConfigureApp
 {
