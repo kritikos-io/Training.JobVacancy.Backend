@@ -2,7 +2,7 @@
 
 using System.Text.Json.Serialization;
 
-public class Vacancy
+public class VacancyDto
 {
   public Guid Id { get; set; }
 
