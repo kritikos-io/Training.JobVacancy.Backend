@@ -11,7 +11,7 @@ public class V1FeedEntryEndpoints
   public static RouteGroupBuilder Map(RouteGroupBuilder endpoint)
   {
     var group = endpoint.MapGroup("feedentry")
-        .WithTags("Feed");
+        .WithTags("Feed Entries");
 
     group.MapGet("{id:guid}", GetFeedEntry);
 
