@@ -6,8 +6,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddJobVacancyServices();
 
-builder.Services.AddOpenApi();
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -19,5 +17,10 @@ app.UseHttpsRedirection();
 
 app.MapOpenApi();
 app.MapScalarApiReference();
+
+app.UseExceptionHandler();
+app.UseStatusCodePages();
+
+app.MapEndpoints();
 
 app.Run();
