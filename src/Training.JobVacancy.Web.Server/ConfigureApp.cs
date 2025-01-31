@@ -26,7 +26,7 @@ public static class ConfigureApp
   public static RouteGroupBuilder MapV1Endpoints(this RouteGroupBuilder endpoint)
   {
 
-    var group = endpoint.HasApiVersion(1);
+    var group = endpoint.MapToApiVersion(1);
 
     V1FeedEndpoints.Map(group);
     V1FeedEntryEndpoints.Map(group);
