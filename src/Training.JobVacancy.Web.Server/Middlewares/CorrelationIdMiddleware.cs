@@ -18,7 +18,7 @@ public class CorrelationIdMiddleware(ILogger<CorrelationIdMiddleware> logger) : 
     context.Request.Headers[header] = headerValue;
     context.Response.Headers[header] = headerValue;
 
-    using (logger.BeginScope("{CorrelationId}", headerValue))
+    using (logger.BeginScope(new Dictionary<string, object> {{"Correlation-Id", headerValue}}))
     {
       return next.Invoke(context);
     }

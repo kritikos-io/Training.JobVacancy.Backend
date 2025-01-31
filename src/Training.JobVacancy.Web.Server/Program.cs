@@ -28,10 +28,4 @@ app.MapEndpoints();
 
 app.UseCorrelationIdMiddleware();
 
-app.MapGet("/api/v2/hello", (HttpContext ctx, ILogger<Program> logger) =>
-{
-  logger.LogWarning("Received Requeset");
-  return ctx.Request.Headers;
-});
-
 app.Run();
