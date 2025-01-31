@@ -12,6 +12,8 @@ using Microsoft.Extensions.Options;
 
 using Refit;
 
+using ZiggyCreatures.Caching.Fusion;
+
 public static class ConfigureServices
 {
   public static void AddJobVacancyServices(this WebApplicationBuilder builder)
@@ -27,6 +29,8 @@ public static class ConfigureServices
     builder.Services.AddDbContext<JobVacancyDbContext>(options => options
         .UseNpgsql(builder.Configuration.GetConnectionString("JobVacancyDatabase"))
         .EnableSensitiveDataLogging());
+
+    builder.AddConfiguredFusionCache();
   }
 
   public static void AddApiDocumentation(this WebApplicationBuilder builder)
@@ -78,4 +82,28 @@ public static class ConfigureServices
       return new NavJobVacancyRepo(seed);
     });
   }
+
+  public static void AddConfiguredFusionCache(this WebApplicationBuilder builder)
+  {
+    var fusionCacheSettings = builder.Configuration.GetSection("FusionCache");
+
+    var defaultDurationMinutes = fusionCacheSettings.GetValue<int>("DefaultDurationMinutes", 5);
+    var isFailSafeEnabled = fusionCacheSettings.GetValue<bool>("FailSafeEnabled", true);
+    var failSafeMaxDurationHours = fusionCacheSettings.GetValue<int>("FailSafeMaxDurationHours", 2);
+    var failSafeThrottleDurationSeconds = fusionCacheSettings.GetValue<int>("FailSafeThrottleDurationSeconds", 30);
+
+    builder.Services.AddFusionCache()
+      .WithOptions(options =>
+      {
+        options.DefaultEntryOptions = new FusionCacheEntryOptions
+        {
+          Duration = TimeSpan.FromMinutes(defaultDurationMinutes),
+          IsFailSafeEnabled = isFailSafeEnabled,
+          FailSafeMaxDuration = TimeSpan.FromHours(failSafeMaxDurationHours),
+          FailSafeThrottleDuration = TimeSpan.FromSeconds(failSafeThrottleDurationSeconds),
+        };
+      })
+      .TryWithAutoSetup();
+  }
+
 }

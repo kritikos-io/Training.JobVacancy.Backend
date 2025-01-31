@@ -8,8 +8,6 @@ builder.AddJobVacancyServices();
 
 builder.Services.AddOpenApi();
 
-builder.Services.AddFusionCache();
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
