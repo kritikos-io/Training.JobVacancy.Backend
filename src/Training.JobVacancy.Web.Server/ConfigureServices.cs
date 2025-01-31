@@ -2,6 +2,7 @@
 
 using Adaptit.Training.JobVacancy.Data;
 using Adaptit.Training.JobVacancy.Web.Models;
+using Adaptit.Training.JobVacancy.Web.Server.Middlewares;
 using Adaptit.Training.JobVacancy.Web.Server.Options;
 using Adaptit.Training.JobVacancy.Web.Server.Repositories;
 
@@ -78,4 +79,6 @@ public static class ConfigureServices
       return new NavJobVacancyRepo(seed);
     });
   }
+
+  public static void AddMiddlewareServices(this WebApplicationBuilder builder) => builder.Services.AddTransient<CorrelationIdMiddleware>();
 }
