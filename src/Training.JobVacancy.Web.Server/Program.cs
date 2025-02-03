@@ -16,7 +16,18 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.MapOpenApi();
-app.MapScalarApiReference();
+app.MapScalarApiReference(options =>
+{
+  options
+      .WithDefaultHttpClient(ScalarTarget.JavaScript, ScalarClient.Axios)
+      .WithPreferredScheme("openid")
+      .WithOAuth2Authentication(oauth =>
+      {
+        oauth.ClientId = "Swagger";
+        oauth.Scopes = new[] { "openid", "profile", "email" };
+      })
+      .WithLayout(ScalarLayout.Modern);
+});
 
 app.UseExceptionHandler();
 app.UseStatusCodePages();
