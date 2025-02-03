@@ -1,11 +1,10 @@
 ﻿namespace Adaptit.Training.JobVacancy.Web.Server;
 
-using System.Text.Json.Serialization;
-
 using Adaptit.Training.JobVacancy.Backend.Helpers;
 using Adaptit.Training.JobVacancy.Data;
 using Adaptit.Training.JobVacancy.Web.Models;
 using Adaptit.Training.JobVacancy.Web.Server.Helpers;
+using Adaptit.Training.JobVacancy.Web.Server.Middlewares;
 using Adaptit.Training.JobVacancy.Web.Server.OpenApi.OperationTransformers;
 using Adaptit.Training.JobVacancy.Web.Server.OpenApi.SchemaTransformers;
 using Adaptit.Training.JobVacancy.Web.Server.Options;
@@ -24,10 +23,6 @@ public static class ConfigureServices
   public static void AddJobVacancyServices(this WebApplicationBuilder builder)
   {
     builder.Services.AddProblemDetails();
-    builder.Services.ConfigureHttpJsonOptions(options =>
-    {
-      options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-    });
     builder.AddJobVacancyAuthentication();
 
     builder.AddNavJobVacancyClient();
@@ -153,4 +148,6 @@ public static class ConfigureServices
       return new NavJobVacancyRepo(seed);
     });
   }
+
+  public static void AddMiddlewareServices(this WebApplicationBuilder builder) => builder.Services.AddTransient<CorrelationIdMiddleware>();
 }
