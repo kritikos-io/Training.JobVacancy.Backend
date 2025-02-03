@@ -14,12 +14,15 @@ public static class ConfigureApp
         .ReportApiVersions()
         .Build();
 
-    var group = app.MapGroup("api/v{version:apiVersion}")
+    app.MapGroup("api/v{version:apiVersion}")
         .WithOpenApi()
-        .WithApiVersionSet(apiVersionSet);
+        .WithApiVersionSet(apiVersionSet)
+        .MapV1Endpoints();
 
-    group.MapV1Endpoints();
-    group.MapV2Endpoints();
+    app.MapGroup("api/v{version:apiVersion}")
+        .WithOpenApi()
+        .WithApiVersionSet(apiVersionSet)
+        .MapV2Endpoints();
 
     return app;
   }
