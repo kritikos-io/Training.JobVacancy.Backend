@@ -2,13 +2,16 @@
 
 using Adaptit.Training.JobVacancy.Data;
 using Adaptit.Training.JobVacancy.Web.Models;
+using Adaptit.Training.JobVacancy.Web.Server.Middlewares;
 using Adaptit.Training.JobVacancy.Web.Server.Options;
 using Adaptit.Training.JobVacancy.Web.Server.Repositories;
 
 using Asp.Versioning;
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 
 using Refit;
 
@@ -17,6 +20,7 @@ public static class ConfigureServices
   public static void AddJobVacancyServices(this WebApplicationBuilder builder)
   {
     builder.Services.AddProblemDetails();
+    builder.AddJobVacancyAuthentication();
 
     builder.AddNavJobVacancyClient();
     builder.AddNavJobRepository();
@@ -27,6 +31,37 @@ public static class ConfigureServices
     builder.Services.AddDbContext<JobVacancyDbContext>(options => options
         .UseNpgsql(builder.Configuration.GetConnectionString("JobVacancyDatabase"))
         .EnableSensitiveDataLogging());
+  }
+
+  public static void AddJobVacancyAuthentication(this WebApplicationBuilder builder)
+  {
+    builder.Services.AddOptionsWithValidateOnStart<JobVacancyAuthenticationOptions>()
+        .BindConfiguration(JobVacancyAuthenticationOptions.Section)
+        .ValidateDataAnnotations();
+
+    builder.Services.AddAuthentication()
+        .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
+            options =>
+            {
+              var realmSettings = new JobVacancyAuthenticationOptions();
+              builder.Configuration.GetRequiredSection(JobVacancyAuthenticationOptions.Section)
+                  .Bind(realmSettings);
+
+              options.Authority = realmSettings.Authority.ToString();
+              options.MetadataAddress = $"{options.Authority}/.well-known/openid-configuration";
+
+              options.RequireHttpsMetadata = true;
+              options.SaveToken = true;
+
+              options.TokenValidationParameters = new TokenValidationParameters
+              {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidIssuer = realmSettings.Authority.ToString(),
+                ValidAudience = "account",
+                ValidateLifetime = true,
+              };
+            });
   }
 
   public static void AddApiDocumentation(this WebApplicationBuilder builder)
@@ -78,4 +113,6 @@ public static class ConfigureServices
       return new NavJobVacancyRepo(seed);
     });
   }
+
+  public static void AddMiddlewareServices(this WebApplicationBuilder builder) => builder.Services.AddTransient<CorrelationIdMiddleware>();
 }
