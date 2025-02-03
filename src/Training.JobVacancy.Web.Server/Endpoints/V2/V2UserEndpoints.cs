@@ -15,6 +15,8 @@ public class V2UserEndpoints
 
     group.MapGet("", GetAllUsers);
     group.MapGet("{id}", GetUserById);
+    group.MapPost(string.Empty, CreateUser);
+    group.MapPut(string.Empty, UpdateUser);
 
     return endpoint;
   }
