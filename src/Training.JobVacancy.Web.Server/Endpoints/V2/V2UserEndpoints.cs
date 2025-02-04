@@ -11,10 +11,10 @@ public class V2UserEndpoints
 {
   public static RouteGroupBuilder Map(RouteGroupBuilder endpoint)
   {
-    var group = endpoint.MapGroup("user").WithTags("User");
+    var group = endpoint.MapGroup("users").WithTags("User");
 
     group.MapGet("", GetAllUsers);
-    group.MapGet("{id}", GetUserById);
+    group.MapGet("{id:guid}", GetUserById).WithName("GetUserById");
     group.MapPost(string.Empty, CreateUser);
     group.MapPut(string.Empty, UpdateUser);
 
@@ -27,7 +27,7 @@ public class V2UserEndpoints
     return TypedResults.Ok(dtos);
   }
 
-  public static async Task<Results<Ok<UserReturnDto>, NotFound>> GetUserById(string id, JobVacancyDbContext dbContext,
+  public static async Task<Results<Ok<UserReturnDto>, NotFound>> GetUserById(Guid id, JobVacancyDbContext dbContext,
     CancellationToken cancellationToken)
   {
     var user = await dbContext.Users.FindAsync(id, cancellationToken);
@@ -40,29 +40,30 @@ public class V2UserEndpoints
     return TypedResults.Ok(dto);
   }
 
-  public static async Task<Results<CreatedAtRoute<UserReturnDto>, BadRequest>> CreateUser(UserModifyDto userModifyDto,
+  public static async Task<Results<CreatedAtRoute<UserReturnDto>, BadRequest>> CreateUser(UserCreateDto userCreateDto,
     JobVacancyDbContext dbContext, CancellationToken cancellationToken)
   {
-    userModifyDto.Id = Guid.NewGuid();
-
-    var user = userModifyDto.ToUser();
+    var user = userCreateDto.ToUser();
 
     dbContext.Users.Add(user);
     await dbContext.SaveChangesAsync(cancellationToken);
     var dto = user.ToUserReturnDto();
-    return TypedResults.CreatedAtRoute(dto);
+    return TypedResults.CreatedAtRoute(dto, nameof(GetUserById), new {id = dto.Id});
   }
 
-  public static async Task<Results<Ok<UserReturnDto>, NotFound>> UpdateUser(UserModifyDto userModifyDto,
+  public static async Task<Results<Ok<UserReturnDto>, NotFound>> UpdateUser(UserUpdateDto userUpdateDto,
     JobVacancyDbContext dbContext, CancellationToken cancellationToken)
   {
-    var user = await dbContext.Users.FindAsync(userModifyDto.Id, cancellationToken);
+    var user = await dbContext.Users.FindAsync(userUpdateDto.Id, cancellationToken);
     if (user == null)
     {
       return TypedResults.NotFound();
     }
-    user = userModifyDto.ToUser();
-    dbContext.Users.Update(user);
+
+    user.Name = userUpdateDto.Name;
+    user.Surname = userUpdateDto.Surname;
+    user.Resume = userUpdateDto.Resume;
+
     await dbContext.SaveChangesAsync(cancellationToken);
     var dto = user.ToUserReturnDto();
     return TypedResults.Ok(dto);
