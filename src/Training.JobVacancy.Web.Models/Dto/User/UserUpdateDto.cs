@@ -1,6 +1,6 @@
 namespace Adaptit.Training.JobVacancy.Web.Models.Dto.User;
 
-public class UserModifyDto
+public class UserUpdateDto
 {
   public Guid Id { get; set; }
   public string Name { get; set; } = string.Empty;
