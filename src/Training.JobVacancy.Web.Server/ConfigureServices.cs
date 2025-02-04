@@ -33,10 +33,7 @@ public static class ConfigureServices
     builder.AddConfiguredFusionCache();
   }
 
-  public static void AddApiDocumentation(this WebApplicationBuilder builder)
-  {
-    builder.Services.AddOpenApi();
-  }
+  public static void AddApiDocumentation(this WebApplicationBuilder builder) => builder.Services.AddOpenApi();
 
   public static void AddApiVersioning(this WebApplicationBuilder builder)
   {
@@ -85,25 +82,30 @@ public static class ConfigureServices
 
   public static void AddConfiguredFusionCache(this WebApplicationBuilder builder)
   {
-    var fusionCacheSettings = builder.Configuration.GetSection("FusionCache");
+    builder.Services.AddOptionsWithValidateOnStart<ProjectFusionCacheOptions>()
+      .BindConfiguration(ProjectFusionCacheOptions.Section)
+      .ValidateDataAnnotations();
 
-    var defaultDurationMinutes = fusionCacheSettings.GetValue<int>("DefaultDurationMinutes", 5);
-    var isFailSafeEnabled = fusionCacheSettings.GetValue<bool>("FailSafeEnabled", true);
-    var failSafeMaxDurationHours = fusionCacheSettings.GetValue<int>("FailSafeMaxDurationHours", 2);
-    var failSafeThrottleDurationSeconds = fusionCacheSettings.GetValue<int>("FailSafeThrottleDurationSeconds", 30);
+    builder.Services.AddFusionCacheSystemTextJsonSerializer();
+
+    var cacheOptions = builder.Services.BuildServiceProvider()
+      .GetRequiredService<IOptions<ProjectFusionCacheOptions>>()
+      .Value;
 
     builder.Services.AddFusionCache()
       .WithOptions(options =>
       {
+
+
         options.DefaultEntryOptions = new FusionCacheEntryOptions
         {
-          Duration = TimeSpan.FromMinutes(defaultDurationMinutes),
-          IsFailSafeEnabled = isFailSafeEnabled,
-          FailSafeMaxDuration = TimeSpan.FromHours(failSafeMaxDurationHours),
-          FailSafeThrottleDuration = TimeSpan.FromSeconds(failSafeThrottleDurationSeconds),
+          Duration = TimeSpan.FromMinutes(cacheOptions.DefaultDurationMinutes),
+          JitterMaxDuration = TimeSpan.FromSeconds(cacheOptions.JitterMaxDurationMs)
         };
       })
-      .TryWithAutoSetup();
+      .TryWithRegisteredDistributedCache()
+      .WithStackExchangeRedisBackplane(options => options.Configuration = cacheOptions.RedisConnectionString)
+      .AsHybridCache();
   }
 
 }

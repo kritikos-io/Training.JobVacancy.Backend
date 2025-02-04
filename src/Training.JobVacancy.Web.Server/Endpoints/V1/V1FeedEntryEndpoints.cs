@@ -6,6 +6,8 @@ using Adaptit.Training.JobVacancy.Web.Server.Repositories;
 
 using Microsoft.AspNetCore.Http.HttpResults;
 
+using ZiggyCreatures.Caching.Fusion;
+
 public class V1FeedEntryEndpoints
 {
   public static RouteGroupBuilder Map(RouteGroupBuilder endpoint)
@@ -21,15 +23,23 @@ public class V1FeedEntryEndpoints
   public static Results<Ok<EntryDto>, NotFound> GetFeedEntry(
       Guid id,
       NavJobVacancyRepo repository,
-      ILogger<V1FeedEntryEndpoints> logger)
+      ILogger<V1FeedEntryEndpoints> logger,
+      IFusionCache fusionCache)
   {
-    var entry = repository.Entries.FirstOrDefault(x => x.Uuid == id);
-    if (entry is null)
+    var entry = fusionCache.GetOrSet<EntryDto?>(
+      id.ToString(),
+      _ =>
+      {
+        return repository.Entries.FirstOrDefault(x => x.Uuid == id);;
+      });
+
+    if (entry is not null)
     {
-      logger.LogEntityNotFound(nameof(EntryDto), id);
-      return TypedResults.NotFound();
+      return TypedResults.Ok(entry);
     }
 
-    return TypedResults.Ok(entry);
+    logger.LogEntityNotFound(nameof(EntryDto), id);
+    return TypedResults.NotFound();
+
   }
 }

@@ -14,7 +14,7 @@ public static class ConfigureApp
         .ReportApiVersions()
         .Build();
 
-    var group = app.MapGroup("api/v{version:apiVersion}")
+    var group = app.MapGroup("/api/v{version:apiVersion}/")
         .WithOpenApi()
         .WithApiVersionSet(apiVersionSet);
 

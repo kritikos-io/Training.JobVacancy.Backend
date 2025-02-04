@@ -19,5 +19,6 @@ app.UseHttpsRedirection();
 
 app.MapOpenApi();
 app.MapScalarApiReference();
+app.MapEndpoints();
 
 app.Run();

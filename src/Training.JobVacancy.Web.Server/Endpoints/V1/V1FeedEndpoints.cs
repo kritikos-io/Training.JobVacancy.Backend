@@ -11,6 +11,8 @@ using Adaptit.Training.JobVacancy.Web.Server.Repositories;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
+using ZiggyCreatures.Caching.Fusion;
+
 public class V1FeedEndpoints
 {
   public static RouteGroupBuilder Map(RouteGroupBuilder endpoint)
@@ -30,7 +32,8 @@ public class V1FeedEndpoints
       [FromHeader(Name = "If-Modified-Since")] string? modifiedSinceHeader,
       string? last,
       NavJobVacancyRepo repository,
-      ILogger<V1FeedEndpoints> logger)
+      ILogger<V1FeedEndpoints> logger,
+      IFusionCache fusionCache)
   {
     if (!DateTimeOffset.TryParseExact(
             modifiedSinceHeader,
@@ -44,18 +47,26 @@ public class V1FeedEndpoints
       return TypedResults.ValidationProblem([new KeyValuePair<string, string[]>("If-Modified-Since", ["Valid dates should be in RFC1123"])]);
     }
 
-    var feeds = repository.Feeds
-        .OrderBy(
+    var feed = fusionCache.GetOrSet<FeedDto?>(
+      modifiedSince.ToString(),
+      _ =>
+      {
+        var feeds = repository.Feeds
+          .OrderBy(
             last is not null
-                ? ListSortDirection.Descending
-                : ListSortDirection.Ascending,
+              ? ListSortDirection.Descending
+              : ListSortDirection.Ascending,
             x => x.Items.FirstOrDefault()?.ModifiedAt);
 
-    var feed = feeds
-        .WhereIf(
+        var feed = feeds
+          .WhereIf(
             modifiedSinceHeader is not null,
             x => x.Items.FirstOrDefault()?.ModifiedAt > modifiedSince)
-        .FirstOrDefault();
+          .FirstOrDefault();
+
+        return feed;
+      }
+    );
 
     return TypedResults.Ok(feed);
   }
@@ -63,15 +74,34 @@ public class V1FeedEndpoints
   public static Results<Ok<FeedDto>, NotFound> GetFeedPage(
       Guid id,
       NavJobVacancyRepo repository,
-      ILogger<V1FeedEndpoints> logger)
+      ILogger<V1FeedEndpoints> logger,
+      IFusionCache fusionCache)
   {
-    var feed = repository.Feeds.FirstOrDefault(x => x.Id == id);
-    if (feed is null)
+
+    var feedPage = fusionCache.GetOrSet<FeedDto?>(
+      id.ToString(),
+      _ =>
+      {
+        var feedFromRepo = repository.Feeds.FirstOrDefault(x => x.Id == id);
+
+        if (feedFromRepo is not null)
+        {
+          return feedFromRepo;
+        }
+
+        logger.LogEntityNotFound(nameof(FeedDto), id);
+        return null;
+
+      }
+    );
+
+    if (feedPage is not null)
     {
-      logger.LogEntityNotFound(nameof(FeedDto), id);
-      return TypedResults.NotFound();
+      return TypedResults.Ok(feedPage);
     }
 
-    return TypedResults.Ok(feed);
+    logger.LogEntityNotFound(nameof(FeedDto), id);
+    return TypedResults.NotFound();
+
   }
 }

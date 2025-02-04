@@ -22,6 +22,26 @@
           "Microsoft.Extensions.Caching.Memory": "9.0.0"
         }
       },
+      "ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis": {
+        "type": "Direct",
+        "requested": "[2.0.0, )",
+        "resolved": "2.0.0",
+        "contentHash": "NPAeTTxux3YH5UP7YrK97fZ3taIjqaraKcmTHacXBXO3C1uKjCtNUPtpATdzSXR+SKkqMemQOvAvi9kGU/xkcQ==",
+        "dependencies": {
+          "StackExchange.Redis": "2.8.22",
+          "ZiggyCreatures.FusionCache": "2.0.0"
+        }
+      },
+      "ZiggyCreatures.FusionCache.Serialization.SystemTextJson": {
+        "type": "Direct",
+        "requested": "[2.0.0, )",
+        "resolved": "2.0.0",
+        "contentHash": "R0K0zZJ4Nx1NnIYTkEq5EJrLlDMZIzsbgmPlUCuI4pYARF4TaG7Z9jR6B88RVxcOcPmCKfBnziubqmluY5fpsA==",
+        "dependencies": {
+          "System.Text.Json": "8.0.5",
+          "ZiggyCreatures.FusionCache": "2.0.0"
+        }
+      },
       "Microsoft.EntityFrameworkCore": {
         "type": "Transitive",
         "resolved": "9.0.1",
@@ -134,6 +154,33 @@
         "dependencies": {
           "Microsoft.Extensions.Logging.Abstractions": "8.0.2"
         }
+      },
+      "Pipelines.Sockets.Unofficial": {
+        "type": "Transitive",
+        "resolved": "2.2.8",
+        "contentHash": "zG2FApP5zxSx6OcdJQLbZDk2AVlN2BNQD6MorwIfV6gVj0RRxWPEp2LXAxqDGZqeNV1Zp0BNPcNaey/GXmTdvQ==",
+        "dependencies": {
+          "System.IO.Pipelines": "5.0.1"
+        }
+      },
+      "StackExchange.Redis": {
+        "type": "Transitive",
+        "resolved": "2.8.22",
+        "contentHash": "GRA97f4cHYxBI/fKOfgs3GyKklc5is6YKM2yWbkiCZGR/JKsXIo0sRJSSeJabriJAZkKFthM0rXnULFfSbs0KA==",
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "6.0.0",
+          "Pipelines.Sockets.Unofficial": "2.2.8"
+        }
+      },
+      "System.IO.Pipelines": {
+        "type": "Transitive",
+        "resolved": "5.0.1",
+        "contentHash": "qEePWsaq9LoEEIqhbGe6D5J8c9IqQOUuTzzV6wn1POlfdLkJliZY3OlB0j0f17uMWlqZYjH7txj+2YbyrIA8Yg=="
+      },
+      "System.Text.Json": {
+        "type": "Transitive",
+        "resolved": "8.0.5",
+        "contentHash": "0f1B50Ss7rqxXiaBJyzUu9bWFOO2/zSlifZ/UNMdiIpDYe4cY4LQQicP4nirK1OS31I43rn062UIJ1Q9bpmHpg=="
       }
     }
   }

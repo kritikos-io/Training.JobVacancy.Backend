@@ -446,6 +446,23 @@
           "Microsoft.Extensions.Logging.Abstractions": "8.0.2"
         }
       },
+      "Pipelines.Sockets.Unofficial": {
+        "type": "Transitive",
+        "resolved": "2.2.8",
+        "contentHash": "zG2FApP5zxSx6OcdJQLbZDk2AVlN2BNQD6MorwIfV6gVj0RRxWPEp2LXAxqDGZqeNV1Zp0BNPcNaey/GXmTdvQ==",
+        "dependencies": {
+          "System.IO.Pipelines": "5.0.1"
+        }
+      },
+      "StackExchange.Redis": {
+        "type": "Transitive",
+        "resolved": "2.8.22",
+        "contentHash": "GRA97f4cHYxBI/fKOfgs3GyKklc5is6YKM2yWbkiCZGR/JKsXIo0sRJSSeJabriJAZkKFthM0rXnULFfSbs0KA==",
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "6.0.0",
+          "Pipelines.Sockets.Unofficial": "2.2.8"
+        }
+      },
       "System.CodeDom": {
         "type": "Transitive",
         "resolved": "6.0.0",
@@ -546,11 +563,22 @@
         "resolved": "4.2.2",
         "contentHash": "Dczu80ZOWyT4LTV0ddOkfbVZSwMzJAa213jS70aP2ydiyUWYOdO1+4ny0b4r9TFiP4wfl6X15GXj0rlSrPNsbw=="
       },
+      "ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis": {
+        "type": "Transitive",
+        "resolved": "2.0.0",
+        "contentHash": "NPAeTTxux3YH5UP7YrK97fZ3taIjqaraKcmTHacXBXO3C1uKjCtNUPtpATdzSXR+SKkqMemQOvAvi9kGU/xkcQ==",
+        "dependencies": {
+          "StackExchange.Redis": "2.8.22",
+          "ZiggyCreatures.FusionCache": "2.0.0"
+        }
+      },
       "Adaptit.Training.JobVacancy.Data": {
         "type": "Project",
         "dependencies": {
           "Npgsql.EntityFrameworkCore.PostgreSQL": "[9.0.3, )",
-          "ZiggyCreatures.FusionCache": "[2.0.0, )"
+          "ZiggyCreatures.FusionCache": "[2.0.0, )",
+          "ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis": "[2.0.0, )",
+          "ZiggyCreatures.FusionCache.Serialization.SystemTextJson": "[2.0.0, )"
         }
       },
       "Adaptit.Training.JobVacancy.Web.Models": {
@@ -583,6 +611,16 @@
         "contentHash": "fwUwz4iS9Avq5oh7AI01/RktdG4yEp/jlCrlcq1ww6/mCoQzxq5dJDZhyhLVdx0s7MN22rUW3N+huGYXignrMA==",
         "dependencies": {
           "Microsoft.Extensions.Caching.Memory": "9.0.0"
+        }
+      },
+      "ZiggyCreatures.FusionCache.Serialization.SystemTextJson": {
+        "type": "CentralTransitive",
+        "requested": "[2.0.0, )",
+        "resolved": "2.0.0",
+        "contentHash": "R0K0zZJ4Nx1NnIYTkEq5EJrLlDMZIzsbgmPlUCuI4pYARF4TaG7Z9jR6B88RVxcOcPmCKfBnziubqmluY5fpsA==",
+        "dependencies": {
+          "System.Text.Json": "8.0.5",
+          "ZiggyCreatures.FusionCache": "2.0.0"
         }
       }
     }
