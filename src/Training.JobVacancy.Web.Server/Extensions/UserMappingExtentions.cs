@@ -26,28 +26,15 @@ public static class UserMappingExtentions
     return dtos;
   }
 
-  public static User ToUser(this UserModifyDto userModifyDto)
+  public static User ToUser(this UserCreateDto userCreateDto)
   {
-    ArgumentNullException.ThrowIfNull(userModifyDto);
+    ArgumentNullException.ThrowIfNull(userCreateDto);
     var user = new User
     {
-      Id = userModifyDto.Id,
-      Name = userModifyDto.Name,
-      Surname = userModifyDto.Surname,
-      Resume = userModifyDto.Resume,
-    };
-    return user;
-  }
-
-  public static User ToUser(this UserReturnDto userReturnDto)
-  {
-    ArgumentNullException.ThrowIfNull(userReturnDto);
-    var user = new User
-    {
-      Id = userReturnDto.Id,
-      Name = userReturnDto.Name,
-      Surname = userReturnDto.Surname,
-      Resume = userReturnDto.Resume,
+      Id = Guid.NewGuid(),
+      Name = userCreateDto.Name,
+      Surname = userCreateDto.Surname,
+      Resume = userCreateDto.Resume,
     };
     return user;
   }
