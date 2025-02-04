@@ -42,6 +42,7 @@ public static class ConfigureApp
   {
 
     var group = endpoint.MapToApiVersion(2);
+
     V2UserEndpoints.Map(group);
     return group;
   }
