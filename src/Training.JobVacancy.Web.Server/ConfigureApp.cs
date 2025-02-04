@@ -32,7 +32,7 @@ public static class ConfigureApp
 
     V1FeedEndpoints.Map(group);
     V1FeedEntryEndpoints.Map(group);
-
+    V2UserEndpoints.Map(group);
     return group;
   }
 
@@ -40,7 +40,6 @@ public static class ConfigureApp
   {
 
     var group = endpoint.MapToApiVersion(2);
-    V2UserEndpoints.Map(group);
 
     return group;
   }
