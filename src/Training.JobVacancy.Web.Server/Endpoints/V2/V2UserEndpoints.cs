@@ -16,6 +16,7 @@ public class V2UserEndpoints
     group.MapGet("", GetAllUsers);
     group.MapGet("{id:guid}", GetUserById).WithName("GetUserById");
     group.MapPost(string.Empty, CreateUser);
+    group.MapPost("/upload-resume", UploadUserResume).DisableAntiforgery();
     group.MapPut(string.Empty, UpdateUser);
     group.MapDelete("{id:guid}", DeleteUser);
 
@@ -82,6 +83,17 @@ public class V2UserEndpoints
     dbContext.Users.Remove(user);
     await dbContext.SaveChangesAsync(cancellationToken);
     return TypedResults.NoContent();
+  }
+
+  public static async Task<Results<Ok, BadRequest<string>>> UploadUserResume(IFormFile file, CancellationToken cancellationToken)
+  {
+    if (file == null || file.Length == 0 || file.ContentType != "application/pdf")
+    {
+      return TypedResults.BadRequest("Need a pdf file");
+    }
+    // logiki gia save
+
+    return TypedResults.Ok();
   }
 }
 
