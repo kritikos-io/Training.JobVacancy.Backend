@@ -17,6 +17,7 @@ public class V2UserEndpoints
     group.MapGet("{id:guid}", GetUserById).WithName("GetUserById");
     group.MapPost(string.Empty, CreateUser);
     group.MapPut(string.Empty, UpdateUser);
+    group.MapDelete("{id:guid}", DeleteUser);
 
     return endpoint;
   }
@@ -67,6 +68,20 @@ public class V2UserEndpoints
     await dbContext.SaveChangesAsync(cancellationToken);
     var dto = user.ToUserReturnDto();
     return TypedResults.Ok(dto);
+  }
+
+  public static async Task<Results<NoContent, NotFound>> DeleteUser(Guid id, JobVacancyDbContext dbContext,
+    CancellationToken cancellationToken)
+  {
+    var user = await dbContext.Users.FindAsync(id, cancellationToken);
+
+    if (user == null)
+    {
+      return TypedResults.NotFound();
+    }
+    dbContext.Users.Remove(user);
+    await dbContext.SaveChangesAsync(cancellationToken);
+    return TypedResults.NoContent();
   }
 }
 
