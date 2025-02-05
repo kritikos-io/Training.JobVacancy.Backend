@@ -563,15 +563,6 @@
         "resolved": "4.2.2",
         "contentHash": "Dczu80ZOWyT4LTV0ddOkfbVZSwMzJAa213jS70aP2ydiyUWYOdO1+4ny0b4r9TFiP4wfl6X15GXj0rlSrPNsbw=="
       },
-      "ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis": {
-        "type": "Transitive",
-        "resolved": "2.0.0",
-        "contentHash": "NPAeTTxux3YH5UP7YrK97fZ3taIjqaraKcmTHacXBXO3C1uKjCtNUPtpATdzSXR+SKkqMemQOvAvi9kGU/xkcQ==",
-        "dependencies": {
-          "StackExchange.Redis": "2.8.22",
-          "ZiggyCreatures.FusionCache": "2.0.0"
-        }
-      },
       "Adaptit.Training.JobVacancy.Data": {
         "type": "Project",
         "dependencies": {
@@ -611,6 +602,16 @@
         "contentHash": "fwUwz4iS9Avq5oh7AI01/RktdG4yEp/jlCrlcq1ww6/mCoQzxq5dJDZhyhLVdx0s7MN22rUW3N+huGYXignrMA==",
         "dependencies": {
           "Microsoft.Extensions.Caching.Memory": "9.0.0"
+        }
+      },
+      "ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis": {
+        "type": "CentralTransitive",
+        "requested": "[2.0.0, )",
+        "resolved": "2.0.0",
+        "contentHash": "NPAeTTxux3YH5UP7YrK97fZ3taIjqaraKcmTHacXBXO3C1uKjCtNUPtpATdzSXR+SKkqMemQOvAvi9kGU/xkcQ==",
+        "dependencies": {
+          "StackExchange.Redis": "2.8.22",
+          "ZiggyCreatures.FusionCache": "2.0.0"
         }
       },
       "ZiggyCreatures.FusionCache.Serialization.SystemTextJson": {
