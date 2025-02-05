@@ -4,21 +4,21 @@ using System;
 
 public class JobAd
 {
-  private Guid Id { get; set; }
+  public Guid Id { get; set; }
 
-  private JobType Type { get; set; }
+  public JobType Type { get; set; }
 
-  private string SalaryRange { get; set; }
+  public string SalaryRange { get; set; }
 
-  private string Description { get; set; }
+  public string Description { get; set; }
 
-  private bool Favorite { get; set; }
+  public bool Favorite { get; set; }
 
-  private string Location { get; set; }
+  public string Location { get; set; }
 
-  private DateTime CreatedAt { get; set; }
+  public DateTimeOffset CreatedAt { get; set; }
 
-  private DateTime ExpiresAt { get; set; }
+  public DateTimeOffset ExpiresAt { get; set; }
 
-  private JobExperienceLevel Level { get; set; }
+  public JobExperienceLevel Level { get; set; }
 }

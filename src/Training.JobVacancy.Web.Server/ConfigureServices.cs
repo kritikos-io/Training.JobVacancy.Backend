@@ -28,7 +28,8 @@ public static class ConfigureServices
     builder.AddApiVersioning();
 
     builder.Services.AddDbContext<JobVacancyDbContext>(options => options
-        .UseNpgsql(builder.Configuration.GetConnectionString("JobVacancyDatabase"))
+        .UseNpgsql(builder.Configuration.GetConnectionString("JobVacancyDatabase"), options =>
+          options.MigrationsAssembly("Training.JobVacancy.Web.Server"))
         .EnableSensitiveDataLogging());
   }
 

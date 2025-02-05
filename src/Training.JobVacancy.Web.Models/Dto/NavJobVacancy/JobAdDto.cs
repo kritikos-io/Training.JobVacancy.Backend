@@ -2,9 +2,15 @@
 
 using System.Text.Json.Serialization;
 
+using Adaptit.Training.JobVacancy.Data.Entities;
+
 public class JobAdDto
 {
   public Guid Uuid { get; set; }
+  public JobType Type { get; set; }
+
+  [JsonPropertyName("salary_range")]
+  public string SalaryRange { get; set; }
 
   [JsonPropertyName("jobtitle")]
   public string Title { get; set; } = string.Empty;
@@ -19,6 +25,8 @@ public class JobAdDto
 
   [JsonPropertyName("updated")]
   public DateTimeOffset UpdatedAt { get; set; }
+
+  public JobExperienceLevel Level { get; set; }
 
   public Source Source { get; set; }
 
