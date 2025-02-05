@@ -1,6 +1,9 @@
 ﻿namespace Adaptit.Training.JobVacancy.Web.Server.Endpoints.V2;
 
+using Adaptit.Training.JobVacancy.Data.Entities;
+
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 
 public class V2JobAdEndpoints
 {
@@ -19,7 +22,15 @@ public class V2JobAdEndpoints
     return endpoint;
   }
 
-  public static Results<Ok, NotFound> GetAllJobAds() => throw new NotImplementedException();
+  public static Results<Ok, NotFound> GetAllJobAds(
+    [FromQuery] JobType? type,
+    [FromQuery] bool? favorite,
+    [FromQuery] double? salary,
+    [FromQuery] DateTime? created,
+    [FromQuery] DateTime? expires,
+    [FromQuery] string? Description,
+    [FromQuery] int? page,
+    [FromQuery] int? rowsPerPage) => throw new NotImplementedException();
 
   public static Results<Ok, NotFound> GetJobAd(Guid id) => throw new NotImplementedException();
 
