@@ -16,9 +16,6 @@ using ZiggyCreatures.Caching.Fusion;
 public class V1FeedEndpoints
 {
 
-  private const string LastFeedCacheKey = "LastFeed";
-  private const string LatestFeedIfModifiedSinceCacheKey = "LastestFeed_If-Modified-Since";
-
   public static RouteGroupBuilder Map(RouteGroupBuilder endpoint)
   {
     var group = endpoint.MapGroup("feed")
@@ -52,19 +49,6 @@ public class V1FeedEndpoints
       return TypedResults.ValidationProblem([new KeyValuePair<string, string[]>("If-Modified-Since", ["Valid dates should be in RFC1123"])]);
     }
 
-    if (modifiedSinceHeader is not null)
-    {
-      var lastModifiedSince = fusionCache.TryGet<DateTimeOffset>(LatestFeedIfModifiedSinceCacheKey);
-      if (lastModifiedSince.HasValue && (modifiedSince - lastModifiedSince < TimeSpan.FromSeconds(5)))
-      {
-        var cachedFeed = fusionCache.TryGet<FeedDto?>(LastFeedCacheKey);
-        if (cachedFeed.HasValue)
-        {
-          return TypedResults.Ok(cachedFeed.Value);
-        }
-      }
-    }
-
     var feeds = repository.Feeds
       .OrderBy(
         last is not null
@@ -77,9 +61,6 @@ public class V1FeedEndpoints
         modifiedSinceHeader is not null,
         x => x.Items.FirstOrDefault()?.ModifiedAt > modifiedSince)
       .FirstOrDefault();
-
-    fusionCache.Set(LatestFeedIfModifiedSinceCacheKey,DateTimeOffset.Now);
-    fusionCache.Set(LastFeedCacheKey,feed);
 
     return TypedResults.Ok(feed);
   }

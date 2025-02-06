@@ -88,23 +88,19 @@ public static class ConfigureServices
 
     builder.Services.AddFusionCacheSystemTextJsonSerializer();
 
-    var cacheOptions = builder.Services.BuildServiceProvider()
-      .GetRequiredService<IOptions<ProjectFusionCacheOptions>>()
-      .Value;
+    var cacheOptions = new ProjectFusionCacheOptions();
+    builder.Configuration.Bind(cacheOptions);
 
     builder.Services.AddFusionCache()
       .WithOptions(options =>
       {
-
-
         options.DefaultEntryOptions = new FusionCacheEntryOptions
         {
           Duration = TimeSpan.FromMinutes(cacheOptions.DefaultDurationMinutes),
           JitterMaxDuration = TimeSpan.FromSeconds(cacheOptions.JitterMaxDurationMs)
         };
       })
-      .TryWithRegisteredDistributedCache()
-      .WithStackExchangeRedisBackplane(options => options.Configuration = cacheOptions.RedisConnectionString)
+      .TryWithAutoSetup()
       .AsHybridCache();
   }
 

@@ -10,5 +10,4 @@ public class ProjectFusionCacheOptions
   public int DefaultDurationMinutes { get; set; }
   [Required]
   public int JitterMaxDurationMs { get; set; }
-  public string? RedisConnectionString { get; set; }
 }
