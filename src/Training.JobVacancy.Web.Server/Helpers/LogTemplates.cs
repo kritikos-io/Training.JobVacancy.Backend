@@ -27,18 +27,18 @@ public static partial class LogTemplates
   [LoggerMessage(LogLevel.Warning, EntityNotFound)]
   public static partial void LogEntityNotFound(this ILogger logger, string entity, object id);
 
-  [LoggerMessage(LogLevel.Information, GettingEntitiesOfType)]
+  [LoggerMessage(LogLevel.Debug, GettingEntitiesOfType)]
   public static partial void LogGettingEntitiesOfType(this ILogger logger, string entity);
 
-  [LoggerMessage(LogLevel.Information, GettingEntityOfTypeWithId)]
+  [LoggerMessage(LogLevel.Debug, GettingEntityOfTypeWithId)]
   public static partial void LogGettingEntityOfTypeWithId(this ILogger logger, string entity, object id);
 
-  [LoggerMessage(LogLevel.Information, DeletingEntityOfTypeWithId)]
+  [LoggerMessage(LogLevel.Debug, DeletingEntityOfTypeWithId)]
   public static partial void LogDeletingEntityOfTypeWithId(this ILogger logger, string entity, object id);
 
-  [LoggerMessage(LogLevel.Information, CreatingEntityOfType)]
+  [LoggerMessage(LogLevel.Debug, CreatingEntityOfType)]
   public static partial void LogCreatingEntityOfType(this ILogger logger, string entity);
 
-  [LoggerMessage(LogLevel.Information, UpdatingEntityOfTypeWithId)]
+  [LoggerMessage(LogLevel.Debug, UpdatingEntityOfTypeWithId)]
   public static partial void LogUpdatingEntityOfTypeWithId(this ILogger logger, string entity, object id);
 }
