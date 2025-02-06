@@ -34,7 +34,6 @@ public static class UserMappingExtentions
       Id = Guid.NewGuid(),
       Name = userCreateDto.Name,
       Surname = userCreateDto.Surname,
-      Resume = userCreateDto.Resume,
     };
     return user;
   }
