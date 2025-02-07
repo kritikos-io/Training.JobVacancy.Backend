@@ -5,8 +5,10 @@ using Adaptit.Training.JobVacancy.Data;
 using Adaptit.Training.JobVacancy.Data.Entities;
 using Adaptit.Training.JobVacancy.Web.Models.Dto.User;
 using Adaptit.Training.JobVacancy.Web.Server.Extensions;
+using Adaptit.Training.JobVacancy.Web.Server.Helpers;
 
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 public class V2UserEndpoints()
@@ -24,11 +26,17 @@ public class V2UserEndpoints()
 
     return endpoint;
   }
-  public static async Task<Ok<List<UserReturnDto>>> GetAllUsers(JobVacancyDbContext dbContext, ILogger<V2UserEndpoints> logger, CancellationToken cancellationToken, int page = 1, int pageSize = 10)
+  public static async Task<Ok<PagedList<UserReturnDto>>> GetAllUsers(JobVacancyDbContext dbContext, ILogger<V2UserEndpoints> logger, CancellationToken cancellationToken, int page = 1, int pageSize = 10)
   {
-    var users = await dbContext.Users.Skip((page -1) * pageSize).Take(pageSize).ToListAsync(cancellationToken);
-    var dtos = users.ToUserReturnDtoList();
-    return TypedResults.Ok(dtos);
+    var query = dbContext.Users.OrderBy(u => u.Id).Select(u => new UserReturnDto
+    {
+      Id = u.Id,
+      Name = u.Name,
+      Surname = u.Surname,
+      Resume = u.Resume
+    }).AsQueryable();
+    var pagedListWithDtos = await PagedList<UserReturnDto>.CreateAsync(query, page, pageSize);
+    return TypedResults.Ok(pagedListWithDtos);
   }
 
   public static async Task<Results<Ok<UserReturnDto>, NotFound>> GetUserById(Guid id, JobVacancyDbContext dbContext,
