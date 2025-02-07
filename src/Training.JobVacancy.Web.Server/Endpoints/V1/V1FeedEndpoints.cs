@@ -12,8 +12,6 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Hybrid;
 
-using ZiggyCreatures.Caching.Fusion;
-
 public class V1FeedEndpoints
 {
 

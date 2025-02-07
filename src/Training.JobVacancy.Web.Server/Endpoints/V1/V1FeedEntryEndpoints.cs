@@ -7,8 +7,6 @@ using Adaptit.Training.JobVacancy.Web.Server.Repositories;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.Caching.Hybrid;
 
-using ZiggyCreatures.Caching.Fusion;
-
 public class V1FeedEntryEndpoints
 {
   public static RouteGroupBuilder Map(RouteGroupBuilder endpoint)
