@@ -5,6 +5,7 @@ using Adaptit.Training.JobVacancy.Web.Models.Dto.NavJobVacancy;
 using Adaptit.Training.JobVacancy.Web.Server.Repositories;
 
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.Extensions.Caching.Hybrid;
 
 using ZiggyCreatures.Caching.Fusion;
 
@@ -20,18 +21,17 @@ public class V1FeedEntryEndpoints
     return endpoint;
   }
 
-  public static Results<Ok<EntryDto>, NotFound> GetFeedEntry(
+  public static async Task<Results<Ok<EntryDto>, NotFound>> GetFeedEntry(
       Guid id,
       NavJobVacancyRepo repository,
       ILogger<V1FeedEntryEndpoints> logger,
-      IFusionCache fusionCache)
+      HybridCache cache,
+      CancellationToken ct)
   {
-    var entry = fusionCache.GetOrSet<EntryDto?>(
-      id.ToString(),
-      _ =>
-      {
-        return repository.Entries.FirstOrDefault(x => x.Uuid == id);;
-      });
+    var entry = await cache.GetOrCreateAsync<EntryDto?>(
+      $"{nameof(EntryDto)}:{id}",
+       _ => ValueTask.FromResult(repository.Entries.FirstOrDefault(x => x.Uuid == id)),
+      cancellationToken: ct);
 
     if (entry is not null)
     {
@@ -40,6 +40,5 @@ public class V1FeedEntryEndpoints
 
     logger.LogEntityNotFound(nameof(EntryDto), id);
     return TypedResults.NotFound();
-
   }
 }

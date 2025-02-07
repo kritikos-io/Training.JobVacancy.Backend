@@ -10,6 +10,7 @@ using Adaptit.Training.JobVacancy.Web.Server.Repositories;
 
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Hybrid;
 
 using ZiggyCreatures.Caching.Fusion;
 
@@ -33,8 +34,7 @@ public class V1FeedEndpoints
       [FromHeader(Name = "If-Modified-Since")] string? modifiedSinceHeader,
       string? last,
       NavJobVacancyRepo repository,
-      ILogger<V1FeedEndpoints> logger,
-      IFusionCache fusionCache)
+      ILogger<V1FeedEndpoints> logger)
   {
     if (!DateTimeOffset.TryParseExact(
             modifiedSinceHeader,
@@ -65,29 +65,16 @@ public class V1FeedEndpoints
     return TypedResults.Ok(feed);
   }
 
-  public static Results<Ok<FeedDto>, NotFound> GetFeedPage(
+  public static async Task<Results<Ok<FeedDto>, NotFound>> GetFeedPage(
       Guid id,
       NavJobVacancyRepo repository,
       ILogger<V1FeedEndpoints> logger,
-      IFusionCache fusionCache)
+      HybridCache cache)
   {
 
-    var feedPage = fusionCache.GetOrSet<FeedDto?>(
-      id.ToString(),
-      _ =>
-      {
-        var feedFromRepo = repository.Feeds.FirstOrDefault(x => x.Id == id);
-
-        if (feedFromRepo is not null)
-        {
-          return feedFromRepo;
-        }
-
-        logger.LogEntityNotFound(nameof(FeedDto), id);
-        return null;
-
-      }
-    );
+    var feedPage = await cache.GetOrCreateAsync<FeedDto?>(
+      $"{nameof(FeedDto)}:{id}",
+      _ => ValueTask.FromResult(repository.Feeds.FirstOrDefault(x => x.Id == id)));
 
     if (feedPage is not null)
     {
