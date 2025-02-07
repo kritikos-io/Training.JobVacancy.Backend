@@ -24,10 +24,9 @@ public class V2UserEndpoints()
 
     return endpoint;
   }
-  public static async Task<Ok<ICollection<UserReturnDto>>> GetAllUsers(JobVacancyDbContext dbContext, ILogger<V2UserEndpoints> logger, CancellationToken cancellationToken)
+  public static async Task<Ok<List<UserReturnDto>>> GetAllUsers(JobVacancyDbContext dbContext, ILogger<V2UserEndpoints> logger, CancellationToken cancellationToken, int page = 1, int pageSize = 10)
   {
-    logger.LogGettingEntitiesOfType(nameof(User));
-    var users = await dbContext.Users.ToListAsync(cancellationToken);
+    var users = await dbContext.Users.Skip((page -1) * pageSize).Take(pageSize).ToListAsync(cancellationToken);
     var dtos = users.ToUserReturnDtoList();
     return TypedResults.Ok(dtos);
   }
@@ -36,8 +35,7 @@ public class V2UserEndpoints()
     ILogger<V2UserEndpoints> logger,
     CancellationToken cancellationToken)
   {
-    logger.LogGettingEntityOfTypeWithId(nameof(User), id);
-    var user = await dbContext.Users.FindAsync(id, cancellationToken);
+    var user = await dbContext.Users.TagWith("Fetching user by ID in V2UserEndpoints").FirstOrDefaultAsync(u => u.Id == id, cancellationToken);;
     if (user == null)
     {
       logger.LogEntityNotFound(nameof(user), id);
@@ -47,11 +45,13 @@ public class V2UserEndpoints()
     var dto = user.ToUserReturnDto();
     return TypedResults.Ok(dto);
   }
-
   public static async Task<Results<CreatedAtRoute<UserReturnDto>, BadRequest>> CreateUser(UserCreateDto userCreateDto,
     JobVacancyDbContext dbContext, ILogger<V2UserEndpoints> logger, CancellationToken cancellationToken)
   {
-    logger.LogCreatingEntityOfType(nameof(User));
+    if (userCreateDto.Name == string.Empty || userCreateDto.Surname == string.Empty)
+    {
+      return TypedResults.BadRequest();
+    }
     var user = userCreateDto.ToUser();
 
     dbContext.Users.Add(user);
@@ -63,7 +63,6 @@ public class V2UserEndpoints()
   public static async Task<Results<Ok<UserReturnDto>, NotFound>> UpdateUser(UserUpdateDto userUpdateDto, Guid id,
     JobVacancyDbContext dbContext, ILogger<V2UserEndpoints> logger, CancellationToken cancellationToken)
   {
-    logger.LogUpdatingEntityOfTypeWithId(nameof(User), id);
     var user = await dbContext.Users.FindAsync(id, cancellationToken);
     if (user == null)
     {

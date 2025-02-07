@@ -7,8 +7,6 @@ public static class UserMappingExtentions
 {
   public static UserReturnDto ToUserReturnDto(this User user)
   {
-    ArgumentNullException.ThrowIfNull(user);
-
     var dto = new UserReturnDto
     {
       Id = user.Id,
@@ -18,20 +16,16 @@ public static class UserMappingExtentions
     };
     return dto;
   }
-
-  public static ICollection<UserReturnDto> ToUserReturnDtoList(this ICollection<User> users)
+  public static List<UserReturnDto> ToUserReturnDtoList(this List<User> users)
   {
-    ArgumentNullException.ThrowIfNull(users);
     var dtos = users.Select(u => u.ToUserReturnDto()).ToList();
     return dtos;
   }
 
   public static User ToUser(this UserCreateDto userCreateDto)
   {
-    ArgumentNullException.ThrowIfNull(userCreateDto);
     var user = new User
     {
-      Id = Guid.NewGuid(),
       Name = userCreateDto.Name,
       Surname = userCreateDto.Surname,
     };
