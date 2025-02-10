@@ -35,6 +35,16 @@ public class V2UserEndpoints()
     int page = 1,
     int pageSize = 10)
   {
+    if (page < 1)
+    {
+      page = 1;
+    }
+
+    if (pageSize is < 1 or > 100)
+    {
+      pageSize = 100;
+    }
+
     var query = await dbContext.Users
       .Select(u => u.ToUserReturnDto())
       .OrderBy(u => u.Id)
@@ -129,11 +139,16 @@ public class V2UserEndpoints()
 
   public static async Task<Results<Ok, BadRequest<string>>> UploadUserResume(
     IFormFile file,
+    ILogger<V2UserEndpoints> logger,
     CancellationToken cancellationToken)
   {
-    if (file.Length == 0 || file.ContentType != "application/pdf")
+    const long fileSize = 5 * 1024 * 1024;
+
+    if (file.Length == 0 || file.Length > fileSize || file.ContentType != "application/pdf")
     {
-      return TypedResults.BadRequest("Need a pdf file");
+      logger.LogInformation("Rejected a file of type {fileType} that user tried to upload", file.ContentType);
+
+      return TypedResults.BadRequest("Need a pdf file less than 5Mb");
     }
 
     return TypedResults.Ok();
