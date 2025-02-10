@@ -14,11 +14,14 @@ public static class UserMappingExtentions
       Surname = user.Surname,
       Resume = user.Resume,
     };
+
     return dto;
   }
+
   public static List<UserReturnDto> ToUserReturnDtoList(this List<User> users)
   {
     var dtos = users.Select(u => u.ToUserReturnDto()).ToList();
+
     return dtos;
   }
 
@@ -29,6 +32,7 @@ public static class UserMappingExtentions
       Name = userCreateDto.Name,
       Surname = userCreateDto.Surname,
     };
+
     return user;
   }
 }
