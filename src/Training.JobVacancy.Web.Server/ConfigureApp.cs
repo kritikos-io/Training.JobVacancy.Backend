@@ -31,6 +31,7 @@ public static class ConfigureApp
 
     V1FeedEndpoints.Map(group);
     V1FeedEntryEndpoints.Map(group);
+    V1CompanyEndpoints.Map(group);
 
     return group;
   }

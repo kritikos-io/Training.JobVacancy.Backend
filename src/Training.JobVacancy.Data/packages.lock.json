@@ -125,6 +125,18 @@
         "dependencies": {
           "Microsoft.Extensions.Logging.Abstractions": "8.0.2"
         }
+      },
+      "Adaptit.Training.JobVacancy.Web.Models": {
+        "type": "Project",
+        "dependencies": {
+          "Refit": "[8.0.0, )"
+        }
+      },
+      "Refit": {
+        "type": "CentralTransitive",
+        "requested": "[8.0.0, )",
+        "resolved": "8.0.0",
+        "contentHash": "gXRmIy3Va0mwwr8usnqVRQFoFIJaJGlWTTXBlwxIkHB/xwXnq1Ybs1YNA2BM1O4G46JLLlGjg6YOwrTZusuY3Q=="
       }
     }
   }

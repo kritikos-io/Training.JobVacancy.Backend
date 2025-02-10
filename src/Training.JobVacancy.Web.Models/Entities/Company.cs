@@ -1,6 +1,6 @@
-﻿namespace Adaptit.Training.JobVacancy.Web.Models.Dto.NavJobVacancy;
+namespace Adaptit.Training.JobVacancy.Web.Models.Entities;
 
-public class CompanyDto
+public class Company
 {
   public Guid Id { get; set; }
 
@@ -12,12 +12,11 @@ public class CompanyDto
 
   public Uri LogoUrl { get; set; } = new Uri(string.Empty);
 
-  public AddressDto Address { get; set; } = new AddressDto();
+  public Address Address { get; set; } = new Address();
 
   public bool Sponsored { get; set; } = false;
 
   public int TotalJobsAdvertised { get; set; } = 0;
 
   public string PhoneNumber { get; set; } = string.Empty;
-
 }
