@@ -2,11 +2,11 @@
 
 public static partial class LogTemplates
 {
-  public const string UnhandledException = "An unhandled exception occurred.";
+  private const string UnhandledException = "An unhandled exception occurred.";
 
-  public const string ApiValidationException = "Validation error on {Endpoint} for {Parameter}";
+  private const string ApiValidationException = "Validation error on {Endpoint} for {Parameter}";
 
-  public const string EntityNotFound = "Requested entity {Entity} with id {Id} was not found.";
+  private const string EntityNotFound = "Requested entity {Entity} with id {Id} was not found.";
 
   [LoggerMessage(LogLevel.Information, UnhandledException)]
   public static partial void LogUnhandledException(this ILogger logger);

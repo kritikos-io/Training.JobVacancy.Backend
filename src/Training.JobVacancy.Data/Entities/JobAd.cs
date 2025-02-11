@@ -16,9 +16,9 @@ public class JobAd
 
   public string Location { get; set; }
 
-  public DateTimeOffset CreatedAt { get; set; }
+  public DateTime CreatedAt { get; set; }
 
-  public DateTimeOffset ExpiresAt { get; set; }
+  public DateTime ExpiresAt { get; set; }
 
   public JobExperienceLevel Level { get; set; }
 }
