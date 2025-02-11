@@ -5,9 +5,9 @@ using Adaptit.Training.JobVacancy.Web.Models.Dto.V2;
 
 public static class EntityDtoTransformations
 {
-  public static JobAd ToDto(this JobAdDto dto) => new()
+  public static JobAd ToEntity(this JobAdDto dto) => new()
   {
-    Id = Guid.NewGuid(),
+    Id = dto.Id,
     Type = dto.Type,
     SalaryRange = dto.SalaryRange,
     Description = dto.Description,
@@ -17,9 +17,9 @@ public static class EntityDtoTransformations
     Level = dto.Level,
   };
 
-  public static JobAdDto ToEntity(this JobAd jobAd) => new()
+  public static JobAdDto ToDto(this JobAd jobAd) => new()
   {
-    Id = jobAd.Id,
+    Id = Guid.NewGuid(),
     Type = jobAd.Type,
     SalaryRange = jobAd.SalaryRange,
     Description = jobAd.Description,
