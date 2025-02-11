@@ -18,6 +18,10 @@ public class JobVacancyDbContext(DbContextOptions<JobVacancyDbContext> options)
         .HasConversion<string>();
       entity.Property(j => j.Level)
         .HasConversion<string>();
+
+      entity.HasIndex(j => new {j.Description})
+        .HasMethod("GIN")
+        .IsTsVectorExpressionIndex("english");
     });
   }
 }

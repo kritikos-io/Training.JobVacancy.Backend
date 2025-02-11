@@ -29,7 +29,7 @@ public static class ConfigureServices
 
     builder.Services.AddDbContext<JobVacancyDbContext>(options => options
         .UseNpgsql(builder.Configuration.GetConnectionString("JobVacancyDatabase"), options =>
-          options.MigrationsAssembly(typeof(JobVacancyDbContext).Assembly))
+          options.MigrationsAssembly("Training.JobVacancy.Web.Server"))
         .EnableSensitiveDataLogging());
   }
 
