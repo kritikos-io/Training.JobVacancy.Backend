@@ -46,7 +46,13 @@ public class V2UserEndpoints()
     }
 
     var query = await dbContext.Users
-      .Select(u => u.ToUserReturnDto())
+      .Select(u => new UserReturnDto
+      {
+        Id = u.Id,
+        Name = u.Name,
+        Surname = u.Surname,
+        Resume = u.Resume
+      })
       .OrderBy(u => u.Id)
       .ToPagedListAsync(page, pageSize, cancellationToken);
 
