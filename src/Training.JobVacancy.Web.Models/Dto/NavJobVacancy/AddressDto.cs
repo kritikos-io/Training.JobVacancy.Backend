@@ -10,5 +10,5 @@ public class AddressDto
 
   public string StreetNumber { get; set; } = string.Empty;
 
-  public string Postcode { get; set; } = string.Empty;
+  public string PostalCode { get; set; } = string.Empty;
 }

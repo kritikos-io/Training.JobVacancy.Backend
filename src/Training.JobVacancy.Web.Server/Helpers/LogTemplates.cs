@@ -16,4 +16,5 @@ public static partial class LogTemplates
 
   [LoggerMessage(LogLevel.Warning, EntityNotFound)]
   public static partial void LogEntityNotFound(this ILogger logger, string entity, object id);
+
 }

@@ -4,7 +4,7 @@ public class Company
 {
   public Guid Id { get; set; }
 
-  public string Name { get; set; } = string.Empty;
+  public required string Name { get; set; }
 
   public Uri Website { get; set; } = new Uri(string.Empty);
 
