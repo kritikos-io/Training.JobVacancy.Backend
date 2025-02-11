@@ -5,6 +5,8 @@ using System.Linq.Expressions;
 
 using Adaptit.Training.JobVacancy.Web.Models;
 
+using Microsoft.EntityFrameworkCore;
+
 public static class LinqExtensions
 {
   public static IQueryable<T> WhereIf<T>(this IQueryable<T> source, bool condition, Expression<Func<T, bool>> predicate)
@@ -34,10 +36,12 @@ public static class LinqExtensions
         ? source.Take(amount)
         : source;
 
-  public static PageList<T> Page<T>(this IOrderedQueryable<T>source, int pageNumber = 1, int pageSize = 50)
+  public static PageList<T> Page<T>(this IOrderedQueryable<T>source,int pageNumber = 1, int pageSize = 50)
   {
-    PageList<T> pageList = new PageList<T>(pageNumber, pageSize);
-    pageList.pageList = source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+    var pageList = new PageList<T>(pageNumber, pageSize)
+    {
+      pageList = [.. source.Skip((pageNumber - 1) * pageSize).Take(pageSize)]
+    };
 
     return pageList;
   }

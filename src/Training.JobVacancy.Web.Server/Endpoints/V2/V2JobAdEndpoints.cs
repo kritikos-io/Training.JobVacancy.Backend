@@ -19,9 +19,10 @@ public class V2JobAdEndpoints
     var group = endpoint.MapGroup("jobad")
           .WithTags("JobAd");
 
-    group.MapGet("", GetAllJobAds);
+    group.MapGet("", ListAllJobAds);
     group.MapGet("{id:guid}", GetJobAd).WithName(GetJobAddEndpointName);
 
+    group.MapPost("/search", SearchJobAds);
     group.MapPost("", CreateJobAd);
     group.MapPatch("{id:guid}", UpdateJobAd);
     group.MapDelete("{id:guid}", DeleteJobAd);
@@ -29,13 +30,7 @@ public class V2JobAdEndpoints
     return endpoint;
   }
 
-  private static async Task<Ok<PageList<JobAd>>> GetAllJobAds(
-    [FromQuery] JobType? type,
-    [FromQuery] bool? favorite,
-    [FromQuery] double? salary,       // Not implemented
-    [FromQuery] DateTime? created,
-    [FromQuery] DateTime? expires,
-    [FromQuery] string? description,  // Not implemented
+  private static async Task<Ok<PageList<JobAd>>> ListAllJobAds(
     [FromQuery] int? page,
     [FromQuery] int? size,
     JobVacancyDbContext db,
@@ -43,20 +38,29 @@ public class V2JobAdEndpoints
     CancellationToken cancellationToken)
   {
     var jobs = db.JobAds
-      .WhereIf(type != null, j => j.Type == type)
-      .WhereIf(favorite != null, j => j.Favorite == favorite)
-      .WhereIf(created != null, j => j.CreatedAt >= created)
-      .WhereIf(expires != null, j => j.ExpiresAt <= expires)
       .OrderBy(x => x.Id)
-      .Page(page ?? 1, size ?? 5);
+      .Page(page ?? 1, size ?? 20);
 
     return TypedResults.Ok(jobs);
   }
 
-  // public static async Task SearchJobAds(Criteria c)
-  // {
-  //
-  // }
+  private static Ok<PageList<JobAd>> SearchJobAds(
+    JobAdFilters filters,
+    [FromQuery] int? page,
+    [FromQuery] int? size,
+    JobVacancyDbContext db,
+    CancellationToken cancellationToken)
+  {
+    var jobAds = db.JobAds
+      .WhereIf(filters.Type != null, j => j.Type == filters.Type)
+      .WhereIf(filters.Favorite != null, j => j.Favorite == filters.Favorite)
+      .WhereIf(filters.Created != null, j => j.CreatedAt >= filters.Created)
+      .WhereIf(filters.Expires != null, j => j.ExpiresAt <= filters.Expires)
+      .OrderBy(x => x.Id)
+      .Page(page ?? 1, size ?? 20);
+
+    return TypedResults.Ok(jobAds);
+  }
 
   private static async Task<Results<Ok<JobAdDto>, NotFound>> GetJobAd(
     [FromRoute] Guid id,
