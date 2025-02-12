@@ -71,15 +71,13 @@ public class V2JobAdEndpoints
     ILogger<V2JobAdEndpoints> logger,
     CancellationToken cancellationToken)
   {
-    var jobAd = await db.JobAds.FindAsync(id, cancellationToken);
+    var jobAd = await db.JobAds.FindAsync([id], cancellationToken: cancellationToken);
 
-    if (jobAd == null)
-    {
-      logger.LogEntityNotFound(nameof(JobAd), id);
-      return TypedResults.NotFound();
-    }
+    if (jobAd != null)
+      return TypedResults.Ok(jobAd.ToDto());
 
-    return TypedResults.Ok(jobAd.ToDto());
+    logger.LogEntityNotFound(nameof(JobAd), id);
+    return TypedResults.NotFound();
   }
 
   private static async Task<Results<CreatedAtRoute<JobAd>, BadRequest<string>>> CreateJobAd(
@@ -93,12 +91,27 @@ public class V2JobAdEndpoints
     db.JobAds.Add(jobAd);
     await db.SaveChangesAsync(cancellationToken);
 
-    return TypedResults.CreatedAtRoute(jobAd, nameof(GetJobAd), new {id = jobAd.Id});
+    return TypedResults.CreatedAtRoute(jobAd, nameof(GetJobAd), new { id = jobAd.Id });
   }
 
-  private static Results<Ok<string>, NotFound<string>> UpdateJobAd(Guid id)
+  private static async Task<Results<Ok<JobAdDto>, NotFound>> UpdateJobAd(
+    Guid id,
+    JobAdUpdateDto dto,
+    JobVacancyDbContext db,
+    ILogger<V2JobAdEndpoints> logger)
   {
-    throw new NotImplementedException();
+    var jobAd = await db.JobAds.FindAsync([id], CancellationToken.None);
+
+    if (jobAd == null)
+    {
+      logger.LogEntityNotFound(nameof(JobAd), id);
+      return TypedResults.NotFound();
+    }
+
+    jobAd.UpdateEntity(dto);
+    await db.SaveChangesAsync();
+
+    return TypedResults.Ok(jobAd.ToDto());
   }
 
   private static async Task<Results<Ok, NotFound>> DeleteJobAd(
