@@ -1,4 +1,4 @@
-namespace Adaptit.Training.JobVacancy.Web.Server.Endpoints.V1;
+namespace Adaptit.Training.JobVacancy.Web.Server.Endpoints.V2;
 
 using Adaptit.Training.JobVacancy.Data;
 using Adaptit.Training.JobVacancy.Web.Models.Dto.NavJobVacancy;
@@ -32,6 +32,27 @@ public class V2CompanyEndpoints
       routeName: "GetById",
       routeValues: entry.Entity.Id
     );
+  }
+
+  public static async Task<Results<NoContent, NotFound>> UpdateCompany([FromBody] CompanyDto companyDto, JobVacancyDbContext dbContext)
+  {
+
+    var entity = await dbContext.FindAsync<Company>(companyDto.Id);
+    if (entity is null) TypedResults.NotFound();
+
+    var enityFromDto = companyDto.ToEntity();
+
+    foreach (var prop in typeof(Company).GetProperties())
+    {
+      var newValue = prop.GetValue(enityFromDto);
+      if (newValue is not null)
+      {
+        typeof(Company).GetProperty(prop.Name)?.SetValue(entity, newValue);
+      }
+    }
+
+    await dbContext.SaveChangesAsync();
+    return TypedResults.NoContent();
   }
 
   public static async Task<Results<Ok<CompanyDto>, NotFound>> GetById(Guid companyId, JobVacancyDbContext dbContext)

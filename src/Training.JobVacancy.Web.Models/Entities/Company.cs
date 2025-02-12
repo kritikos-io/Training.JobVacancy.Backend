@@ -6,11 +6,11 @@ public class Company
 
   public required string Name { get; set; }
 
-  public Uri Website { get; set; } = new Uri(string.Empty);
+  public Uri? Website { get; set; }
 
   public string Vat { get; set; } = string.Empty;
 
-  public Uri LogoUrl { get; set; } = new Uri(string.Empty);
+  public Uri? LogoUrl { get; set; }
 
   public Address Address { get; set; } = new Address();
 
