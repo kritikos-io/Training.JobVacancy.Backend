@@ -9,10 +9,11 @@ using Adaptit.Training.JobVacancy.Web.Server.Extensions;
 
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 public class V2JobAdEndpoints
 {
-  private const string GetJobAddEndpointName = "V2GetJobAd";
+  private const string GetJobAddEndpointName = "GetJobAd";
 
   public static RouteGroupBuilder Map(RouteGroupBuilder endpoint)
   {
@@ -20,7 +21,8 @@ public class V2JobAdEndpoints
           .WithTags("JobAd");
 
     group.MapGet("", ListAllJobAds);
-    group.MapGet("{id:guid}", GetJobAd).WithName(GetJobAddEndpointName);
+    group.MapGet("{id:guid}", GetJobAd)
+         .WithName(GetJobAddEndpointName);
 
     group.MapPost("/search", SearchJobAds);
     group.MapPost("", CreateJobAd);
@@ -37,27 +39,28 @@ public class V2JobAdEndpoints
     ILogger<V2JobAdEndpoints> logger,
     CancellationToken cancellationToken)
   {
-    var jobs = db.JobAds
+    var jobs = await db.JobAds
       .OrderBy(x => x.Id)
-      .Page(page ?? 1, size ?? 20);
+      .Page(cancellationToken, page ?? 1, size ?? 20);
 
     return TypedResults.Ok(jobs);
   }
 
-  private static Ok<PageList<JobAd>> SearchJobAds(
+  private static async Task<Results<Ok<PageList<JobAd>>, BadRequest>> SearchJobAds(
     JobAdFilters filters,
     [FromQuery] int? page,
     [FromQuery] int? size,
     JobVacancyDbContext db,
     CancellationToken cancellationToken)
   {
-    var jobAds = db.JobAds
+    var jobAds = await db.JobAds
       .WhereIf(filters.Type != null, j => j.Type == filters.Type)
       .WhereIf(filters.Favorite != null, j => j.Favorite == filters.Favorite)
       .WhereIf(filters.Created != null, j => j.CreatedAt >= filters.Created)
       .WhereIf(filters.Expires != null, j => j.ExpiresAt <= filters.Expires)
+      .WhereIf(filters.Description != null, j => EF.Functions.ToTsVector("english", j.Description).Matches(filters.Description!))
       .OrderBy(x => x.Id)
-      .Page(page ?? 1, size ?? 20);
+      .Page(cancellationToken, page ?? 1, size ?? 20);
 
     return TypedResults.Ok(jobAds);
   }
@@ -76,7 +79,7 @@ public class V2JobAdEndpoints
       return TypedResults.NotFound();
     }
 
-    return TypedResults.Ok(EntityToDto(jobAd));
+    return TypedResults.Ok(jobAd.ToDto());
   }
 
   private static async Task<Results<CreatedAtRoute<JobAd>, BadRequest<string>>> CreateJobAd(
@@ -85,15 +88,18 @@ public class V2JobAdEndpoints
     ILogger<V2JobAdEndpoints> logger,
     CancellationToken cancellationToken)
   {
-    var jobAd = DtoToEntity(ad);
+    var jobAd = ad.ToEntity();
 
     db.JobAds.Add(jobAd);
     await db.SaveChangesAsync(cancellationToken);
 
-    return TypedResults.CreatedAtRoute(jobAd, GetJobAddEndpointName);
+    return TypedResults.CreatedAtRoute(jobAd, nameof(GetJobAd), new {id = jobAd.Id});
   }
 
-  private static Results<Ok<string>, NotFound<string>> UpdateJobAd(Guid id) => throw new NotImplementedException();
+  private static Results<Ok<string>, NotFound<string>> UpdateJobAd(Guid id)
+  {
+    throw new NotImplementedException();
+  }
 
   private static async Task<Results<Ok, NotFound>> DeleteJobAd(
     [FromRoute] Guid id,
@@ -111,36 +117,6 @@ public class V2JobAdEndpoints
 
     logger.LogEntityNotFound(nameof(JobAd), id);
     return TypedResults.NotFound();
-  }
-
-  private static JobAd DtoToEntity(JobAdDto dto)
-  {
-    return new JobAd()
-    {
-      Id = Guid.NewGuid(),
-      Type = dto.Type,
-      SalaryRange = dto.SalaryRange,
-      Description = dto.Description,
-      Location = dto.Location,
-      CreatedAt = dto.CreatedAt,
-      ExpiresAt = dto.ExpiresAt,
-      Level = dto.Level,
-    };
-  }
-
-  private static JobAdDto EntityToDto(JobAd jobAd)
-  {
-    return new JobAdDto()
-    {
-      Id = jobAd.Id,
-      Type = jobAd.Type,
-      SalaryRange = jobAd.SalaryRange,
-      Description = jobAd.Description,
-      Location = jobAd.Location,
-      CreatedAt = jobAd.CreatedAt,
-      ExpiresAt = jobAd.ExpiresAt,
-      Level = jobAd.Level,
-    };
   }
 
 }

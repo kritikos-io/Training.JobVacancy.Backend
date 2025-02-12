@@ -36,11 +36,13 @@ public static class LinqExtensions
         ? source.Take(amount)
         : source;
 
-  public static PageList<T> Page<T>(this IOrderedQueryable<T>source,int pageNumber = 1, int pageSize = 50)
+  public static async Task<PageList<T>> Page<T>(this IOrderedQueryable<T>source, CancellationToken cancellationToken,int pageNumber = 1, int pageSize = 20)
   {
-    var pageList = new PageList<T>(pageNumber, pageSize)
+    var totalEntries = await source.CountAsync(cancellationToken: cancellationToken);
+    var pageList = new PageList<T>()
     {
-      pageList = [.. source.Skip((pageNumber - 1) * pageSize).Take(pageSize)]
+      entries = await source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync(cancellationToken),
+      total = totalEntries
     };
 
     return pageList;
