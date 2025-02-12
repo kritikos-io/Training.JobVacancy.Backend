@@ -1,12 +1,10 @@
 namespace Adaptit.Training.JobVacancy.Web.Server.HealthChecks;
 
-using Adaptit.Training.JobVacancy.Web.Models;
-
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-public class FeedServiceHealthCheck(INavJobVacancy navJobVacancy) : IHealthCheck
+public class FeedServiceHealthCheck : IHealthCheck
 {
-  private readonly INavJobVacancy navJobVacancy = navJobVacancy;
+  private readonly HttpClient httpClient = new() {Timeout = TimeSpan.FromSeconds(2)};
 
   /// <inheritdoc />
   public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context,
@@ -14,16 +12,14 @@ public class FeedServiceHealthCheck(INavJobVacancy navJobVacancy) : IHealthCheck
   {
     try
     {
-      var responce = await navJobVacancy.GetLatestFeedPageAsync(cancellationToken: cancellationToken);
-      if (!responce.IsSuccessful)
-      {
-        HealthCheckResult.Unhealthy("Feed service unreachable.");
-      }
-      return HealthCheckResult.Healthy();
+      var reply = await httpClient.GetAsync("http://localhost:8080/api/v1/feed", cancellationToken);
+      return !reply.IsSuccessStatusCode
+        ? HealthCheckResult.Unhealthy("Feed service unreachable.")
+        : HealthCheckResult.Healthy();
     }
-    catch (HttpRequestException)
+    catch (Exception)
     {
-      return HealthCheckResult.Unhealthy("Network error when contacting Feed API");
+      return HealthCheckResult.Unhealthy("Feed service unreachable.");
     }
   }
 }
