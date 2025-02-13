@@ -2,6 +2,10 @@
 
 using System.ComponentModel;
 
+using Adaptit.Training.JobVacancy.Web.Models.Dto;
+
+using Microsoft.EntityFrameworkCore;
+
 public static class LinqExtensions
 {
   public static IEnumerable<T> WhereIf<T>(this IEnumerable<T> source, bool condition, Func<T, bool> predicate)
@@ -35,4 +39,20 @@ public static class LinqExtensions
     => condition
         ? source.Skip(amount)
         : source;
+
+  public static async Task<PagedList<T>> ToPagedListAsync<T>(this IOrderedQueryable<T> query, int page, int pageSize, CancellationToken cancellationToken = default)
+  {
+    var totalItemsCount = await query.CountAsync(cancellationToken);
+    var items = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync(cancellationToken);
+
+    return new()
+    {
+      Items = items,
+      Page = page,
+      PageSize = pageSize,
+      TotalItemsCount = totalItemsCount
+    };
+  }
+
 }
+
