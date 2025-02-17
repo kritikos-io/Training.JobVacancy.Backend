@@ -1,10 +1,11 @@
-﻿using Adaptit.Training.JobVacancy.Data.Entities;
+﻿
+using Adaptit.Training.JobVacancy.Data.Entities;
 using Adaptit.Training.JobVacancy.Web.Models.Dto.V2.Company;
 using Adaptit.Training.JobVacancy.Web.Server.Extensions;
 
 using FluentAssertions;
 
-namespace Adaptit.Training.JobVacancy.Web.Server.Tests;
+namespace Adaptit.Training.JobVacancy.Web.Server.Tests.CompanyTests;
 public class EntityDtoTransformationExtentionsTests
 {
   [Theory]

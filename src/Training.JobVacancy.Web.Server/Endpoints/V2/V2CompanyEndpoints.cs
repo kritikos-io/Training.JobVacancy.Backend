@@ -14,8 +14,7 @@ public class V2CompanyEndpoints
 {
   public static RouteGroupBuilder Map(RouteGroupBuilder endpoint)
   {
-    var group = endpoint.MapGroup("company")
-      .WithTags("Company");
+    var group = endpoint.MapGroup("company").WithTags("Company");
 
     group.MapPost("/search", Search).WithName("Search");
     group.MapGet("/{id:guid}", GetById).WithName("GetById");
