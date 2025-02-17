@@ -55,6 +55,18 @@ public class V2ResumeEndpoints
       logger.LogWarning("User with id: {id} could not be found", userId);
     }
 
+    if (!string.IsNullOrEmpty(user.Resume))
+    {
+      var fileOldUrl = new Uri(user.Resume);
+      var fileName = Path.GetFileName(fileOldUrl.LocalPath);
+
+      var deleted = await blobStorageService.DeleteFileAsync(fileName, cancellationToken);
+      if (!deleted)
+      {
+        logger.LogWarning("Failed to delete old resume with name {fileName}", fileName );
+      }
+    }
+
     user.Resume = fileUrl;
 
     await dbContext.SaveChangesAsync(cancellationToken);
