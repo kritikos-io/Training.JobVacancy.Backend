@@ -31,7 +31,7 @@ public static class ConfigureServices
     builder.AddApiDocumentation();
     builder.AddApiVersioning();
 
-    builder.AddApplicationInsights();
+    builder.AddCentralizedLogging();
 
     builder.Services.AddDbContext<JobVacancyDbContext>(options => options
       .UseNpgsql(builder.Configuration.GetConnectionString("JobVacancyDatabase"))
@@ -157,12 +157,12 @@ public static class ConfigureServices
   public static void AddMiddlewareServices(this WebApplicationBuilder builder) =>
     builder.Services.AddTransient<CorrelationIdMiddleware>();
 
-  public static void AddApplicationInsights(this WebApplicationBuilder builder)
+  public static void AddCentralizedLogging(this WebApplicationBuilder builder)
   {
-    builder.Services.AddApplicationInsightsTelemetry(options =>
+    builder.Services.AddApplicationInsightsTelemetry();
+    builder.Logging.AddApplicationInsights(config =>
     {
-      options.ConnectionString = builder.Configuration["ApplicationInsights:ConnectionString"];
-    });
-    builder.Logging.AddApplicationInsights();
+      config.ConnectionString = builder.Configuration["ApplicationInsights:ConnectionString"];
+    }, options => options.FlushOnDispose = true);
   }
 }
