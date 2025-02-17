@@ -33,15 +33,15 @@ public class V2JobAdEndpoints
   }
 
   private static async Task<Ok<PageList<JobAd>>> ListAllJobAds(
-    [FromQuery] int? page,
-    [FromQuery] int? size,
     JobVacancyDbContext db,
     ILogger<V2JobAdEndpoints> logger,
-    CancellationToken cancellationToken)
+    CancellationToken cancellationToken,
+    [FromQuery] int page = 1,
+    [FromQuery] int size = 20)
   {
     var jobs = await db.JobAds
       .OrderBy(x => x.Id)
-      .Page(cancellationToken, page ?? 1, size ?? 20);
+      .Page(cancellationToken, page, size);
 
     return TypedResults.Ok(jobs);
   }
