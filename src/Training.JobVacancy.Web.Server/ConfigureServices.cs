@@ -160,6 +160,7 @@ public static class ConfigureServices
   public static void AddCentralizedLogging(this WebApplicationBuilder builder)
   {
     builder.Services.AddApplicationInsightsTelemetry();
+    builder.Logging.AddSeq(builder.Configuration.GetSection("Seq"));
     builder.Logging.AddApplicationInsights(config =>
     {
       config.ConnectionString = builder.Configuration["ApplicationInsights:ConnectionString"];
