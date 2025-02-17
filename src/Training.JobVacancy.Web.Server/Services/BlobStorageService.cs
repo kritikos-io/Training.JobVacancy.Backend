@@ -35,5 +35,24 @@ public class BlobStorageService
     return isDeleted;
   }
 
+  public string GetReadOnlySasUrl(string fileName, int validForMinutes = 60)
+  {
+    var blobContainerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
+    var blobClient = blobContainerClient.GetBlobClient(fileName);
+
+    var sasBuilder = new BlobSasBuilder
+    {
+      BlobContainerName = _containerName,
+      BlobName = fileName,
+      Resource = "b",
+      ExpiresOn = DateTimeOffset.UtcNow.AddMinutes(validForMinutes)
+    };
+
+    sasBuilder.SetPermissions(BlobSasPermissions.Read);
+
+    var sasUri = blobClient.GenerateSasUri(sasBuilder);
+
+    return sasUri.ToString();
+  }
 
 }

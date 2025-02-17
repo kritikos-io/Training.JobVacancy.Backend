@@ -13,6 +13,7 @@ public class V2ResumeEndpoints
 
     group.MapPost("{userId:guid}", UploadUserResume).DisableAntiforgery();
     group.MapDelete("{userId:guid}", DeleteUserResume).DisableAntiforgery();
+    group.MapGet("{userId:guid}/sas", GetUserResumeSasUrl).DisableAntiforgery();
 
     return endpoint;
   }
@@ -106,5 +107,24 @@ public class V2ResumeEndpoints
     return TypedResults.Ok();
   }
 
+  public static async Task<Results<Ok<string>, NotFound<string>, ProblemHttpResult>> GetUserResumeSasUrl(
+    Guid userId,
+    JobVacancyDbContext dbContext,
+    BlobStorageService blobStorageService,
+    CancellationToken cancellationToken)
+  {
+    var user = await dbContext.Users.FindAsync(userId, cancellationToken);
 
+    if (user == null || string.IsNullOrEmpty(user.Resume))
+    {
+      return TypedResults.NotFound("Resume not found.");
+    }
+
+    var fileUrl = new Uri(user.Resume);
+    var fileName = Path.GetFileName(fileUrl.LocalPath);
+
+    var sasUrl = blobStorageService.GetReadOnlySasUrl(fileName, 60);
+
+    return TypedResults.Ok(sasUrl);
+  }
 }
