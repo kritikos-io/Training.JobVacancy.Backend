@@ -7,6 +7,7 @@ using Adaptit.Training.JobVacancy.Web.Models.Dto;
 using Adaptit.Training.JobVacancy.Web.Models.Dto.User;
 using Adaptit.Training.JobVacancy.Web.Server.Extensions;
 using Adaptit.Training.JobVacancy.Web.Server.Helpers;
+using Adaptit.Training.JobVacancy.Web.Server.Services;
 
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -21,7 +22,6 @@ public class V2UserEndpoints()
     group.MapGet("", GetAllUsers);
     group.MapGet("{id:guid}", GetUserById).WithName("GetUserById");
     group.MapPost(string.Empty, CreateUser);
-    group.MapPost("upload-resume/{id:guid}", UploadUserResume).DisableAntiforgery();
     group.MapPut("{id:guid}", UpdateUser);
     group.MapDelete("{id:guid}", DeleteUser);
 
@@ -46,7 +46,13 @@ public class V2UserEndpoints()
     }
 
     var query = await dbContext.Users
-      .Select(u => u.ToUserReturnDto())
+      .Select(u => new UserReturnDto
+      {
+        Id = u.Id,
+        Name = u.Name,
+        Surname = u.Surname,
+        Resume = u.Resume
+      })
       .OrderBy(u => u.Id)
       .ToPagedListAsync(page, pageSize, cancellationToken);
 
@@ -136,22 +142,4 @@ public class V2UserEndpoints()
 
     return TypedResults.NoContent();
   }
-
-  public static async Task<Results<Ok, BadRequest<string>>> UploadUserResume(
-    IFormFile file,
-    ILogger<V2UserEndpoints> logger,
-    CancellationToken cancellationToken)
-  {
-    const long fileSize = 5 * 1024 * 1024;
-
-    if (file.Length == 0 || file.Length > fileSize || file.ContentType != "application/pdf")
-    {
-      logger.LogInformation("Rejected a file of type {fileType} that user tried to upload", file.ContentType);
-
-      return TypedResults.BadRequest("Need a pdf file less than 5Mb");
-    }
-
-    return TypedResults.Ok();
-  }
 }
-

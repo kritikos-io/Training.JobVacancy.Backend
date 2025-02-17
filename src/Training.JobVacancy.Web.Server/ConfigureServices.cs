@@ -9,6 +9,7 @@ using Adaptit.Training.JobVacancy.Web.Server.OpenApi.OperationTransformers;
 using Adaptit.Training.JobVacancy.Web.Server.OpenApi.SchemaTransformers;
 using Adaptit.Training.JobVacancy.Web.Server.Options;
 using Adaptit.Training.JobVacancy.Web.Server.Repositories;
+using Adaptit.Training.JobVacancy.Web.Server.Services;
 
 using Asp.Versioning;
 
@@ -30,6 +31,8 @@ public static class ConfigureServices
 
     builder.AddApiDocumentation();
     builder.AddApiVersioning();
+
+    builder.Services.AddSingleton<BlobStorageService>();
 
     builder.Services.AddDbContext<JobVacancyDbContext>(options => options
         .UseNpgsql(builder.Configuration.GetConnectionString("JobVacancyDatabase"))
