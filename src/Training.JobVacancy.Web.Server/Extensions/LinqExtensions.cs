@@ -3,7 +3,6 @@
 using System.ComponentModel;
 using System.Linq.Expressions;
 
-using Adaptit.Training.JobVacancy.Web.Models;
 using Adaptit.Training.JobVacancy.Web.Models.Dto.V2;
 
 using Microsoft.EntityFrameworkCore;

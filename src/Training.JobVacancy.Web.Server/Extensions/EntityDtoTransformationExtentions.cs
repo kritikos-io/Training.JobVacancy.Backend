@@ -3,7 +3,7 @@
 using Adaptit.Training.JobVacancy.Data.Entities;
 using Adaptit.Training.JobVacancy.Web.Models.Dto.V2.Company;
 
-public static class EntityAndDtoTransformationExtentions
+public static class EntityDtoTransformationExtentions
 {
   public static CompanyDto ToDto(this Company entity)
   {
@@ -52,9 +52,11 @@ public static class EntityAndDtoTransformationExtentions
     };
   }
 
-  public static Company ToEntity(this CompanyUpdateDto dto)
+  public static Company ToEntity(this CompanyUpdateDto dto, Guid companyId)
   {
     var company = new Company();
+
+    company.Id = companyId;
 
     if (!string.IsNullOrEmpty(dto.Name)) company.Name = dto.Name;
 

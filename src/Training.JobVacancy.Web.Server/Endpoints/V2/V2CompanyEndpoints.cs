@@ -81,8 +81,9 @@ public class V2CompanyEndpoints
     var entityUpdateDto = entity.ToUpdateDto();
     patch.ApplyTo(entityUpdateDto);
 
-    entity = entityUpdateDto.ToEntity();
-    dbContext.Update(entity);
+
+    var updatedEntity = entityUpdateDto.ToEntity(entity.Id);
+    dbContext.Update(updatedEntity);
 
     await dbContext.SaveChangesAsync();
     return TypedResults.NoContent();
