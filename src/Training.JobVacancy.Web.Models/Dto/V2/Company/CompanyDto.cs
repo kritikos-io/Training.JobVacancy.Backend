@@ -1,18 +1,15 @@
-﻿namespace Adaptit.Training.JobVacancy.Web.Models.Dto.NavJobVacancy;
-
-using System.Text.Json.Serialization;
+﻿namespace Adaptit.Training.JobVacancy.Web.Models.Dto.V2.Company;
 
 public class CompanyDto
 {
   public Guid Id { get; set; }
 
   public string Name { get; set; } = string.Empty;
-  [JsonPropertyName("website")]
+
   public Uri? Website { get; set; }
 
   public string Vat { get; set; } = string.Empty;
 
-  [JsonPropertyName("logoUrl")]
   public Uri? LogoUrl { get; set; }
 
   public AddressDto Address { get; set; } = new AddressDto();

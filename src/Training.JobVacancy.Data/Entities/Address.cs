@@ -1,4 +1,4 @@
-namespace Adaptit.Training.JobVacancy.Web.Models.Entities;
+namespace Adaptit.Training.JobVacancy.Data.Entities;
 
 public class Address
 {

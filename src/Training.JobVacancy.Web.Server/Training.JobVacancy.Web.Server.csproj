@@ -11,6 +11,7 @@
     <PackageReference Include="Bogus"/>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer"/>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect"/>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi"/>
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
@@ -33,6 +34,10 @@
   <ItemGroup>
     <ProjectReference Include="..\Training.JobVacancy.Data\Training.JobVacancy.Data.csproj"/>
     <ProjectReference Include="..\Training.JobVacancy.Web.Models\Training.JobVacancy.Web.Models.csproj"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Endpoints\V1\" />
   </ItemGroup>
 
 </Project>

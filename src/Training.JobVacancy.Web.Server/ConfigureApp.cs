@@ -1,6 +1,4 @@
 ﻿namespace Adaptit.Training.JobVacancy.Web.Server;
-
-using Adaptit.Training.JobVacancy.Web.Server.Endpoints.V1;
 using Adaptit.Training.JobVacancy.Web.Server.Endpoints.V2;
 
 using Asp.Versioning;
@@ -29,9 +27,6 @@ public static class ConfigureApp
   {
 
     var group = endpoint.MapToApiVersion(1);
-
-    V1FeedEndpoints.Map(group);
-    V1FeedEntryEndpoints.Map(group);
 
     return group;
   }

@@ -1,10 +1,12 @@
 ﻿namespace Adaptit.Training.JobVacancy.Data;
-using Adaptit.Training.JobVacancy.Web.Models.Entities;
+
+using Adaptit.Training.JobVacancy.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
 public class JobVacancyDbContext(DbContextOptions<JobVacancyDbContext> options)
     : DbContext(options)
 {
+  public DbSet<Company> Companies;
 
   /// <inheritdoc />
   protected override void OnModelCreating(ModelBuilder modelBuilder) =>

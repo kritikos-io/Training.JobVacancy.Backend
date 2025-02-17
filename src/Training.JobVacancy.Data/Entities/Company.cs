@@ -1,10 +1,12 @@
-namespace Adaptit.Training.JobVacancy.Web.Models.Entities;
+namespace Adaptit.Training.JobVacancy.Data.Entities;
+
+using System;
 
 public class Company
 {
   public Guid Id { get; set; }
 
-  public required string Name { get; set; }
+  public string Name { get; set; }
 
   public Uri? Website { get; set; }
 

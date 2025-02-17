@@ -30,6 +30,10 @@ public static class ConfigureServices
     builder.Services.AddDbContext<JobVacancyDbContext>(options => options
         .UseNpgsql(builder.Configuration.GetConnectionString("JobVacancyDatabase"))
         .EnableSensitiveDataLogging());
+
+    builder.Services
+      .AddControllers()
+      .AddNewtonsoftJson();
   }
 
   public static void AddJobVacancyAuthentication(this WebApplicationBuilder builder)

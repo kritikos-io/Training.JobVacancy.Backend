@@ -1,4 +1,4 @@
-﻿namespace Adaptit.Training.JobVacancy.Web.Models.Dto.NavJobVacancy;
+﻿namespace Adaptit.Training.JobVacancy.Web.Models.Dto.V2.Company;
 
 public class AddressDto
 {
