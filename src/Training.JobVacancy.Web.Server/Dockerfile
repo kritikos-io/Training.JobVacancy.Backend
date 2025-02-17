@@ -30,6 +30,11 @@ WORKDIR "/src/src/Training.JobVacancy.Web.Server"
 RUN dotnet publish --no-build "Training.JobVacancy.Web.Server.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
+USER root
+RUN apt update && apt install -y curl
+USER $APP_UID
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT "dotnet" "Training.JobVacancy.Web.Server.dll"
+
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD curl --silent --fail http://localhost:8080/health || exit 1
