@@ -62,6 +62,7 @@ public class V2UserEndpoints()
   public static async Task<Results<Ok<UserReturnDto>, NotFound>> GetUserById(
     Guid id,
     JobVacancyDbContext dbContext,
+    BlobStorageService blobStorageService,
     ILogger<V2UserEndpoints> logger,
     CancellationToken cancellationToken)
   {
@@ -72,6 +73,11 @@ public class V2UserEndpoints()
 
       return TypedResults.NotFound();
     }
+    var fileUrl = new Uri(user.Resume);
+    var fileName = Path.GetFileName(fileUrl.LocalPath);
+
+    var sasUrl = blobStorageService.GetReadOnlySasUrl(fileName, 60);
+    user.Resume = sasUrl;
 
     var dto = user.ToUserReturnDto();
 
