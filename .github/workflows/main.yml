@@ -24,6 +24,9 @@ jobs:
       - name: Restore
         run: dotnet restore ./Training.JobVacancy.Backend.slnx
 
+      - name: Test
+        run: dotnet test ./Training.JobVacancy.Backend.slnx --no-build
+
       - name: Build
         run: dotnet build ./Training.JobVacancy.Backend.slnx --configuration Release --no-restore
 
