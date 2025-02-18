@@ -16,6 +16,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '23'
+
+      - name: Install Spectral
+        run: npm install -g @stoplight/spectral
+
+      - name: Lint OpenAPI Spec
+        run: spectral lint ./Training.JobVacancy.Backend/src/Training.JobVacancy.Web.Server/OpenApi/Training.JobVacancy.Web.Server.json --ruleset ./Training.JobVacancy.Backend/src/Training.JobVacancy.Web.Server/OpenApi/.spectral.yaml
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
