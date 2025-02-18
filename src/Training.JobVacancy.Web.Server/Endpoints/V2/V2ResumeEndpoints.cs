@@ -3,6 +3,8 @@ namespace Adaptit.Training.JobVacancy.Web.Server.Endpoints.V2;
 using Adaptit.Training.JobVacancy.Data;
 using Adaptit.Training.JobVacancy.Web.Server.Services;
 
+using Azure;
+
 using Microsoft.AspNetCore.Http.HttpResults;
 
 public class V2ResumeEndpoints
@@ -13,7 +15,7 @@ public class V2ResumeEndpoints
 
     group.MapPost("{userId:guid}", UploadUserResume).DisableAntiforgery();
     group.MapDelete("{userId:guid}", DeleteUserResume).DisableAntiforgery();
-    group.MapGet("{userId:guid}/sas", GetUserResumeSasUrl).DisableAntiforgery();
+    group.MapGet("{userId:guid}", GetUserResumeSasUrl).DisableAntiforgery();
 
     return endpoint;
   }
@@ -27,6 +29,15 @@ public class V2ResumeEndpoints
     ILogger<V2UserEndpoints> logger,
     CancellationToken cancellationToken)
   {
+    var user = await dbContext.Users.FindAsync(userId, cancellationToken);
+
+    if (user == null)
+    {
+      logger.LogWarning("User with id: {id} could not be found", userId);
+
+      return TypedResults.BadRequest("User not found.");
+    }
+
     const long fileSize = 5 * 1024 * 1024;
 
     if (file.Length == 0 || file.Length > fileSize || file.ContentType != "application/pdf")
@@ -49,13 +60,6 @@ public class V2ResumeEndpoints
       return TypedResults.BadRequest("Error uploading the file.");
     }
 
-    var user = await dbContext.Users.FindAsync(userId, cancellationToken);
-
-    if (user == null)
-    {
-      logger.LogWarning("User with id: {id} could not be found", userId);
-    }
-
     if (!string.IsNullOrEmpty(user.Resume))
     {
       var fileOldUrl = new Uri(user.Resume);
@@ -64,12 +68,11 @@ public class V2ResumeEndpoints
       var deleted = await blobStorageService.DeleteFileAsync(fileName, cancellationToken);
       if (!deleted)
       {
-        logger.LogWarning("Failed to delete old resume with name {fileName}", fileName );
+        logger.LogWarning("Failed to delete old resume with name {fileName}", fileName);
       }
     }
 
     user.Resume = fileUrl;
-
     await dbContext.SaveChangesAsync(cancellationToken);
 
     return TypedResults.Ok(fileUrl);
@@ -111,20 +114,39 @@ public class V2ResumeEndpoints
     Guid userId,
     JobVacancyDbContext dbContext,
     BlobStorageService blobStorageService,
+    ILogger<V2ResumeEndpoints> _logger,
     CancellationToken cancellationToken)
   {
-    var user = await dbContext.Users.FindAsync(userId, cancellationToken);
-
-    if (user == null || string.IsNullOrEmpty(user.Resume))
+    try
     {
-      return TypedResults.NotFound("Resume not found.");
+      var user = await dbContext.Users.FindAsync(userId, cancellationToken);
+
+      if (user == null || string.IsNullOrEmpty(user.Resume))
+      {
+        return TypedResults.NotFound("Resume not found.");
+      }
+
+      var fileUrl = new Uri(user.Resume);
+      var fileName = Path.GetFileName(fileUrl.LocalPath);
+
+      if (string.IsNullOrEmpty(fileName))
+      {
+        return TypedResults.Problem("Could not extract file name from the resume URL.");
+      }
+
+      var sasUrl = blobStorageService.GetReadOnlySasUrl(fileName, 60);
+
+      return TypedResults.Ok(sasUrl);
     }
-
-    var fileUrl = new Uri(user.Resume);
-    var fileName = Path.GetFileName(fileUrl.LocalPath);
-
-    var sasUrl = blobStorageService.GetReadOnlySasUrl(fileName, 60);
-
-    return TypedResults.Ok(sasUrl);
+    catch (RequestFailedException ex)
+    {
+      _logger.LogError(ex, "Something went wrong while accessing the resume file for user {UserId}.", userId);
+      return TypedResults.Problem("There was a problem accessing the resume file.");
+    }
+    catch (Exception ex)
+    {
+      _logger.LogError(ex, "Unexpected error occurred for user {UserId}.", userId);
+      return TypedResults.Problem("An unexpected error occurred. Please try again later.");
+    }
   }
 }
