@@ -1,0 +1,29 @@
+name: Publish
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+    - main
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore
+        run: dotnet restore ./Training.JobVacancy.Backend.slnx
+
+      - name: Build
+        run: dotnet build ./Training.JobVacancy.Backend.slnx --configuration Release --no-restore
+
+      - name: Publish
+        run: dotnet publish ./Training.JobVacancy.Backend.slnx --configuration Release --no-build
+      
