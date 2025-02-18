@@ -28,21 +28,16 @@ public class V2UserEndpoints()
     return endpoint;
   }
 
-  public static async Task<Ok<PagedList<UserReturnDto>>> GetAllUsers(
+  public static async Task<Results<Ok<PagedList<UserReturnDto>>, BadRequest<string>>> GetAllUsers(
     JobVacancyDbContext dbContext,
     ILogger<V2UserEndpoints> logger,
     CancellationToken cancellationToken,
     int page = 1,
     int pageSize = 10)
   {
-    if (page < 1)
+    if (page < 1 || pageSize < 1 || pageSize > 100)
     {
-      page = 1;
-    }
-
-    if (pageSize is < 1 or > 100)
-    {
-      pageSize = 100;
+      return TypedResults.BadRequest("Invalid page or pageSize");
     }
 
     var query = await dbContext.Users
