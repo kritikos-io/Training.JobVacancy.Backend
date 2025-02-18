@@ -71,6 +71,7 @@ public class V2CompanyEndpoints
 
     if (entity is null)
     {
+      logger.LogEntityNotFound(nameof(Company), id);
       return TypedResults.NotFound();
     }
 
@@ -107,6 +108,7 @@ public class V2CompanyEndpoints
 
     if (entity is null)
     {
+      logger.LogEntityNotFound(nameof(Company), companyId);
       return TypedResults.NotFound();
     }
 
