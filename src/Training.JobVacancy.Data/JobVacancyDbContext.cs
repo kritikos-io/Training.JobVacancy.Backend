@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 public class JobVacancyDbContext(DbContextOptions<JobVacancyDbContext> options)
     : DbContext(options)
 {
-  public DbSet<Company> Companies;
+  public DbSet<Company> Companies { get; set; }
 
   /// <inheritdoc />
   protected override void OnModelCreating(ModelBuilder modelBuilder) =>
@@ -20,14 +20,12 @@ public class JobVacancyDbContext(DbContextOptions<JobVacancyDbContext> options)
           .IsRequired()
           .HasMaxLength(50);
 
+        e.HasIndex(c => c.Name)
+          .IsUnique();
+
         e.Property(c => c.PhoneNumber)
-          .HasAnnotation("PhoneNumberFormat", @"^[0-9(){}\-\+ ]+$")
-          .HasMaxLength(20);
+          .HasMaxLength(10);
 
-        e.HasOne<Address>()
-          .WithMany()
-          .OnDelete(DeleteBehavior.NoAction);
-      })
-
-      .Entity<Address>(e => e.HasKey(a => new { a.Country, a.City, a.Street, a.StreetNumber, a.PostalCode }));
+        e.OwnsOne(c => c.Address);
+      });
 }

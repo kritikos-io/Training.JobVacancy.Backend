@@ -5,9 +5,9 @@ using Adaptit.Training.JobVacancy.Web.Models.Dto.V2.Company;
 
 public static class EntityDtoTransformationExtentions
 {
-  public static CompanyDto ToDto(this Company entity)
+  public static CompanyResponseDto ToResponseDto(this Company entity)
   {
-    return new CompanyDto
+    return new CompanyResponseDto
     {
       Id = entity.Id,
       Name = entity.Name,
@@ -16,65 +16,45 @@ public static class EntityDtoTransformationExtentions
       LogoUrl = entity.LogoUrl,
       Address = ToDto(entity.Address),
       Sponsored = entity.Sponsored,
-      TotalJobsAdvertised = entity.TotalJobsAdvertised,
       PhoneNumber = entity.PhoneNumber
     };
   }
 
-  public static CompanyUpdateDto ToUpdateDto(this Company entity)
+  public static CompanyShortResponseDto ToShortResponseDto(this Company entity)
   {
-    return new CompanyUpdateDto
+    return new CompanyShortResponseDto
     {
+      Id = entity.Id,
       Name = entity.Name,
-      Website = entity.Website,
       Vat = entity.Vat,
-      LogoUrl = entity.LogoUrl,
-      Address = ToUpdateDto(entity.Address),
-      Sponsored = entity.Sponsored,
-      TotalJobsAdvertised = entity.TotalJobsAdvertised,
       PhoneNumber = entity.PhoneNumber
     };
   }
 
-  public static Company ToEntity(this CompanyDto dto)
+  public static void Apply(this Company entity, CompanyRequestUpdateDto dto)
   {
-    return new Company
-    {
-      Id = dto.Id,
-      Name = dto.Name,
-      Website = dto.Website,
-      Vat = dto.Vat,
-      LogoUrl = dto.LogoUrl,
-      Address = ToEntity(dto.Address),
-      Sponsored = dto.Sponsored,
-      TotalJobsAdvertised = dto.TotalJobsAdvertised,
-      PhoneNumber = dto.PhoneNumber
-    };
+    entity.Name = dto.Name;
+    entity.Website = dto.Website;
+    entity.Vat = dto.Vat;
+    entity.LogoUrl = dto.LogoUrl;
+    entity.Address = dto.Address?.ToEntity() ?? new Address();
+    entity.Sponsored = dto.Sponsored;
+    entity.PhoneNumber = dto.PhoneNumber;
   }
 
-  public static Company ToEntity(this CompanyUpdateDto dto, Guid companyId)
+  public static Company ToEntity(this CompanyRequestCreateDto dto)
   {
-    var company = new Company();
+    var c = new Company();
 
-    company.Id = companyId;
+    c.Name = dto.Name;
+    c.Website = dto.Website;
+    c.Vat = dto.Vat;
+    c.LogoUrl = dto.LogoUrl;
+    c.Sponsored = dto.Sponsored;
+    c.Address = dto.Address?.ToEntity() ?? new Address();
+    c.PhoneNumber = dto.PhoneNumber;
 
-    if (!string.IsNullOrEmpty(dto.Name)) company.Name = dto.Name;
-
-    if (dto.Website != null) company.Website = dto.Website;
-
-    if (!string.IsNullOrEmpty(dto.Vat)) company.Vat = dto.Vat;
-
-    if (dto.LogoUrl != null) company.LogoUrl = dto.LogoUrl;
-
-    if (dto.Address != null) company.Address = ToEntity(dto.Address);
-
-    if (dto.Sponsored != null) company.Sponsored = dto.Sponsored.Value;
-
-    if (dto.TotalJobsAdvertised.HasValue) company.TotalJobsAdvertised = dto.TotalJobsAdvertised.Value;
-
-    if (!string.IsNullOrEmpty(dto.PhoneNumber)) company.PhoneNumber = dto.PhoneNumber;
-
-    return company;
+    return c;
   }
 
   public static AddressDto ToDto(this Address entity)
@@ -90,30 +70,6 @@ public static class EntityDtoTransformationExtentions
   }
 
   public static Address ToEntity(this AddressDto dto)
-  {
-    return new Address
-    {
-      Street = dto.Street,
-      City = dto.City,
-      StreetNumber = dto.StreetNumber,
-      PostalCode = dto.PostalCode,
-      Country = dto.Country
-    };
-  }
-
-  public static AddressUpdateDto ToUpdateDto(this Address entity)
-  {
-    return new AddressUpdateDto()
-    {
-      Street = entity.Street,
-      City = entity.City,
-      StreetNumber = entity.StreetNumber,
-      PostalCode = entity.PostalCode,
-      Country = entity.Country
-    };
-  }
-
-  public static Address ToEntity(this AddressUpdateDto dto)
   {
     return new Address
     {

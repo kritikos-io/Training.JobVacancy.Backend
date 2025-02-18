@@ -1,5 +1,6 @@
 namespace Adaptit.Training.JobVacancy.Web.Server.Endpoints.V2;
 
+using Adaptit.Training.JobVacancy.Backend.Helpers;
 using Adaptit.Training.JobVacancy.Data;
 using Adaptit.Training.JobVacancy.Data.Entities;
 using Adaptit.Training.JobVacancy.Web.Models.Dto.V2;
@@ -7,8 +8,8 @@ using Adaptit.Training.JobVacancy.Web.Models.Dto.V2.Company;
 using Adaptit.Training.JobVacancy.Web.Server.Extensions;
 
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 public class V2CompanyEndpoints
 {
@@ -19,82 +20,84 @@ public class V2CompanyEndpoints
     group.MapPost("/search", Search).WithName("Search");
     group.MapGet("/{id:guid}", GetById).WithName("GetById");
     group.MapPost("", CreateCompany).WithName("CreateCompany");
-    group.MapPatch("/{id:guid}", UpdateCompanyById).WithName("UpdateCompanyById");
+    group.MapPut("/{id:guid}", UpdateCompanyById).WithName("UpdateCompanyById");
     group.MapDelete("/{id:guid}", DeleteById).WithName("DeleteById");
 
     return endpoint;
   }
 
-  public static async Task<Ok<PageList<CompanyDto>>> Search([FromBody] CompanyFilters? filters, JobVacancyDbContext dbContext,CancellationToken ct)
+  public static async Task<Ok<PageList<CompanyShortResponseDto>>> Search([FromBody] CompanyFilters? filters, JobVacancyDbContext dbContext,CancellationToken ct)
   {
-    var companies = dbContext.Companies;
-    var result = new PageList<CompanyDto>();
 
-    if (companies != null)
-    {
-      if (filters == null)
-      {
-        result = await companies
-          .Select(c => c.ToDto())
-          .OrderBy(c => c.Name)
-          .Page(ct);
-      }
-      else
-      {
-        result = await dbContext.Companies
-          .WhereIf(filters.Name != null, c => c.Name.Contains(filters.Name!))
-          .WhereIf(filters.HasActiveJobs != null, c => c.TotalJobsAdvertised > 0)
-          .WhereIf(filters.Address != null, c => SearchByAddress(filters.Address!, c))
-          .Select(c => c.ToDto())
-          .OrderBy(c => c.Name)
-          .Page(ct);
-      }
-    }
+    var result = await dbContext.Companies
+      .WhereIf(!string.IsNullOrWhiteSpace(filters?.Name), c => c.Name.Contains(filters!.Name!))
+      .WhereIf(!string.IsNullOrWhiteSpace(filters?.Vat), c => c.Vat.Contains(filters!.Vat!))
+      .WhereIf(!string.IsNullOrWhiteSpace(filters?.PhoneNumber), c => c.PhoneNumber != null && c.PhoneNumber.Contains(filters!.PhoneNumber!))
+      .WhereIf(filters?.Address != null, company => (company.Address.PostalCode!= null && company.Address.PostalCode.Contains(filters!.Address!.PostalCode!))
+                                                    || (company.Address.Country!= null && company.Address.Country.Contains(filters!.Address!.Country!))
+                                                    || (company.Address.Street!= null && company.Address.Street.Contains(filters!.Address!.Street!))
+                                                    || (company.Address.City!= null && company.Address.City.Contains(filters!.Address!.City!))
+                                                    || (company.Address.StreetNumber!= null && company.Address.StreetNumber.Contains(filters!.Address!.StreetNumber!)))
+      .Select(c => c.ToShortResponseDto())
+      .OrderBy(c => c.Name)
+      .Page(ct);
 
     return TypedResults.Ok(result);
   }
 
-  private static bool SearchByAddress(AddressDto filter, Company company)
+  public static async Task<CreatedAtRoute<CompanyResponseDto>> CreateCompany([FromBody] CompanyRequestCreateDto dto, JobVacancyDbContext dbContext, ILogger<V2CompanyEndpoints> logger)
   {
-    return company.Address.PostalCode.Contains(filter.PostalCode) || company.Address.Street.Contains(filter.Street) ||
-           company.Address.Country.Contains(filter.Country) || company.Address.City.Contains(filter.City);
-  }
+    var entity = dto.ToEntity();
 
-  public static async Task<CreatedAtRoute> CreateCompany([FromBody] CompanyDto companyDto, JobVacancyDbContext dbContext)
-  {
-    var dto = companyDto.ToEntity();
-    var entry = dbContext.Add(dto);
-    await dbContext.SaveChangesAsync();
+    try
+    {
+      await dbContext.SaveChangesAsync();
+    }
+    catch (DbUpdateException)
+    {
+      logger.LogError($"Failed to create company {dto.Name}");
+    }
 
     return TypedResults.CreatedAtRoute(
       routeName: "GetById",
-      routeValues: entry.Entity.Id
+      routeValues: entity.Id,
+      value: entity.ToResponseDto()
     );
   }
 
-  public static async Task<Results<NoContent, NotFound>> UpdateCompanyById(Guid id, [FromBody] JsonPatchDocument<CompanyUpdateDto> patch, JobVacancyDbContext dbContext)
+  public static async Task<Results<Ok<CompanyResponseDto>, NotFound>> UpdateCompanyById(Guid id, CompanyRequestUpdateDto dto, JobVacancyDbContext dbContext,  ILogger<V2CompanyEndpoints> logger)
   {
     var entity = await dbContext.FindAsync<Company>(id);
-    if (entity is null) return TypedResults.NotFound();
 
-    var entityUpdateDto = entity.ToUpdateDto();
-    patch.ApplyTo(entityUpdateDto);
+    if (entity is null)
+    {
+      return TypedResults.NotFound();
+    }
 
+    entity.Apply(dto);
 
-    var updatedEntity = entityUpdateDto.ToEntity(entity.Id);
-    dbContext.Update(updatedEntity);
-
-    await dbContext.SaveChangesAsync();
-    return TypedResults.NoContent();
+    try
+    {
+      await dbContext.SaveChangesAsync();
+    }
+    catch (DbUpdateException)
+    {
+      logger.LogError($"Failed to create company {dto.Name}");
+    }
+    return TypedResults.Ok(entity.ToResponseDto());
   }
 
-  public static async Task<Results<Ok<CompanyDto>, NotFound>> GetById(Guid companyId, JobVacancyDbContext dbContext)
+  public static async Task<Results<Ok<CompanyResponseDto>, NotFound>> GetById(Guid companyId, JobVacancyDbContext dbContext, ILogger<V2CompanyEndpoints> logger)
   {
     var entity = await dbContext.FindAsync<Company>(typeof(Company),companyId);
 
-    if (entity is null) TypedResults.NotFound();
+    if (entity is null)
+    {
+      logger.LogEntityNotFound(nameof(Company), companyId);
+      return TypedResults.NotFound();
+    }
 
-    var dto = entity!.ToDto();
+    var dto = entity.ToResponseDto();
     return TypedResults.Ok(dto);
   }
 
@@ -102,10 +105,20 @@ public class V2CompanyEndpoints
   {
     var entity = await dbContext.FindAsync<Company>(companyId);
 
-    if (entity is null) return TypedResults.NotFound();
+    if (entity is null)
+    {
+      return TypedResults.NotFound();
+    }
 
     dbContext.Remove(entity);
-    await dbContext.SaveChangesAsync();
+    try
+    {
+      await dbContext.SaveChangesAsync();
+    }
+    catch (DbUpdateException)
+    {
+      logger.LogError($"Failed to delete company {entity.Name}");
+    }
 
     return TypedResults.NoContent();
   }

@@ -10,11 +10,11 @@ public class EntityDtoTransformationExtentionsTests
 {
   [Theory]
   [MemberData(nameof(GetCompanyTestData))]
-  public void Company_To_Dto_ReturnsCompanyDto(Company entity, CompanyDto expectedDto)
+  public void Company_To_Dto_ReturnsCompanyDto(Company entity, CompanyResponseDto expectedResponseDto)
   {
-    var dto = entity.ToDto();
+    var dto = entity.ToResponseDto();
 
-    dto.Should().BeEquivalentTo(expectedDto);
+    dto.Should().BeEquivalentTo(expectedResponseDto);
   }
 
   public static IEnumerable<object[]> GetCompanyTestData()
@@ -37,10 +37,9 @@ public class EntityDtoTransformationExtentionsTests
           PostalCode = "10001"
         },
         Sponsored = true,
-        TotalJobsAdvertised = 25,
         PhoneNumber = "+1-555-123-4567"
       },
-      new CompanyDto
+      new CompanyResponseDto
       {
         Id = Guid.Parse("c3b510a2-40bd-4b77-85bf-1c871538efb8"),
         Name = "Tech Corp",
@@ -80,10 +79,9 @@ public class EntityDtoTransformationExtentionsTests
           PostalCode = string.Empty
         },
         Sponsored = false,
-        TotalJobsAdvertised = 0,
         PhoneNumber = string.Empty
       },
-      new CompanyDto
+      new CompanyResponseDto
       {
         Id = Guid.Empty,
         Name = string.Empty,
@@ -123,10 +121,9 @@ public class EntityDtoTransformationExtentionsTests
           PostalCode = "M5H 2N2"
         },
         Sponsored = false,
-        TotalJobsAdvertised = 10,
         PhoneNumber = "+1-555-987-6543"
       },
-      new CompanyDto
+      new CompanyResponseDto
       {
         Id = Guid.Parse("c410fdcb-c276-4ac0-87fa-16ccc29825b1"),
         Name = "No Logo Inc.",

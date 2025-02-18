@@ -1,3 +1,4 @@
+#nullable enable
 namespace Adaptit.Training.JobVacancy.Data.Entities;
 
 using System;
@@ -10,15 +11,13 @@ public class Company
 
   public Uri? Website { get; set; }
 
-  public string Vat { get; set; } = string.Empty;
+  public string Vat { get; set; }
 
   public Uri? LogoUrl { get; set; }
 
   public Address Address { get; set; } = new Address();
 
-  public bool Sponsored { get; set; } = false;
+  public bool Sponsored { get; set; }
 
-  public int TotalJobsAdvertised { get; set; } = 0;
-
-  public string PhoneNumber { get; set; } = string.Empty;
+  public string? PhoneNumber { get; set; }
 }
