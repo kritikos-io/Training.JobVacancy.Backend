@@ -12,6 +12,8 @@ using Microsoft.Extensions.Options;
 
 using Refit;
 
+using ZiggyCreatures.Caching.Fusion;
+
 public static class ConfigureServices
 {
   public static void AddJobVacancyServices(this WebApplicationBuilder builder)
@@ -27,12 +29,11 @@ public static class ConfigureServices
     builder.Services.AddDbContext<JobVacancyDbContext>(options => options
         .UseNpgsql(builder.Configuration.GetConnectionString("JobVacancyDatabase"))
         .EnableSensitiveDataLogging());
+
+    builder.AddConfiguredFusionCache();
   }
 
-  public static void AddApiDocumentation(this WebApplicationBuilder builder)
-  {
-    builder.Services.AddOpenApi();
-  }
+  public static void AddApiDocumentation(this WebApplicationBuilder builder) => builder.Services.AddOpenApi();
 
   public static void AddApiVersioning(this WebApplicationBuilder builder)
   {
@@ -78,4 +79,29 @@ public static class ConfigureServices
       return new NavJobVacancyRepo(seed);
     });
   }
+
+  public static void AddConfiguredFusionCache(this WebApplicationBuilder builder)
+  {
+    builder.Services.AddOptionsWithValidateOnStart<ProjectFusionCacheOptions>()
+      .BindConfiguration(ProjectFusionCacheOptions.Section)
+      .ValidateDataAnnotations();
+
+    builder.Services.AddFusionCacheSystemTextJsonSerializer();
+
+    var cacheOptions = new ProjectFusionCacheOptions();
+    builder.Configuration.Bind(cacheOptions);
+
+    builder.Services.AddFusionCache()
+      .WithOptions(options =>
+      {
+        options.DefaultEntryOptions = new FusionCacheEntryOptions
+        {
+          Duration = TimeSpan.FromMinutes(cacheOptions.DefaultDurationMinutes),
+          JitterMaxDuration = TimeSpan.FromSeconds(cacheOptions.JitterMaxDurationMs)
+        };
+      })
+      .TryWithAutoSetup()
+      .AsHybridCache();
+  }
+
 }

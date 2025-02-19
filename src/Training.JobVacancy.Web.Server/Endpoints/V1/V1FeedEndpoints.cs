@@ -10,9 +10,11 @@ using Adaptit.Training.JobVacancy.Web.Server.Repositories;
 
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Hybrid;
 
 public class V1FeedEndpoints
 {
+
   public static RouteGroupBuilder Map(RouteGroupBuilder endpoint)
   {
     var group = endpoint.MapGroup("feed")
@@ -40,38 +42,45 @@ public class V1FeedEndpoints
             out var modifiedSince)
         && modifiedSinceHeader is not null)
     {
+
       logger.LogApiValidationException(nameof(modifiedSinceHeader), nameof(GetLatestFeedPage));
       return TypedResults.ValidationProblem([new KeyValuePair<string, string[]>("If-Modified-Since", ["Valid dates should be in RFC1123"])]);
     }
 
     var feeds = repository.Feeds
-        .OrderBy(
-            last is not null
-                ? ListSortDirection.Descending
-                : ListSortDirection.Ascending,
-            x => x.Items.FirstOrDefault()?.ModifiedAt);
+      .OrderBy(
+        last is not null
+          ? ListSortDirection.Descending
+          : ListSortDirection.Ascending,
+        x => x.Items.FirstOrDefault()?.ModifiedAt);
 
     var feed = feeds
-        .WhereIf(
-            modifiedSinceHeader is not null,
-            x => x.Items.FirstOrDefault()?.ModifiedAt > modifiedSince)
-        .FirstOrDefault();
+      .WhereIf(
+        modifiedSinceHeader is not null,
+        x => x.Items.FirstOrDefault()?.ModifiedAt > modifiedSince)
+      .FirstOrDefault();
 
     return TypedResults.Ok(feed);
   }
 
-  public static Results<Ok<FeedDto>, NotFound> GetFeedPage(
+  public static async Task<Results<Ok<FeedDto>, NotFound>> GetFeedPage(
       Guid id,
       NavJobVacancyRepo repository,
-      ILogger<V1FeedEndpoints> logger)
+      ILogger<V1FeedEndpoints> logger,
+      HybridCache cache)
   {
-    var feed = repository.Feeds.FirstOrDefault(x => x.Id == id);
-    if (feed is null)
+
+    var feedPage = await cache.GetOrCreateAsync<FeedDto?>(
+      $"{nameof(FeedDto)}:{id}",
+      _ => ValueTask.FromResult(repository.Feeds.FirstOrDefault(x => x.Id == id)));
+
+    if (feedPage is not null)
     {
-      logger.LogEntityNotFound(nameof(FeedDto), id);
-      return TypedResults.NotFound();
+      return TypedResults.Ok(feedPage);
     }
 
-    return TypedResults.Ok(feed);
+    logger.LogEntityNotFound(nameof(FeedDto), id);
+    return TypedResults.NotFound();
+
   }
 }

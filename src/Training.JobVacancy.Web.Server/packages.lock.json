@@ -85,6 +85,16 @@
           "WaffleGenerator": "4.2.2"
         }
       },
+      "ZiggyCreatures.FusionCache.Serialization.SystemTextJson": {
+        "type": "Direct",
+        "requested": "[2.1.0, )",
+        "resolved": "2.1.0",
+        "contentHash": "BSmmQZ6c/0r2fVLDW1hGtywygJV1i+5zBsgvy6gAlSeY0DjwpVxXBftjRTgf3VpsZ2ca4Zi2bopW5CTYCSRWUA==",
+        "dependencies": {
+          "System.Text.Json": "8.0.5",
+          "ZiggyCreatures.FusionCache": "2.1.0"
+        }
+      },
       "Asp.Versioning.Abstractions": {
         "type": "Transitive",
         "resolved": "8.1.0",
@@ -545,6 +555,14 @@
         "type": "Transitive",
         "resolved": "4.2.2",
         "contentHash": "Dczu80ZOWyT4LTV0ddOkfbVZSwMzJAa213jS70aP2ydiyUWYOdO1+4ny0b4r9TFiP4wfl6X15GXj0rlSrPNsbw=="
+      },
+      "ZiggyCreatures.FusionCache": {
+        "type": "Transitive",
+        "resolved": "2.1.0",
+        "contentHash": "dlaO86jRZxggegGw/memJC5QSkZ7+o+RJFv/ZxhikAiYgnO12Nu3x62RX3LdyADd/pz6h4eAwTrZCrtaW33sgw==",
+        "dependencies": {
+          "Microsoft.Extensions.Caching.Memory": "9.0.0"
+        }
       },
       "Adaptit.Training.JobVacancy.Data": {
         "type": "Project",

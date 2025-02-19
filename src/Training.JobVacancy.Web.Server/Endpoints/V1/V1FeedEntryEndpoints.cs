@@ -5,6 +5,7 @@ using Adaptit.Training.JobVacancy.Web.Models.Dto.NavJobVacancy;
 using Adaptit.Training.JobVacancy.Web.Server.Repositories;
 
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.Extensions.Caching.Hybrid;
 
 public class V1FeedEntryEndpoints
 {
@@ -18,18 +19,24 @@ public class V1FeedEntryEndpoints
     return endpoint;
   }
 
-  public static Results<Ok<EntryDto>, NotFound> GetFeedEntry(
+  public static async Task<Results<Ok<EntryDto>, NotFound>> GetFeedEntry(
       Guid id,
       NavJobVacancyRepo repository,
-      ILogger<V1FeedEntryEndpoints> logger)
+      ILogger<V1FeedEntryEndpoints> logger,
+      HybridCache cache,
+      CancellationToken ct)
   {
-    var entry = repository.Entries.FirstOrDefault(x => x.Uuid == id);
-    if (entry is null)
+    var entry = await cache.GetOrCreateAsync<EntryDto?>(
+      $"{nameof(EntryDto)}:{id}",
+       _ => ValueTask.FromResult(repository.Entries.FirstOrDefault(x => x.Uuid == id)),
+      cancellationToken: ct);
+
+    if (entry is not null)
     {
-      logger.LogEntityNotFound(nameof(EntryDto), id);
-      return TypedResults.NotFound();
+      return TypedResults.Ok(entry);
     }
 
-    return TypedResults.Ok(entry);
+    logger.LogEntityNotFound(nameof(EntryDto), id);
+    return TypedResults.NotFound();
   }
 }
