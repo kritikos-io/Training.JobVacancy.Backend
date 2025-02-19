@@ -16,7 +16,7 @@ public class JobAdUpdateDto
   public string? Description { get; set; }
 
   [JsonPropertyName("favorite")]
-  public bool? Favorite { get; set; }
+  public bool Favorite { get; set; }
 
   [JsonPropertyName("location")]
   public string? Location { get; set; }

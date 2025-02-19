@@ -26,7 +26,7 @@ public class V2JobAdEndpoints
 
     group.MapPost("/search", SearchJobAds);
     group.MapPost("", CreateJobAd);
-    group.MapPatch("{id:guid}", UpdateJobAd);
+    group.MapPut("{id:guid}", UpdateJobAd);
     group.MapDelete("{id:guid}", DeleteJobAd);
 
     return endpoint;
@@ -48,10 +48,10 @@ public class V2JobAdEndpoints
 
   private static async Task<Results<Ok<PageList<JobAd>>, BadRequest>> SearchJobAds(
     JobAdFilters filters,
-    [FromQuery] int? page,
-    [FromQuery] int? size,
     JobVacancyDbContext db,
-    CancellationToken cancellationToken)
+    CancellationToken cancellationToken,
+    [FromQuery] int page = 1,
+    [FromQuery] int size = 20)
   {
     var jobAds = await db.JobAds
       .WhereIf(filters.Type != null, j => j.Type == filters.Type)
@@ -60,7 +60,7 @@ public class V2JobAdEndpoints
       .WhereIf(filters.Expires != null, j => j.ExpiresAt <= filters.Expires)
       .WhereIf(filters.Description != null, j => EF.Functions.ToTsVector("english", j.Description).Matches(filters.Description!))
       .OrderBy(x => x.Id)
-      .Page(cancellationToken, page ?? 1, size ?? 20);
+      .Page(cancellationToken, page, size);
 
     return TypedResults.Ok(jobAds);
   }

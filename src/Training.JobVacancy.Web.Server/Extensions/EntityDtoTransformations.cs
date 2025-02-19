@@ -33,13 +33,13 @@ public static class EntityDtoTransformations
 
   public static void UpdateEntity(this JobAd jobAd, JobAdUpdateDto dto)
   {
-    jobAd.Type = dto.Type ?? jobAd.Type;
-    jobAd.SalaryRange = dto.SalaryRange ?? jobAd.SalaryRange;
-    jobAd.Description = dto.Description ?? jobAd.Description;
-    jobAd.Favorite = dto.Favorite ?? jobAd.Favorite;
-    jobAd.Location = dto.Location ?? jobAd.Location;
-    jobAd.CreatedAt = dto.CreatedAt ?? jobAd.CreatedAt;
-    jobAd.ExpiresAt = dto.ExpiresAt ?? jobAd.ExpiresAt;
-    jobAd.Level = dto.Level ?? jobAd.Level;
+    jobAd.Type = (JobType)dto.Type!;
+    jobAd.SalaryRange = dto.SalaryRange;
+    jobAd.Description = dto.Description;
+    jobAd.Favorite = dto.Favorite;
+    jobAd.Location = dto.Location;
+    jobAd.CreatedAt = (DateTime)dto.CreatedAt!;
+    jobAd.ExpiresAt = (DateTime)dto.ExpiresAt!;
+    jobAd.Level = (JobExperienceLevel)dto.Level!;
   }
 }

@@ -64,10 +64,7 @@ public static class ConfigureServices
             });
   }
 
-  public static void AddApiDocumentation(this WebApplicationBuilder builder)
-  {
-    builder.Services.AddOpenApi();
-  }
+  public static void AddApiDocumentation(this WebApplicationBuilder builder) => builder.Services.AddOpenApi();
 
   public static void AddApiVersioning(this WebApplicationBuilder builder)
   {
