@@ -1,5 +1,6 @@
 ﻿namespace Adaptit.Training.JobVacancy.Data.Entities;
 
+
 using System;
 
 public class JobAd
