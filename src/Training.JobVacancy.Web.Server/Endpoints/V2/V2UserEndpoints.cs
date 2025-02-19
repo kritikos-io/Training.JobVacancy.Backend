@@ -6,11 +6,9 @@ using Adaptit.Training.JobVacancy.Data.Entities;
 using Adaptit.Training.JobVacancy.Web.Models.Dto;
 using Adaptit.Training.JobVacancy.Web.Models.Dto.User;
 using Adaptit.Training.JobVacancy.Web.Server.Extensions;
-using Adaptit.Training.JobVacancy.Web.Server.Helpers;
 using Adaptit.Training.JobVacancy.Web.Server.Services;
 
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 public class V2UserEndpoints()
@@ -68,8 +66,7 @@ public class V2UserEndpoints()
 
       return TypedResults.NotFound();
     }
-    var fileUrl = new Uri(user.Resume);
-    var fileName = Path.GetFileName(fileUrl.LocalPath);
+    var fileName = Path.GetFileName(user.Resume.LocalPath);
 
     var sasUrl = blobStorageService.GetReadOnlySasUrl(fileName, 60);
     user.Resume = sasUrl;

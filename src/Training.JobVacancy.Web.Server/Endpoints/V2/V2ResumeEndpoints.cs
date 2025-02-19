@@ -21,7 +21,7 @@ public class V2ResumeEndpoints
   }
 
 
-  public static async Task<Results<Ok<string>, BadRequest<string>>> UploadUserResume(
+  public static async Task<Results<Ok<Uri>, BadRequest<string>>> UploadUserResume(
     IFormFile file,
     Guid userId,
     JobVacancyDbContext dbContext,
@@ -53,17 +53,16 @@ public class V2ResumeEndpoints
     await using var stream = file.OpenReadStream();
     var fileUrl = await blobStorageService.UploadFileAsync(stream, uniqueFileName, cancellationToken);
 
-    if (string.IsNullOrEmpty(fileUrl))
+    if (fileUrl == null)
     {
       logger.LogWarning("File could not be uploaded");
 
       return TypedResults.BadRequest("Error uploading the file.");
     }
 
-    if (!string.IsNullOrEmpty(user.Resume))
+    if (user.Resume != null)
     {
-      var fileOldUrl = new Uri(user.Resume);
-      var fileName = Path.GetFileName(fileOldUrl.LocalPath);
+      var fileName = Path.GetFileName(user.Resume.LocalPath);
 
       var deleted = await blobStorageService.DeleteFileAsync(fileName, cancellationToken);
       if (!deleted)
@@ -87,16 +86,21 @@ public class V2ResumeEndpoints
   {
     var user = await dbContext.Users.FindAsync(userId, cancellationToken);
 
-    if (user == null || string.IsNullOrEmpty(user.Resume))
+    if (user == null || user.Resume == null)
     {
       logger.LogInformation("User with id: {id} either not found or resume missing", userId);
 
       return TypedResults.NotFound("Resume not found.");
     }
 
-    var fileUrl = new Uri(user.Resume);
-    var fileName = Path.GetFileName(fileUrl.LocalPath);
+    if (!user.Resume.IsAbsoluteUri)
+    {
+      logger.LogWarning("User with id: {id} has an invalid resume URL", userId);
 
+      return TypedResults.NotFound("Invalid resume URL.");
+    }
+
+    var fileName = Path.GetFileName(user.Resume.LocalPath);
     var deleted = await blobStorageService.DeleteFileAsync(fileName, cancellationToken);
 
     if (!deleted)
@@ -104,13 +108,13 @@ public class V2ResumeEndpoints
       return TypedResults.NotFound("File not found or already deleted.");
     }
 
-    user.Resume = string.Empty;
+    user.Resume = null;
     await dbContext.SaveChangesAsync(cancellationToken);
 
     return TypedResults.Ok();
   }
 
-  public static async Task<Results<Ok<string>, NotFound<string>, ProblemHttpResult>> GetUserResumeSasUrl(
+  public static async Task<Results<Ok<Uri>, NotFound<string>, ProblemHttpResult>> GetUserResumeSasUrl(
     Guid userId,
     JobVacancyDbContext dbContext,
     BlobStorageService blobStorageService,
@@ -121,13 +125,12 @@ public class V2ResumeEndpoints
     {
       var user = await dbContext.Users.FindAsync(userId, cancellationToken);
 
-      if (user == null || string.IsNullOrEmpty(user.Resume))
+      if (user == null || user.Resume == null)
       {
         return TypedResults.NotFound("Resume not found.");
       }
 
-      var fileUrl = new Uri(user.Resume);
-      var fileName = Path.GetFileName(fileUrl.LocalPath);
+      var fileName = Path.GetFileName(user.Resume.LocalPath);
 
       if (string.IsNullOrEmpty(fileName))
       {
