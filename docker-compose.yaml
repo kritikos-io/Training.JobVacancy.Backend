@@ -1,0 +1,52 @@
+﻿name: JobVacancy
+
+services:
+  backend:
+    image: training.jobvacancy.web.server
+    build:
+      context: .
+      dockerfile: src/Training.JobVacancy.Web.Server/Dockerfile
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - .env
+
+  postgres:
+    image: postgres:17
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready --username=${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:latest
+    healthcheck:
+      test: [ "CMD", "redis-cli","ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  seq:
+    image: datalust/seq:latest
+    ports:
+      - "5341:80"
+    env_file:
+      - .env
+
+  healthchecksui:
+    image: xabarilcoding/healthchecksui:latest
+    ports:
+      - "5000:80"
+    env_file:
+      - .env
+    depends_on:
+      - backend
