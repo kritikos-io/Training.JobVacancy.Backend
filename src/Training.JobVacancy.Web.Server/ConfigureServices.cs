@@ -31,113 +31,118 @@ public static class ConfigureServices
     builder.AddApiDocumentation();
     builder.AddApiVersioning();
 
+    builder.AddCentralizedLogging();
+
     builder.Services.AddDbContext<JobVacancyDbContext>(options => options
-        .UseNpgsql(builder.Configuration.GetConnectionString("JobVacancyDatabase"))
-        .EnableSensitiveDataLogging());
+      .UseNpgsql(builder.Configuration.GetConnectionString("JobVacancyDatabase"))
+      .EnableSensitiveDataLogging());
   }
 
   public static void AddJobVacancyAuthentication(this WebApplicationBuilder builder)
   {
     builder.Services.AddOptionsWithValidateOnStart<JobVacancyAuthenticationOptions>()
-        .BindConfiguration(JobVacancyAuthenticationOptions.Section)
-        .ValidateDataAnnotations();
+      .BindConfiguration(JobVacancyAuthenticationOptions.Section)
+      .ValidateDataAnnotations();
 
     builder.Services.AddAuthentication()
-        .AddJwtBearer("openid",
-            options =>
-            {
-              var realmSettings = new JobVacancyAuthenticationOptions();
-              builder.Configuration.GetRequiredSection(JobVacancyAuthenticationOptions.Section)
-                  .Bind(realmSettings);
+      .AddJwtBearer("openid",
+        options =>
+        {
+          var realmSettings = new JobVacancyAuthenticationOptions();
+          builder.Configuration.GetRequiredSection(JobVacancyAuthenticationOptions.Section)
+            .Bind(realmSettings);
 
-              options.Authority = realmSettings.Authority.ToString();
-              options.MetadataAddress = $"{options.Authority}/.well-known/openid-configuration";
+          options.Authority = realmSettings.Authority.ToString();
+          options.MetadataAddress = $"{options.Authority}/.well-known/openid-configuration";
 
-              options.RequireHttpsMetadata = true;
-              options.SaveToken = true;
+          options.RequireHttpsMetadata = true;
+          options.SaveToken = true;
 
-              options.TokenValidationParameters = new TokenValidationParameters
-              {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidIssuer = realmSettings.Authority.ToString(),
-                ValidAudience = "account",
-                ValidateLifetime = true,
-              };
-            });
+          options.TokenValidationParameters = new TokenValidationParameters
+          {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidIssuer = realmSettings.Authority.ToString(),
+            ValidAudience = "account",
+            ValidateLifetime = true,
+          };
+        });
 
     builder.Services.AddAuthorizationBuilder()
-        .AddDefaultPolicy("default",
-            policy => policy
-                .AddAuthenticationSchemes("openid")
-                .RequireAuthenticatedUser());
+      .AddDefaultPolicy("default",
+        policy => policy
+          .AddAuthenticationSchemes("openid")
+          .RequireAuthenticatedUser());
   }
 
   public static void AddApiDocumentation(this WebApplicationBuilder builder)
   {
     builder.Services.AddOpenApi("v1",
-        options =>
-        {
-          options.AddDocumentTransformer<ApiVersionDocumentTransformer>();
-          options.AddDocumentTransformer<SecuritySchemeTransformer>();
-          options.AddOperationTransformer<DeprecatedVersionTransformer>();
-          options.AddOperationTransformer<AuthorizationCheckOperationTransformer>();
-          options.AddSchemaTransformer<NullableSchemaTransformer>();
-        });
+      options =>
+      {
+        options.AddDocumentTransformer<ApiVersionDocumentTransformer>();
+        options.AddDocumentTransformer<SecuritySchemeTransformer>();
+        options.AddOperationTransformer<DeprecatedVersionTransformer>();
+        options.AddOperationTransformer<AuthorizationCheckOperationTransformer>();
+        options.AddSchemaTransformer<NullableSchemaTransformer>();
+      });
     builder.Services.AddOpenApi("v2",
-        options =>
-        {
-          options.AddDocumentTransformer<ApiVersionDocumentTransformer>();
-          options.AddDocumentTransformer<SecuritySchemeTransformer>();
-          options.AddOperationTransformer<DeprecatedVersionTransformer>();
-          options.AddOperationTransformer<AuthorizationCheckOperationTransformer>();
-          options.AddSchemaTransformer<NullableSchemaTransformer>();
-        });
+      options =>
+      {
+        options.AddDocumentTransformer<ApiVersionDocumentTransformer>();
+        options.AddDocumentTransformer<SecuritySchemeTransformer>();
+        options.AddOperationTransformer<DeprecatedVersionTransformer>();
+        options.AddOperationTransformer<AuthorizationCheckOperationTransformer>();
+        options.AddSchemaTransformer<NullableSchemaTransformer>();
+      });
   }
 
   public static void AddApiVersioning(this WebApplicationBuilder builder)
   {
     builder.Services.AddApiVersioning(options =>
-        {
-          options.DefaultApiVersion = new ApiVersion(1);
-          options.ReportApiVersions = true;
-          options.AssumeDefaultVersionWhenUnspecified = true;
-          options.ApiVersionReader = new UrlSegmentApiVersionReader();
-          options.RouteConstraintName = "apiVersion";
+      {
+        options.DefaultApiVersion = new ApiVersion(1);
+        options.ReportApiVersions = true;
+        options.AssumeDefaultVersionWhenUnspecified = true;
+        options.ApiVersionReader = new UrlSegmentApiVersionReader();
+        options.RouteConstraintName = "apiVersion";
 
-          options.Policies
-              .Sunset(1)
-              .Effective(2025, 02, 15)
-              .Link("api-policy.html")
-              .Title("Versioning Policy")
-              .Type("text/html")
-              .Language("en");
-        })
-        .AddApiExplorer(options =>
-        {
-          options.GroupNameFormat = "'v'V";
-          options.SubstituteApiVersionInUrl = true;
-          options.AssumeDefaultVersionWhenUnspecified = true;
-          options.RouteConstraintName = "apiVersion";
-        });
+        options.Policies
+          .Sunset(1)
+          .Effective(2025, 02, 15)
+          .Link("api-policy.html")
+          .Title("Versioning Policy")
+          .Type("text/html")
+          .Language("en");
+      })
+      .AddApiExplorer(options =>
+      {
+        options.GroupNameFormat = "'v'V";
+        options.SubstituteApiVersionInUrl = true;
+        options.AssumeDefaultVersionWhenUnspecified = true;
+        options.RouteConstraintName = "apiVersion";
+      });
   }
 
   public static void AddNavJobVacancyClient(this WebApplicationBuilder builder)
   {
     builder.Services.AddOptionsWithValidateOnStart<NavJobVacancyOptions>()
-        .BindConfiguration(NavJobVacancyOptions.Section)
-        .ValidateDataAnnotations();
+      .BindConfiguration(NavJobVacancyOptions.Section)
+      .ValidateDataAnnotations();
 
     builder.Services.AddRefitClient<INavJobVacancy>(sp =>
+      {
+        var apiOptions = sp.GetRequiredService<IOptions<NavJobVacancyOptions>>().Value;
+        return new RefitSettings
         {
-          var apiOptions = sp.GetRequiredService<IOptions<NavJobVacancyOptions>>().Value;
-          return new RefitSettings { AuthorizationHeaderValueGetter = (message, token) => Task.FromResult(apiOptions.ApiKey), };
-        })
-        .ConfigureHttpClient((sp, client) =>
-        {
-          var settings = sp.GetRequiredService<IOptions<NavJobVacancyOptions>>().Value;
-          client.BaseAddress = new Uri(settings.BaseAddress.ToString());
-        });
+          AuthorizationHeaderValueGetter = (message, token) => Task.FromResult(apiOptions.ApiKey),
+        };
+      })
+      .ConfigureHttpClient((sp, client) =>
+      {
+        var settings = sp.GetRequiredService<IOptions<NavJobVacancyOptions>>().Value;
+        client.BaseAddress = new Uri(settings.BaseAddress.ToString());
+      });
   }
 
   public static void AddNavJobRepository(this WebApplicationBuilder builder)
@@ -149,5 +154,16 @@ public static class ConfigureServices
     });
   }
 
-  public static void AddMiddlewareServices(this WebApplicationBuilder builder) => builder.Services.AddTransient<CorrelationIdMiddleware>();
+  public static void AddMiddlewareServices(this WebApplicationBuilder builder) =>
+    builder.Services.AddTransient<CorrelationIdMiddleware>();
+
+  public static void AddCentralizedLogging(this WebApplicationBuilder builder)
+  {
+    builder.Services.AddApplicationInsightsTelemetry();
+    builder.Logging.AddSeq(builder.Configuration.GetSection("Seq"));
+    builder.Logging.AddApplicationInsights(config =>
+    {
+      config.ConnectionString = builder.Configuration["ApplicationInsights:ConnectionString"];
+    }, options => options.FlushOnDispose = true);
+  }
 }

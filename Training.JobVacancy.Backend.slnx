@@ -11,6 +11,8 @@
     <File Path="Directory.Build.props" />
     <File Path="Directory.Build.targets" />
     <File Path=".dockerignore" />
+    <File Path="docker-compose.yaml" />
+    <File Path=".env" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src\Training.JobVacancy.Data\Training.JobVacancy.Data.csproj" Type="Classic C#" />
