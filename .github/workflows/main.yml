@@ -5,9 +5,15 @@ env:
 
 on:
   workflow_dispatch:
-  push:
+  pull_request:
     branches:
     - main
+    - develop
+    paths:
+      - 'src/*'
+      - 'tests/*'
+      - 'Directory.Packages.props'
+      - '.github/workflows/main.yml'
 
 jobs:
   publish:
