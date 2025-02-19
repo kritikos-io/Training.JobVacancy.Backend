@@ -3,6 +3,7 @@ using System;
 using Adaptit.Training.JobVacancy.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Adaptit.Training.JobVacancy.Data.Migrations
 {
     [DbContext(typeof(JobVacancyDbContext))]
-    partial class JobVacancyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250218164216_address+company")]
+    partial class addresscompany
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -1,12 +1,12 @@
-﻿
+﻿namespace Adaptit.Training.JobVacancy.Web.Server.Tests.CompanyTests;
+
 using Adaptit.Training.JobVacancy.Data.Entities;
 using Adaptit.Training.JobVacancy.Web.Models.Dto.V2.Company;
-using Adaptit.Training.JobVacancy.Web.Server.Extensions;
+using Adaptit.Training.JobVacancy.Web.Server.Extensions.ObjectTransformations;
 
 using FluentAssertions;
 
-namespace Adaptit.Training.JobVacancy.Web.Server.Tests.CompanyTests;
-public class EntityDtoTransformationExtentionsTests
+public class CompanyTransformationTests
 {
   [Theory]
   [MemberData(nameof(GetCompanyTestData))]
@@ -55,7 +55,6 @@ public class EntityDtoTransformationExtentionsTests
           PostalCode = "10001"
         },
         Sponsored = true,
-        TotalJobsAdvertised = 25,
         PhoneNumber = "+1-555-123-4567"
       }
     ];
@@ -97,7 +96,6 @@ public class EntityDtoTransformationExtentionsTests
           PostalCode = string.Empty
         },
         Sponsored = false,
-        TotalJobsAdvertised = 0,
         PhoneNumber = string.Empty
       }
     ];
@@ -139,7 +137,6 @@ public class EntityDtoTransformationExtentionsTests
           PostalCode = "M5H 2N2"
         },
         Sponsored = false,
-        TotalJobsAdvertised = 10,
         PhoneNumber = "+1-555-987-6543"
       }
     ];

@@ -6,6 +6,7 @@ using Adaptit.Training.JobVacancy.Data.Entities;
 using Adaptit.Training.JobVacancy.Web.Models.Dto.V2;
 using Adaptit.Training.JobVacancy.Web.Models.Dto.V2.Company;
 using Adaptit.Training.JobVacancy.Web.Server.Extensions;
+using Adaptit.Training.JobVacancy.Web.Server.Extensions.ObjectTransformations;
 
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -48,6 +49,7 @@ public class V2CompanyEndpoints
   public static async Task<CreatedAtRoute<CompanyResponseDto>> CreateCompany([FromBody] CompanyRequestCreateDto dto, JobVacancyDbContext dbContext, ILogger<V2CompanyEndpoints> logger)
   {
     var entity = dto.ToEntity();
+    dbContext.Add(entity);
 
     try
     {
@@ -113,6 +115,7 @@ public class V2CompanyEndpoints
     }
 
     dbContext.Remove(entity);
+
     try
     {
       await dbContext.SaveChangesAsync();
@@ -123,6 +126,18 @@ public class V2CompanyEndpoints
     }
 
     return TypedResults.NoContent();
+  }
+
+  private async void TryToSaveCompany(Company entity, JobVacancyDbContext dbContext, ILogger<V2CompanyEndpoints> logger,string errorMessage)
+  {
+    try
+    {
+      await dbContext.SaveChangesAsync();
+    }
+    catch (DbUpdateException)
+    {
+      logger.LogError($"{errorMessage} {entity.Name}");
+    }
   }
 
 }
