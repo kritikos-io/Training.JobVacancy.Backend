@@ -1,5 +1,6 @@
 namespace Adaptit.Training.JobVacancy.Web.Server.Endpoints.V2;
 
+using Adaptit.Training.JobVacancy.Backend.Helpers;
 using Adaptit.Training.JobVacancy.Data;
 using Adaptit.Training.JobVacancy.Web.Server.Services;
 
@@ -121,35 +122,27 @@ public class V2ResumeEndpoints
     ILogger<V2ResumeEndpoints> _logger,
     CancellationToken cancellationToken)
   {
-    try
+    var user = await dbContext.Users.FindAsync(userId, cancellationToken);
+
+    if (user == null || user.Resume == null)
     {
-      var user = await dbContext.Users.FindAsync(userId, cancellationToken);
-
-      if (user == null || user.Resume == null)
-      {
-        return TypedResults.NotFound("Resume not found.");
-      }
-
-      var fileName = Path.GetFileName(user.Resume.LocalPath);
-
-      if (string.IsNullOrEmpty(fileName))
-      {
-        return TypedResults.Problem("Could not extract file name from the resume URL.");
-      }
-
-      var sasUrl = blobStorageService.GetReadOnlySasUrl(fileName, 60);
-
-      return TypedResults.Ok(sasUrl);
+      return TypedResults.NotFound("Resume not found.");
     }
-    catch (RequestFailedException ex)
+
+    var fileName = Path.GetFileName(user.Resume.LocalPath);
+
+    if (string.IsNullOrEmpty(fileName))
     {
-      _logger.LogError(ex, "Something went wrong while accessing the resume file for user {UserId}.", userId);
-      return TypedResults.Problem("There was a problem accessing the resume file.");
+      return TypedResults.Problem("Something went wrong when processing the file", statusCode: 500);
     }
-    catch (Exception ex)
+
+    var sasUrl = blobStorageService.GetReadOnlySasUrl(fileName, 60);
+
+    if (sasUrl == null)
     {
-      _logger.LogError(ex, "Unexpected error occurred for user {UserId}.", userId);
-      return TypedResults.Problem("An unexpected error occurred. Please try again later.");
+      return TypedResults.Problem("Something went wrong while interacting with the storage service", statusCode: 500);
     }
+
+    return TypedResults.Ok(sasUrl);
   }
 }

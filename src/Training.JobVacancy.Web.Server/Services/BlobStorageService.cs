@@ -37,32 +37,29 @@ public class BlobStorageService
     return isDeleted;
   }
 
-  public Uri GetReadOnlySasUrl(string fileName, int validForMinutes = 60)
+  public Uri? GetReadOnlySasUrl(string fileName, int validForMinutes = 60)
   {
-    try
+    var blobContainerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
+
+    if (!blobContainerClient.Exists())
     {
-      var blobContainerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
-      var blobClient = blobContainerClient.GetBlobClient(fileName);
-
-      var sasBuilder = new BlobSasBuilder
-      {
-        BlobContainerName = _containerName,
-        BlobName = fileName,
-        Resource = "b",
-        ExpiresOn = DateTimeOffset.UtcNow.AddMinutes(validForMinutes)
-      };
-
-      sasBuilder.SetPermissions(BlobSasPermissions.Read);
-
-      var sasUri = blobClient.GenerateSasUri(sasBuilder);
-
-      return sasUri;
+      return null;
     }
-    catch(Exception ex)
+
+    var blobClient = blobContainerClient.GetBlobClient(fileName);
+
+    var sasBuilder = new BlobSasBuilder
     {
-      _logger.LogError(ex, "Unexpected error while generating SAS URL for file {FileName}", fileName);
-      throw;
-    }
+      BlobContainerName = _containerName,
+      BlobName = fileName,
+      Resource = "b",
+      ExpiresOn = DateTimeOffset.UtcNow.AddMinutes(validForMinutes)
+    };
+
+    sasBuilder.SetPermissions(BlobSasPermissions.Read);
+
+    var sasUri = blobClient.GenerateSasUri(sasBuilder);
+
+    return sasUri;
   }
-
 }
