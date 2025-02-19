@@ -57,7 +57,8 @@ public class V2CompanyEndpoints
     }
     catch (DbUpdateException)
     {
-      logger.LogError($"Failed to create company {dto.Name}");
+      // TODO: GNWMH GIA -> if(e.InnerException.Message.Contains("Duplicate key"))
+      logger.LogEntityNotCreated(nameof(Company),dto.Name);
     }
 
     return TypedResults.CreatedAtRoute(
@@ -85,7 +86,7 @@ public class V2CompanyEndpoints
     }
     catch (DbUpdateException)
     {
-      logger.LogError($"Failed to create company {dto.Name}");
+      logger.LogEntityNotUpdated(nameof(Company), id);
     }
     return TypedResults.Ok(entity.ToResponseDto());
   }
@@ -122,22 +123,10 @@ public class V2CompanyEndpoints
     }
     catch (DbUpdateException)
     {
-      logger.LogError($"Failed to delete company {entity.Name}");
+      logger.LogEntityNotDeleted(nameof(Company), companyId);
     }
 
     return TypedResults.NoContent();
-  }
-
-  private async void TryToSaveCompany(Company entity, JobVacancyDbContext dbContext, ILogger<V2CompanyEndpoints> logger,string errorMessage)
-  {
-    try
-    {
-      await dbContext.SaveChangesAsync();
-    }
-    catch (DbUpdateException)
-    {
-      logger.LogError($"{errorMessage} {entity.Name}");
-    }
   }
 
 }
