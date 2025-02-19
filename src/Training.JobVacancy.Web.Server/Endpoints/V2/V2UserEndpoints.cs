@@ -68,7 +68,7 @@ public class V2UserEndpoints()
     }
     var fileName = Path.GetFileName(user.Resume.LocalPath);
 
-    var sasUrl = blobStorageService.GetReadOnlySasUrl(fileName, 60);
+    var sasUrl = blobStorageService.GetReadOnlySasUrl(fileName);
     user.Resume = sasUrl;
 
     var dto = user.ToUserReturnDto();

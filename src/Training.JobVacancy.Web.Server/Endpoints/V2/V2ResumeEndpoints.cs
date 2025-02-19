@@ -140,7 +140,7 @@ public class V2ResumeEndpoints
       return TypedResults.Problem("Something went wrong when processing the file", statusCode: 500);
     }
 
-    var sasUri = blobStorageService.GetReadOnlySasUrl(fileName, 60);
+    var sasUri = blobStorageService.GetReadOnlySasUrl(fileName);
 
     if (sasUri == null)
     {

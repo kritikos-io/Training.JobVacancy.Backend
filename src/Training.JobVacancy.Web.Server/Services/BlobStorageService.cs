@@ -9,6 +9,7 @@ public class BlobStorageService
   private readonly BlobServiceClient _blobServiceClient;
   private readonly string _containerName;
   private readonly ILogger<BlobStorageService> _logger;
+  private readonly int _validForMinutes;
 
   public BlobStorageService(IConfiguration configuration, ILogger<BlobStorageService> logger)
   {
@@ -16,6 +17,7 @@ public class BlobStorageService
     var connectionString = Environment.GetEnvironmentVariable("AzureBlobStorage__ConnectionString");
     _blobServiceClient = new BlobServiceClient(connectionString);
     _containerName = configuration["AzureBlobStorage:ContainerName"] ?? "resumes";
+    _validForMinutes = configuration.GetValue<int>("SasTokenSettings:ValidForMinutes");
   }
 
   public async Task<Uri?> UploadFileAsync(Stream fileStream, string fileName, CancellationToken cancellationToken)
@@ -62,7 +64,7 @@ public class BlobStorageService
     return isDeleted;
   }
 
-  public Uri? GetReadOnlySasUrl(string fileName, int validForMinutes = 60)
+  public Uri? GetReadOnlySasUrl(string fileName)
   {
     var blobContainerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
 
@@ -80,7 +82,7 @@ public class BlobStorageService
       BlobContainerName = _containerName,
       BlobName = fileName,
       Resource = "b",
-      ExpiresOn = DateTimeOffset.UtcNow.AddMinutes(validForMinutes)
+      ExpiresOn = DateTimeOffset.UtcNow.AddMinutes(_validForMinutes)
     };
 
     sasBuilder.SetPermissions(BlobSasPermissions.Read);
