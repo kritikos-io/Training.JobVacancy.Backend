@@ -1,5 +1,6 @@
 namespace Adaptit.Training.JobVacancy.Web.Server.Services;
 
+using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Sas;
 
@@ -20,16 +21,40 @@ public class BlobStorageService
   public async Task<Uri?> UploadFileAsync(Stream fileStream, string fileName, CancellationToken cancellationToken)
   {
     var blobContainerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
+
+    if (!blobContainerClient.Exists())
+    {
+      _logger.LogWarning("Blob container {ContainerName} does not exist", _containerName);
+      return null;
+    }
+
     var blobClient = blobContainerClient.GetBlobClient(fileName);
 
-    await blobClient.UploadAsync(fileStream, cancellationToken);
+    try
+    {
+      await blobClient.UploadAsync(fileStream, cancellationToken);
 
-    return blobClient.Uri;
+      return blobClient.Uri;
+    }
+    catch(RequestFailedException ex)
+    {
+      _logger.LogWarning(ex, "Failed to upload file {FileName}", fileName);
+
+      return null;
+    }
   }
 
   public async Task<bool> DeleteFileAsync(string fileName, CancellationToken cancellationToken)
   {
     var blobContainerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
+
+    if (!blobContainerClient.Exists())
+    {
+      _logger.LogWarning("Blob container {ContainerName} does not exist", _containerName);
+
+      return false;
+    }
+
     var blobClient = blobContainerClient.GetBlobClient(fileName);
 
     var isDeleted = await blobClient.DeleteIfExistsAsync(cancellationToken: cancellationToken);
@@ -43,6 +68,8 @@ public class BlobStorageService
 
     if (!blobContainerClient.Exists())
     {
+      _logger.LogWarning("Blob container {ContainerName} does not exist", _containerName);
+
       return null;
     }
 

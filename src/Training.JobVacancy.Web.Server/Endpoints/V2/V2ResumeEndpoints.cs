@@ -119,13 +119,15 @@ public class V2ResumeEndpoints
     Guid userId,
     JobVacancyDbContext dbContext,
     BlobStorageService blobStorageService,
-    ILogger<V2ResumeEndpoints> _logger,
+    ILogger<V2ResumeEndpoints> logger,
     CancellationToken cancellationToken)
   {
     var user = await dbContext.Users.FindAsync(userId, cancellationToken);
 
     if (user == null || user.Resume == null)
     {
+      logger.LogEntityNotFound(nameof(user), userId);
+
       return TypedResults.NotFound("Resume not found.");
     }
 
@@ -133,16 +135,20 @@ public class V2ResumeEndpoints
 
     if (string.IsNullOrEmpty(fileName))
     {
+      logger.LogWarning("Could not extract file name from resume URL for user with id: {id}", userId);
+
       return TypedResults.Problem("Something went wrong when processing the file", statusCode: 500);
     }
 
-    var sasUrl = blobStorageService.GetReadOnlySasUrl(fileName, 60);
+    var sasUri = blobStorageService.GetReadOnlySasUrl(fileName, 60);
 
-    if (sasUrl == null)
+    if (sasUri == null)
     {
+      logger.LogWarning("Failed to generate SAS URL for user with id: {id}", userId);
+
       return TypedResults.Problem("Something went wrong while interacting with the storage service", statusCode: 500);
     }
 
-    return TypedResults.Ok(sasUrl);
+    return TypedResults.Ok(sasUri);
   }
 }
