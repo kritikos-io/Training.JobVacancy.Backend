@@ -25,6 +25,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.ApplicationInsights" />
     <PackageReference Include="Refit.HttpClientFactory"/>
     <PackageReference Include="Scalar.AspNetCore"/>
+    <PackageReference Include="Seq.Extensions.Logging"/>
     <PackageReference Include="WaffleGenerator.Bogus"/>
   </ItemGroup>
 
