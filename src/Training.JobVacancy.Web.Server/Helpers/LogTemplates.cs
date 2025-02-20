@@ -8,11 +8,11 @@ public static partial class LogTemplates
 
   public const string EntityNotFound = "Requested entity {Entity} with id {Id} was not found.";
 
-  public const string EntityNotCreated = "Requested entity {Entity} with id {Id} was not found.";
+  public const string EntityNotCreated = "Requested entity {Entity} with name {Id} was not created.";
 
-  public const string EntityNotUpdated = "Requested entity {Entity} with id {Id} was not found.";
+  public const string EntityNotUpdated = "Requested entity {Entity} with id {Id} was not created.";
 
-  public const string EntityNotDeleted = "Requested entity {Entity} with id {Id} was not found.";
+  public const string EntityNotDeleted = "Requested entity {Entity} with id {Id} was not deleted.";
 
   [LoggerMessage(LogLevel.Information, UnhandledException)]
   public static partial void LogUnhandledException(this ILogger logger);

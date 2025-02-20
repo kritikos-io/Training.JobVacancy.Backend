@@ -20,7 +20,7 @@ public class JobVacancyDbContext(DbContextOptions<JobVacancyDbContext> options)
           .IsRequired()
           .HasMaxLength(50);
 
-        e.HasIndex(c => c.Name)
+        e.HasIndex(c => c.Vat)
           .IsUnique();
 
         e.Property(c => c.PhoneNumber)

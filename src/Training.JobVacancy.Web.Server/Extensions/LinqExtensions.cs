@@ -47,4 +47,21 @@ public static class LinqExtensions
 
     return pageList;
   }
+
+  public static async Task<PageList<TDestination>> PageAsync<TSource,TDestination>(
+    this IOrderedQueryable<TSource>source,
+    Expression<Func<TSource,TDestination>> mapper,
+    int pageNumber,
+    int pageSize,
+    CancellationToken cancellationToken = default)
+  {
+    var totalEntries = await source.CountAsync(cancellationToken: cancellationToken);
+    var pageList = new PageList<TDestination>
+    {
+      entries = await source.Skip((pageNumber - 1) * pageSize).Take(pageSize).Select(mapper).ToListAsync(cancellationToken),
+      total = totalEntries
+    };
+
+    return pageList;
+  }
 }

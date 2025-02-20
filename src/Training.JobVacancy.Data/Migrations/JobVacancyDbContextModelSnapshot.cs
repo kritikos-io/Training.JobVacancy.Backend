@@ -52,7 +52,7 @@ namespace Adaptit.Training.JobVacancy.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Name")
+                    b.HasIndex("Vat")
                         .IsUnique();
 
                     b.ToTable("Companies");

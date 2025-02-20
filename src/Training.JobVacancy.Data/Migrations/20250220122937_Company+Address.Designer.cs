@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Adaptit.Training.JobVacancy.Data.Migrations
 {
     [DbContext(typeof(JobVacancyDbContext))]
-    [Migration("20250218164216_address+company")]
-    partial class addresscompany
+    [Migration("20250220122937_Company+Address")]
+    partial class CompanyAddress
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -55,7 +55,7 @@ namespace Adaptit.Training.JobVacancy.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Name")
+                    b.HasIndex("Vat")
                         .IsUnique();
 
                     b.ToTable("Companies");

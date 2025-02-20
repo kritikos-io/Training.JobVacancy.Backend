@@ -38,6 +38,7 @@ public static class CompanyTransformation
   {
     return new CompanyShortResponseDto
     {
+      Id = entity.Id,
       Name = entity.Name,
       Vat = entity.Vat,
       PhoneNumber = entity.PhoneNumber
