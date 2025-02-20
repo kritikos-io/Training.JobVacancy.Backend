@@ -2,11 +2,13 @@ namespace Adaptit.Training.JobVacancy.Web.Server.Endpoints.V2;
 
 using Adaptit.Training.JobVacancy.Backend.Helpers;
 using Adaptit.Training.JobVacancy.Data;
+using Adaptit.Training.JobVacancy.Data.Entities;
 using Adaptit.Training.JobVacancy.Web.Server.Services;
 
 using Azure;
 
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 
 public class V2ResumeEndpoints
 {
@@ -15,8 +17,8 @@ public class V2ResumeEndpoints
     var group = endpoint.MapGroup("resumes").WithTags("Resume");
 
     group.MapPost("{userId:guid}", UploadUserResume).DisableAntiforgery();
-    group.MapDelete("{userId:guid}", DeleteUserResume).DisableAntiforgery();
-    group.MapGet("{userId:guid}", GetUserResumeSasUrl).DisableAntiforgery();
+    group.MapDelete("{userId:guid}/{resumeId:int}", DeleteUserResume).DisableAntiforgery();
+    group.MapGet("{userId:guid}", GetUserLatestResumeSasUrl).DisableAntiforgery();
 
     return endpoint;
   }
@@ -61,18 +63,11 @@ public class V2ResumeEndpoints
       return TypedResults.InternalServerError();
     }
 
-    if (user.Resume != null)
+    user.Resumes.Add(new Resume
     {
-      var fileName = Path.GetFileName(user.Resume.LocalPath);
+      DownloadUrl = fileUrl
+    });
 
-      var deleted = await blobStorageService.DeleteFileAsync(fileName, cancellationToken);
-      if (!deleted)
-      {
-        logger.LogWarning("Failed to delete old resume with name {fileName}", fileName);
-      }
-    }
-
-    user.Resume = fileUrl;
     await dbContext.SaveChangesAsync(cancellationToken);
 
     return TypedResults.Ok(fileUrl);
@@ -80,28 +75,30 @@ public class V2ResumeEndpoints
 
   public static async Task<Results<Ok, NotFound<string>>> DeleteUserResume(
     Guid userId,
+    int resumeId,
     JobVacancyDbContext dbContext,
     BlobStorageService blobStorageService,
     CancellationToken cancellationToken,
     ILogger<V2UserEndpoints> logger)
   {
-    var user = await dbContext.Users.FindAsync(userId, cancellationToken);
+    var user = await dbContext.Users.Include(u => u.Resumes).FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
+    var resumeToDelete = user.Resumes.FirstOrDefault(r => r.Id == resumeId);
 
-    if (user == null || user.Resume == null)
+    if (user == null)
     {
       logger.LogEntityNotFound(nameof(user), userId);
 
       return TypedResults.NotFound("Resume not found.");
     }
 
-    if (!user.Resume.IsAbsoluteUri)
+    if (resumeToDelete == null)
     {
       logger.LogEntityNotFound(nameof(resumeToDelete), resumeId);
 
-      return TypedResults.NotFound("Invalid resume URL.");
+      return TypedResults.NotFound("Resume not found.");
     }
 
-    var fileName = Path.GetFileName(user.Resume.LocalPath);
+    var fileName = Path.GetFileName(resumeToDelete.DownloadUrl.LocalPath);
     var deleted = await blobStorageService.DeleteFileAsync(fileName, cancellationToken);
 
     logger.LogDeletingEntityOfTypeWithId(nameof(resumeToDelete), resumeId);
@@ -111,29 +108,30 @@ public class V2ResumeEndpoints
       return TypedResults.NotFound("File not found or already deleted.");
     }
 
-    user.Resume = null;
+    user.Resumes.Remove(resumeToDelete);
     await dbContext.SaveChangesAsync(cancellationToken);
 
     return TypedResults.Ok();
   }
 
-  public static async Task<Results<Ok<Uri>, NotFound<string>, ProblemHttpResult>> GetUserResumeSasUrl(
+  public static async Task<Results<Ok<Uri>, NotFound<string>, ProblemHttpResult>> GetUserLatestResumeSasUrl(
     Guid userId,
     JobVacancyDbContext dbContext,
     BlobStorageService blobStorageService,
     ILogger<V2ResumeEndpoints> logger,
     CancellationToken cancellationToken)
   {
-    var user = await dbContext.Users.FindAsync(userId, cancellationToken);
+    var user = await dbContext.Users.Include(u => u.Resumes).FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
 
-    if (user == null || user.Resume == null)
+    if (user == null || user.Resumes == null)
     {
       logger.LogEntityNotFound(nameof(user), userId);
 
       return TypedResults.NotFound("Resume not found.");
     }
 
-    var fileName = Path.GetFileName(user.Resume.LocalPath);
+    var latestResume = user.Resumes.OrderByDescending(r => r.CreatedAt).FirstOrDefault();
+    var fileName = Path.GetFileName(latestResume.DownloadUrl.LocalPath);
 
     if (string.IsNullOrEmpty(fileName))
     {
@@ -146,8 +144,6 @@ public class V2ResumeEndpoints
 
     if (sasUri == null)
     {
-      logger.LogWarning("Failed to generate SAS URL for user with id: {id}", userId);
-
       return TypedResults.Problem("Something went wrong while interacting with the storage service", statusCode: 500);
     }
 
