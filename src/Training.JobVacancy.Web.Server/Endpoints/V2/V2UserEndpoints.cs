@@ -124,15 +124,27 @@ public class V2UserEndpoints()
     Guid id,
     JobVacancyDbContext dbContext,
     ILogger<V2UserEndpoints> logger,
+    BlobStorageService blobStorageService,
     CancellationToken cancellationToken)
   {
     logger.LogDeletingEntityOfTypeWithId(nameof(User), id);
-    var user = await dbContext.Users.FindAsync(id, cancellationToken);
+    var user = await dbContext.Users.Include(u => u.Resumes).FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
     if (user == null)
     {
       logger.LogEntityNotFound(nameof(user), id);
 
       return TypedResults.NotFound();
+    }
+
+    foreach (var resume in user.Resumes)
+    {
+      var fileName = Path.GetFileName(resume.DownloadUrl.LocalPath);
+      var deleted = await blobStorageService.DeleteFileAsync(fileName, cancellationToken);
+
+      if (!deleted)
+      {
+        logger.LogCouldNotDeleteEntityOfTypeWithId(nameof(resume), resume.Id);
+      }
     }
 
     dbContext.Users.Remove(user);
