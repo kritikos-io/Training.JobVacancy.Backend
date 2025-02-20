@@ -28,7 +28,8 @@ public static class ConfigureServices
     builder.AddApiVersioning();
 
     builder.Services.AddDbContext<JobVacancyDbContext>(options => options
-        .UseNpgsql(builder.Configuration.GetConnectionString("JobVacancyDatabase"))
+        .UseNpgsql(builder.Configuration.GetConnectionString("JobVacancyDatabase"), options =>
+          options.MigrationsAssembly("Training.JobVacancy.Web.Server"))
         .EnableSensitiveDataLogging());
   }
 
@@ -63,10 +64,7 @@ public static class ConfigureServices
             });
   }
 
-  public static void AddApiDocumentation(this WebApplicationBuilder builder)
-  {
-    builder.Services.AddOpenApi();
-  }
+  public static void AddApiDocumentation(this WebApplicationBuilder builder) => builder.Services.AddOpenApi();
 
   public static void AddApiVersioning(this WebApplicationBuilder builder)
   {
