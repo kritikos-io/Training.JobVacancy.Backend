@@ -27,6 +27,7 @@ public class BlobStorageService
     if (!blobContainerClient.Exists())
     {
       _logger.LogWarning("Blob container {ContainerName} does not exist", _containerName);
+
       return null;
     }
 
