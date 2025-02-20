@@ -12,7 +12,7 @@ public static class UserMappingExtentions
       Id = user.Id,
       Name = user.Name,
       Surname = user.Surname,
-      Resume = user.Resume,
+      Resumes = user.Resumes.ToResumeReturnDtos(),
     };
 
     return dto;
