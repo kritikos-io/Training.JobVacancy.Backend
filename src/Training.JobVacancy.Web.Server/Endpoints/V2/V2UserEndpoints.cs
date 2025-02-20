@@ -44,7 +44,7 @@ public class V2UserEndpoints()
         Id = u.Id,
         Name = u.Name,
         Surname = u.Surname,
-        Resume = u.Resume
+        Resumes = u.Resumes.Where(r => r.IsInUse).Select(r => r.ToResumeReturnDto()).ToList()
       })
       .OrderBy(u => u.Id)
       .ToPagedListAsync(page, pageSize, cancellationToken);
