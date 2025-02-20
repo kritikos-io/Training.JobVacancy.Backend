@@ -1,5 +1,7 @@
 namespace Adaptit.Training.JobVacancy.Web.Server.Services;
 
+using Adaptit.Training.JobVacancy.Backend.Helpers;
+
 using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Sas;
