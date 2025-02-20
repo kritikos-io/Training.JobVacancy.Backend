@@ -26,7 +26,7 @@ public class BlobStorageService
 
     if (!blobContainerClient.Exists())
     {
-      _logger.LogWarning("Blob container {ContainerName} does not exist", _containerName);
+      _logger.LogBlobContainerDoesNotExist(_containerName);
 
       return null;
     }
@@ -39,9 +39,9 @@ public class BlobStorageService
 
       return blobClient.Uri;
     }
-    catch(RequestFailedException ex)
+    catch(RequestFailedException)
     {
-      _logger.LogWarning(ex, "Failed to upload file {FileName}", fileName);
+      _logger.LogFailedToUploadFile(fileName);
 
       return null;
     }
@@ -53,7 +53,7 @@ public class BlobStorageService
 
     if (!blobContainerClient.Exists())
     {
-      _logger.LogWarning("Blob container {ContainerName} does not exist", _containerName);
+      _logger.LogBlobContainerDoesNotExist(_containerName);
 
       return false;
     }
@@ -71,7 +71,7 @@ public class BlobStorageService
 
     if (!blobContainerClient.Exists())
     {
-      _logger.LogWarning("Blob container {ContainerName} does not exist", _containerName);
+      _logger.LogBlobContainerDoesNotExist(_containerName);
 
       return null;
     }

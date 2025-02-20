@@ -34,7 +34,7 @@ public class V2ResumeEndpoints
 
     if (user == null)
     {
-      logger.LogWarning("User with id: {id} could not be found", userId);
+      logger.LogEntityNotFound(nameof(user), userId);
 
       return TypedResults.BadRequest("User not found.");
     }
@@ -43,7 +43,7 @@ public class V2ResumeEndpoints
 
     if (file.Length == 0 || file.Length > fileSize || file.ContentType != "application/pdf")
     {
-      logger.LogInformation("Rejected a file of type {fileType} that user tried to upload", file.ContentType);
+      logger.LogFailedToUploadFile(file.FileName);
 
       return TypedResults.BadRequest("Need a pdf file less than 5Mb");
     }
@@ -56,7 +56,7 @@ public class V2ResumeEndpoints
 
     if (fileUrl == null)
     {
-      logger.LogWarning("File could not be uploaded");
+      logger.LogFailedToUploadFile(file.FileName);
 
       return TypedResults.BadRequest("Error uploading the file.");
     }
@@ -89,20 +89,22 @@ public class V2ResumeEndpoints
 
     if (user == null || user.Resume == null)
     {
-      logger.LogInformation("User with id: {id} either not found or resume missing", userId);
+      logger.LogEntityNotFound(nameof(user), userId);
 
       return TypedResults.NotFound("Resume not found.");
     }
 
     if (!user.Resume.IsAbsoluteUri)
     {
-      logger.LogWarning("User with id: {id} has an invalid resume URL", userId);
+      logger.LogEntityNotFound(nameof(resumeToDelete), resumeId);
 
       return TypedResults.NotFound("Invalid resume URL.");
     }
 
     var fileName = Path.GetFileName(user.Resume.LocalPath);
     var deleted = await blobStorageService.DeleteFileAsync(fileName, cancellationToken);
+
+    logger.LogDeletingEntityOfTypeWithId(nameof(resumeToDelete), resumeId);
 
     if (!deleted)
     {
@@ -135,7 +137,7 @@ public class V2ResumeEndpoints
 
     if (string.IsNullOrEmpty(fileName))
     {
-      logger.LogWarning("Could not extract file name from resume URL for user with id: {id}", userId);
+      logger.LogCouldNotExtractFileName(fileName);
 
       return TypedResults.Problem("Something went wrong when processing the file", statusCode: 500);
     }
