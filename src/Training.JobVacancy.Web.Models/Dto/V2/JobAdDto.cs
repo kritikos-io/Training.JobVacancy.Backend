@@ -1,8 +1,8 @@
-﻿using Adaptit.Training.JobVacancy.Data.Entities;
-namespace Adaptit.Training.JobVacancy.Web.Models.Dto.V2;
+﻿namespace Adaptit.Training.JobVacancy.Web.Models.Dto.V2;
 
 using System.Text.Json.Serialization;
 
+using Adaptit.Training.JobVacancy.Web.Models.Enum;
 
 public class JobAdDto
 {

@@ -2,7 +2,7 @@
 
 using System.Text.Json.Serialization;
 
-using Adaptit.Training.JobVacancy.Data.Entities;
+using Adaptit.Training.JobVacancy.Web.Models.Enum;
 
 public class JobAdDto
 {

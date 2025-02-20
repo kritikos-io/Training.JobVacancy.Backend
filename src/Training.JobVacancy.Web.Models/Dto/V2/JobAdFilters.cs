@@ -1,6 +1,6 @@
 ﻿namespace Adaptit.Training.JobVacancy.Web.Models.Dto.V2;
 
-using Adaptit.Training.JobVacancy.Data.Entities;
+using Adaptit.Training.JobVacancy.Web.Models.Enum;
 
 public class JobAdFilters
 {

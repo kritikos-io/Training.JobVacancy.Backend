@@ -562,13 +562,13 @@
       "Adaptit.Training.JobVacancy.Data": {
         "type": "Project",
         "dependencies": {
+          "Adaptit.Training.JobVacancy.Web.Models": "[1.0.0, )",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "[9.0.3, )"
         }
       },
       "Adaptit.Training.JobVacancy.Web.Models": {
         "type": "Project",
         "dependencies": {
-          "Adaptit.Training.JobVacancy.Data": "[1.0.0, )",
           "Refit": "[8.0.0, )"
         }
       },

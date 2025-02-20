@@ -314,6 +314,12 @@
         "resolved": "7.0.0",
         "contentHash": "qmeeYNROMsONF6ndEZcIQ+VxR4Q/TX/7uIVLJqtwIWL7dDWeh0l1UIqgo4wYyjG//5lUNhwkLDSFl+pAWO6oiA=="
       },
+      "Adaptit.Training.JobVacancy.Web.Models": {
+        "type": "Project",
+        "dependencies": {
+          "Refit": "[8.0.0, )"
+        }
+      },
       "Microsoft.EntityFrameworkCore": {
         "type": "CentralTransitive",
         "requested": "[9.0.1, )",
@@ -325,6 +331,12 @@
           "Microsoft.Extensions.Caching.Memory": "9.0.1",
           "Microsoft.Extensions.Logging": "9.0.1"
         }
+      },
+      "Refit": {
+        "type": "CentralTransitive",
+        "requested": "[8.0.0, )",
+        "resolved": "8.0.0",
+        "contentHash": "gXRmIy3Va0mwwr8usnqVRQFoFIJaJGlWTTXBlwxIkHB/xwXnq1Ybs1YNA2BM1O4G46JLLlGjg6YOwrTZusuY3Q=="
       }
     }
   }

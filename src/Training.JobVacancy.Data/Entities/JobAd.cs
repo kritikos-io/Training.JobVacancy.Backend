@@ -1,7 +1,8 @@
 ﻿namespace Adaptit.Training.JobVacancy.Data.Entities;
 
-
 using System;
+
+using Adaptit.Training.JobVacancy.Web.Models.Enum;
 
 public class JobAd
 {

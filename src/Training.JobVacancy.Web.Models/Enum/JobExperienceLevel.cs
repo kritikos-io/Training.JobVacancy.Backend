@@ -1,4 +1,4 @@
-﻿namespace Adaptit.Training.JobVacancy.Data.Entities;
+﻿namespace Adaptit.Training.JobVacancy.Web.Models.Enum;
 
 public enum JobExperienceLevel
 {

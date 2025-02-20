@@ -10,8 +10,4 @@
       <PackageReference Include="Refit" />
     </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\Training.JobVacancy.Data\Training.JobVacancy.Data.csproj" />
-    </ItemGroup>
-
 </Project>
