@@ -1,0 +1,127 @@
+name: Build and Deploy Container App to Azure with Sidecar
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'src/*'
+      - 'tests/*'
+      - 'Directory.Packages.props'
+      - '.github/workflows/main.yml'
+
+env:
+  AZURE_CONTAINER_REGISTRY: trainingjobvacancy.azurecr.io
+  CONTAINER_APP_NAME: training.jobvacancy.web.server
+  RESOURCE_GROUP: training-jobvacancy-rg
+  MIGRATIONS_CONTAINER_NAME: training-jobvacancy-migrations
+  Authentication__OpenId__Authority: ${{ secrets.AUTHENTICATION__OPENID__AUTHORITY }}
+
+jobs:
+  build-app-container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Build
+        run: dotnet build --configuration Release
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Azure Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io
+          username: ${{ secrets.AZURE_CONTAINER_REGISTRY_USERNAME }}
+          password: ${{ secrets.AZURE_CONTAINER_REGISTRY_PASSWORD }}
+
+      - name: Build and push app container
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_APP_NAME }}:${{ github.sha}}
+          file: src/Training.JobVacancy.Web.Server/Dockerfile
+
+  build-migrations-container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Build
+        run: dotnet build --configuration Release
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Azure Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io
+          username: ${{ secrets.AZURE_CONTAINER_REGISTRY_USERNAME }}
+          password: ${{ secrets.AZURE_CONTAINER_REGISTRY_PASSWORD }}
+
+      - name: Build and push migrations container
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.MIGRATIONS_CONTAINER_NAME }}:${{ github.sha}}
+          file: src/Training.JobVacancy.Data/Dockerfile
+
+
+
+#  apply-migrations:
+#    runs-on: ubuntu-latest
+#    needs: build-app
+#    steps:
+#      - name: Checkout Code
+#        uses: actions/checkout@v4
+#
+#      - name: Install EF Core CLI
+#        run: dotnet tool install --global dotnet-ef
+#
+#      - name: create migration bundle
+#        run: |
+#          dotnet ef migrations bundle
+#            --startup-project src/Training.JobVacancy.Web.Server
+#            --project src/Training.JobVacancy.Data
+#            --context TrainingJobVacancyDbContext
+#            --output app-bundle.exe
+#
+#      - name: Apply app migrations
+#        run: ./app-bundle.exe
+#            --connection ${{ secrets.DATABASE_CONNECTION_STRING }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [build-app-container, build-migrations-container]
+    steps:
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy to Azure Container Apps
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          imageToDeploy: |
+              ${{ env.AZURE_CONTAINER_REGISTRY }}/${{ env.CONTAINER_APP_NAME }}:${{ github.sha }}
+              ${{ env.AZURE_CONTAINER_REGISTRY }}/${{ env.MIGRATIONS_CONTAINER_NAME }}:${{ github.sha }}
+          resourceGroup: ${{ env.RESOURCE_GROUP }}
+          containerAppName: ${{ env.CONTAINER_APP_NAME }}
+          environmentVariables: |
+            ASPNETCORE_ENVIRONMENT=Development
+            DATABASE_CONNECTION_STRING=${{ secrets.DATABASE_CONNECTION_STRING }}
+
