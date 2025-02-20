@@ -59,17 +59,23 @@ public class V2UserEndpoints()
     ILogger<V2UserEndpoints> logger,
     CancellationToken cancellationToken)
   {
-    var user = await dbContext.Users.TagWith("Fetching user by ID in V2UserEndpoints").FirstOrDefaultAsync(u => u.Id == id, cancellationToken);;
+    var user = await dbContext.Users.Include(u => u.Resumes).FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
     if (user == null)
     {
       logger.LogEntityNotFound(nameof(user), id);
 
       return TypedResults.NotFound();
     }
-    var fileName = Path.GetFileName(user.Resume.LocalPath);
 
-    var sasUrl = blobStorageService.GetReadOnlySasUrl(fileName);
-    user.Resume = sasUrl;
+    var activeResumes = user.Resumes.Where(r => r.IsInUse).ToList();
+
+    foreach (var resume in activeResumes)
+    {
+      var fileName = Path.GetFileName(resume.DownloadUrl.LocalPath);
+
+      var sasUrl = blobStorageService.GetReadOnlySasUrl(fileName);
+      resume.DownloadUrl = sasUrl;
+    }
 
     var dto = user.ToUserReturnDto();
 
