@@ -22,7 +22,7 @@ public class V2ResumeEndpoints
   }
 
 
-  public static async Task<Results<Ok<Uri>, BadRequest<string>>> UploadUserResume(
+  public static async Task<Results<Ok<Uri>, BadRequest<string>,NotFound<string>,InternalServerError>> UploadUserResume(
     IFormFile file,
     Guid userId,
     JobVacancyDbContext dbContext,
@@ -36,7 +36,7 @@ public class V2ResumeEndpoints
     {
       logger.LogEntityNotFound(nameof(user), userId);
 
-      return TypedResults.BadRequest("User not found.");
+      return TypedResults.NotFound("User not found.");
     }
 
     const long fileSize = 5 * 1024 * 1024;
@@ -58,7 +58,7 @@ public class V2ResumeEndpoints
     {
       logger.LogFailedToUploadFile(file.FileName);
 
-      return TypedResults.BadRequest("Error uploading the file.");
+      return TypedResults.InternalServerError();
     }
 
     if (user.Resume != null)
