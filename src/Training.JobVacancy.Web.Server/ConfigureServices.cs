@@ -32,6 +32,8 @@ public static class ConfigureServices
     builder.AddApiDocumentation();
     builder.AddApiVersioning();
 
+    builder.AddSasUrlOptions();
+
     builder.Services.AddSingleton<BlobStorageService>();
 
     builder.Services.AddDbContext<JobVacancyDbContext>(options => options
@@ -153,4 +155,11 @@ public static class ConfigureServices
   }
 
   public static void AddMiddlewareServices(this WebApplicationBuilder builder) => builder.Services.AddTransient<CorrelationIdMiddleware>();
+
+  public static void AddSasUrlOptions(this WebApplicationBuilder builder)
+  {
+    builder.Services.AddOptionsWithValidateOnStart<SasUrlOptions>()
+      .BindConfiguration(SasUrlOptions.Section)
+      .ValidateDataAnnotations();
+  }
 }
