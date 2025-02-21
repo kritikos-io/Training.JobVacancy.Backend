@@ -17,8 +17,9 @@ public class V2ResumeEndpoints
     var group = endpoint.MapGroup("resumes").WithTags("Resume");
 
     group.MapPost("{userId:guid}", UploadUserResume).DisableAntiforgery();
-    group.MapDelete("{userId:guid}/{resumeId:int}", DeleteUserResume).DisableAntiforgery();
-    group.MapGet("{userId:guid}", GetUserLatestResumeSasUrl).DisableAntiforgery();
+    group.MapDelete("{userId:guid}/{resumeId:int}", DeleteUserResume);
+    group.MapGet("{userId:guid}", GetUserLatestResumeSasUrl);
+    group.MapPut("{resumeId:int}", UpdateResumeUsage);
 
     return endpoint;
   }
@@ -123,7 +124,7 @@ public class V2ResumeEndpoints
   {
     var user = await dbContext.Users.Include(u => u.Resumes).FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
 
-    if (user == null || user.Resumes == null)
+    if (user == null || user.Resumes.Count == 0)
     {
       logger.LogEntityNotFound(nameof(user), userId);
 
@@ -148,5 +149,27 @@ public class V2ResumeEndpoints
     }
 
     return TypedResults.Ok(sasUri);
+  }
+
+  public static async Task<Results<Ok, NotFound>> UpdateResumeUsage(
+    int resumeId,
+    JobVacancyDbContext dbContext,
+    ILogger<V2ResumeEndpoints> logger,
+    CancellationToken cancellationToken)
+  {
+    var resumeToUpdate = await dbContext.Resumes.FindAsync(resumeId, cancellationToken);
+
+    if (resumeToUpdate == null)
+    {
+      logger.LogEntityNotFound(nameof(resumeToUpdate), resumeId);
+
+      return TypedResults.NotFound();
+    }
+
+    resumeToUpdate.IsInUse = !resumeToUpdate.IsInUse;
+
+    await dbContext.SaveChangesAsync(cancellationToken);
+
+    return TypedResults.Ok();
   }
 }
