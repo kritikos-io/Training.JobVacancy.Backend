@@ -15,12 +15,15 @@ public static class ConfigureApp
         .ReportApiVersions()
         .Build();
 
-    var group = app.MapGroup("api/v{version:apiVersion}")
+    app.MapGroup("api/v{version:apiVersion}")
         .WithOpenApi()
-        .WithApiVersionSet(apiVersionSet);
+        .WithApiVersionSet(apiVersionSet)
+        .MapV1Endpoints();
 
-    group.MapV1Endpoints();
-    group.MapV2Endpoints();
+    app.MapGroup("api/v{version:apiVersion}")
+        .WithOpenApi()
+        .WithApiVersionSet(apiVersionSet)
+        .MapV2Endpoints();
 
     return app;
   }
@@ -30,7 +33,7 @@ public static class ConfigureApp
 
     var group = endpoint.MapToApiVersion(1);
 
-    // V1FeedEndpoints.Map(group);
+    V1FeedEndpoints.Map(group);
     V1FeedEntryEndpoints.Map(group);
 
     return group;
@@ -41,6 +44,7 @@ public static class ConfigureApp
 
     var group = endpoint.MapToApiVersion(2);
 
+    V2CompanyEndpoints.Map(group);
     V2JobAdEndpoints.Map(group);
 
     return group;

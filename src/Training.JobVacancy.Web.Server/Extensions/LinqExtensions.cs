@@ -3,7 +3,7 @@
 using System.ComponentModel;
 using System.Linq.Expressions;
 
-using Adaptit.Training.JobVacancy.Web.Models;
+using Adaptit.Training.JobVacancy.Web.Models.Dto.V2;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -14,7 +14,7 @@ public static class LinqExtensions
       ? source.Where(predicate)
       : source;
 
-  public static IOrderedQueryable OrderBy<TSource, TKey>(this IQueryable<TSource> source, ListSortDirection direction, Expression<Func<TSource, TKey>> selector)
+  public static IOrderedQueryable<TSource> OrderBy<TSource, TKey>(this IQueryable<TSource> source, ListSortDirection direction, Expression<Func<TSource, TKey>> selector)
     => direction == ListSortDirection.Ascending
         ? source.OrderBy(selector)
         : source.OrderByDescending(selector);
@@ -36,15 +36,60 @@ public static class LinqExtensions
         ? source.Take(amount)
         : source;
 
-  public static async Task<PageList<T>> Page<T>(this IOrderedQueryable<T>source, CancellationToken cancellationToken,int pageNumber = 1, int pageSize = 20)
+  public static IEnumerable<T> SkipIf<T>(this IEnumerable<T> source, bool condition, int amount)
+    => condition
+        ? source.Skip(amount)
+        : source;
+
+  public static async Task<PagedList<TDestination>> ToPagedListAsync<TSource, TDestination>(
+      this IOrderedQueryable<TSource> source,
+      Expression<Func<TSource, TDestination>> mapper,
+      int pageNumber,
+      int pageSize,
+      CancellationToken cancellationToken = default)
   {
-    var totalEntries = await source.CountAsync(cancellationToken: cancellationToken);
-    var pageList = new PageList<T>()
+    if (!source.TryGetNonEnumeratedCount(out var count))
     {
-      entries = await source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync(cancellationToken),
-      total = totalEntries
+      count = await source.CountAsync(cancellationToken);
+    }
+
+    var result = new PagedList<TDestination>
+    {
+      Items = await source
+          .Skip((pageNumber - 1) * pageSize)
+          .Take(pageSize)
+          .Select(mapper)
+          .ToListAsync(cancellationToken),
+      TotalItems = count,
+      CurrentPage = pageNumber,
+      TotalPages = (int)Math.Ceiling(count / (double)pageSize),
     };
 
-    return pageList;
+    return result;
+  }
+
+  public static async Task<PagedList<TSource>> ToPagedListAsync<TSource>(
+      this IOrderedQueryable<TSource> source,
+      int pageNumber,
+      int pageSize,
+      CancellationToken cancellationToken = default)
+  {
+    if (!source.TryGetNonEnumeratedCount(out var count))
+    {
+      count = await source.CountAsync(cancellationToken);
+    }
+
+    var result = new PagedList<TSource>
+    {
+      Items = await source
+          .Skip((pageNumber - 1) * pageSize)
+          .Take(pageSize)
+          .ToListAsync(cancellationToken),
+      TotalItems = count,
+      CurrentPage = pageNumber,
+      TotalPages = (int)Math.Ceiling(count / (double)pageSize),
+    };
+
+    return result;
   }
 }

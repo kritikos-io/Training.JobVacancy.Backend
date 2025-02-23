@@ -3,7 +3,6 @@
 using Adaptit.Training.JobVacancy.Backend.Helpers;
 using Adaptit.Training.JobVacancy.Data;
 using Adaptit.Training.JobVacancy.Data.Entities;
-using Adaptit.Training.JobVacancy.Web.Models;
 using Adaptit.Training.JobVacancy.Web.Models.Dto.V2;
 using Adaptit.Training.JobVacancy.Web.Server.Extensions;
 
@@ -32,7 +31,7 @@ public class V2JobAdEndpoints
     return endpoint;
   }
 
-  private static async Task<Ok<PageList<JobAd>>> ListAllJobAds(
+  private static async Task<Ok<PagedList<JobAd>>> ListAllJobAds(
     JobVacancyDbContext db,
     ILogger<V2JobAdEndpoints> logger,
     CancellationToken cancellationToken,
@@ -41,12 +40,12 @@ public class V2JobAdEndpoints
   {
     var jobs = await db.JobAds
       .OrderBy(x => x.Id)
-      .Page(cancellationToken, page, size);
+      .ToPagedListAsync(page, size,cancellationToken);
 
     return TypedResults.Ok(jobs);
   }
 
-  private static async Task<Results<Ok<PageList<JobAd>>, BadRequest>> SearchJobAds(
+  private static async Task<Results<Ok<PagedList<JobAd>>, BadRequest>> SearchJobAds(
     JobAdFilters filters,
     JobVacancyDbContext db,
     CancellationToken cancellationToken,
@@ -60,7 +59,7 @@ public class V2JobAdEndpoints
       .WhereIf(filters.Expires != null, j => j.ExpiresAt <= filters.Expires)
       .WhereIf(filters.Description != null, j => EF.Functions.ToTsVector("english", j.Description).Matches(filters.Description!))
       .OrderBy(x => x.Id)
-      .Page(cancellationToken, page, size);
+      .ToPagedListAsync(page, size, cancellationToken);
 
     return TypedResults.Ok(jobAds);
   }
