@@ -45,17 +45,17 @@ public class V1FeedEndpoints
     }
 
     var feeds = repository.Feeds
+        .AsQueryable<FeedDto>()
+        .WhereIf(
+            modifiedSinceHeader is not null,
+            x => x.Items.FirstOrDefault()!.ModifiedAt > modifiedSince)
         .OrderBy(
             last is not null
                 ? ListSortDirection.Descending
                 : ListSortDirection.Ascending,
-            x => x.Items.FirstOrDefault()?.ModifiedAt);
+            x => x.Items.FirstOrDefault()!.ModifiedAt);
 
-    var feed = feeds
-        .WhereIf(
-            modifiedSinceHeader is not null,
-            x => x.Items.FirstOrDefault()?.ModifiedAt > modifiedSince)
-        .FirstOrDefault();
+    var feed = feeds.FirstOrDefault();
 
     return TypedResults.Ok(feed);
   }

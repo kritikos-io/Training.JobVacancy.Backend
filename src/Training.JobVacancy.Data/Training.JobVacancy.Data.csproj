@@ -8,4 +8,8 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL"/>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Training.JobVacancy.Web.Models\Training.JobVacancy.Web.Models.csproj" />
+  </ItemGroup>
+
 </Project>
