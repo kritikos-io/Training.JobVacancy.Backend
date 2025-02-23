@@ -2,7 +2,7 @@
 
 using Adaptit.Training.JobVacancy.Data.Entities;
 using Adaptit.Training.JobVacancy.Web.Models.Dto.V2.Company;
-using Adaptit.Training.JobVacancy.Web.Server.Extensions.ObjectTransformations;
+using Adaptit.Training.JobVacancy.Web.Server.Extensions.Mappings.V2;
 
 using Shouldly;
 

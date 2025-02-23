@@ -87,7 +87,7 @@ public class V2CompanyEndpoints
       return TypedResults.NotFound();
     }
 
-    entity.Apply(dto);
+    entity.UpdateEntity(dto);
 
     try
     {

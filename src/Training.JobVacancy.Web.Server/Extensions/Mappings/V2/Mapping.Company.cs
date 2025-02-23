@@ -50,18 +50,18 @@ public static partial class Mapping
   /// </summary>
   /// <param name="entity">The company entity to be updated.</param>
   /// <param name="dto">The DTO containing the new values.</param>
-  public static void Apply(this Company entity, CompanyRequestUpdateDto dto)
+  public static void UpdateEntity(this Company entity, CompanyRequestUpdateDto dto)
   {
     entity.Name = dto.Name;
     entity.Website = dto.Website;
     entity.Vat = dto.Vat;
     entity.LogoUrl = dto.LogoUrl;
-    entity.Address = entity.Address?.Apply(dto.Address) ?? new Address();
+    entity.Address = entity.Address?.UpdateEntity(dto.Address) ?? new Address();
     entity.Sponsored = dto.Sponsored;
     entity.PhoneNumber = dto.PhoneNumber;
   }
 
-  public static Address? Apply(this Address? entity, AddressDto? dto)
+  public static Address? UpdateEntity(this Address? entity, AddressDto? dto)
   {
     if (entity is null)
     {
