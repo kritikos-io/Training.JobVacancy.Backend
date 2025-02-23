@@ -5,7 +5,8 @@ using Adaptit.Training.JobVacancy.Data.Entities;
 using Adaptit.Training.JobVacancy.Web.Models.Dto;
 using Adaptit.Training.JobVacancy.Web.Models.Dto.V2.Company;
 using Adaptit.Training.JobVacancy.Web.Server.Extensions;
-using Adaptit.Training.JobVacancy.Web.Server.Extensions.ObjectTransformations;
+using Adaptit.Training.JobVacancy.Web.Server.Extensions.Mappings;
+using Adaptit.Training.JobVacancy.Web.Server.Extensions.Mappings.V2;
 
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;

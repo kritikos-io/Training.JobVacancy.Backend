@@ -5,6 +5,7 @@ using Adaptit.Training.JobVacancy.Data.Entities;
 using Adaptit.Training.JobVacancy.Web.Models.Dto;
 using Adaptit.Training.JobVacancy.Web.Models.Dto.V2.JobAd;
 using Adaptit.Training.JobVacancy.Web.Server.Extensions;
+using Adaptit.Training.JobVacancy.Web.Server.Extensions.Mappings.V2;
 
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -56,7 +57,6 @@ public class V2JobAdEndpoints
   {
     var jobAds = await db.JobAds
       .WhereIf(filters.Type != null, j => j.Type == filters.Type)
-      .WhereIf(filters.Favorite != null, j => j.Favorite == filters.Favorite)
       .WhereIf(filters.Created != null, j => j.CreatedAt >= filters.Created)
       .WhereIf(filters.Expires != null, j => j.ExpiresAt <= filters.Expires)
       .WhereIf(filters.Description != null, j => EF.Functions.ToTsVector("english", j.Description).Matches(filters.Description!))
@@ -132,5 +132,4 @@ public class V2JobAdEndpoints
     LogTemplates.LogEntityNotFound(logger, nameof(JobAd), id);
     return TypedResults.NotFound();
   }
-
 }
