@@ -17,7 +17,5 @@
     <Project Path="src\Training.JobVacancy.Web.Models\Training.JobVacancy.Web.Models.csproj" Type="Classic C#" />
     <Project Path="src\Training.JobVacancy.Web.Server\Training.JobVacancy.Web.Server.csproj" Type="Classic C#" />
   </Folder>
-  <Folder Name="/tests/">
-    <Project Path="Training.JobVacancy.Web.Test\Training.JobVacancy.Web.Server.Test.csproj" Type="Classic C#" />
-  </Folder>
+  <Folder Name="/tests/" />
 </Solution>
