@@ -3,6 +3,7 @@
 using Adaptit.Training.JobVacancy.Backend.Helpers;
 using Adaptit.Training.JobVacancy.Data;
 using Adaptit.Training.JobVacancy.Data.Entities;
+using Adaptit.Training.JobVacancy.Web.Models.Dto;
 using Adaptit.Training.JobVacancy.Web.Models.Dto.V2;
 using Adaptit.Training.JobVacancy.Web.Models.Dto.V2.Company;
 using Adaptit.Training.JobVacancy.Web.Server.Extensions;

@@ -1,4 +1,4 @@
-﻿namespace Adaptit.Training.JobVacancy.Web.Models.Dto.V2;
+﻿namespace Adaptit.Training.JobVacancy.Web.Models.Dto.V2.JobAd;
 
 using Adaptit.Training.JobVacancy.Web.Models.Enum;
 
