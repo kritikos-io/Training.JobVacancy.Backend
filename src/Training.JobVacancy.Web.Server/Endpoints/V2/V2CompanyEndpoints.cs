@@ -1,4 +1,4 @@
-namespace Adaptit.Training.JobVacancy.Web.Server.Endpoints.V2;
+﻿namespace Adaptit.Training.JobVacancy.Web.Server.Endpoints.V2;
 
 using Adaptit.Training.JobVacancy.Backend.Helpers;
 using Adaptit.Training.JobVacancy.Data;
@@ -31,16 +31,18 @@ public class V2CompanyEndpoints
   {
 
     var result = await dbContext.Companies
-      .WhereIf(!string.IsNullOrWhiteSpace(filters?.Name), c => c.Name.Contains(filters!.Name!))
-      .WhereIf(!string.IsNullOrWhiteSpace(filters?.Vat), c => c.Vat.Contains(filters!.Vat!))
-      .WhereIf(!string.IsNullOrWhiteSpace(filters?.PhoneNumber), c => c.PhoneNumber != null && c.PhoneNumber.Contains(filters!.PhoneNumber!))
-      .WhereIf(filters?.Address != null, company => (company.Address.PostalCode!= null && company.Address.PostalCode.Contains(filters!.Address!.PostalCode!))
-                                                    || (company.Address.Country!= null && company.Address.Country.Contains(filters!.Address!.Country!))
-                                                    || (company.Address.Street!= null && company.Address.Street.Contains(filters!.Address!.Street!))
-                                                    || (company.Address.City!= null && company.Address.City.Contains(filters!.Address!.City!))
-                                                    || (company.Address.StreetNumber!= null && company.Address.StreetNumber.Contains(filters!.Address!.StreetNumber!)))
-      .OrderBy(c => c.Name)
-      .PageAsync(c=>c.ToShortResponseDto(),pageSize: filters!.PageSize, pageNumber: filters!.PageNumber,cancellationToken:ct);
+        .WhereIf(!string.IsNullOrWhiteSpace(filters?.Name), c => c.Name.Contains(filters!.Name!))
+        .WhereIf(!string.IsNullOrWhiteSpace(filters?.Vat), c => c.Vat.Contains(filters!.Vat!))
+        .WhereIf(!string.IsNullOrWhiteSpace(filters?.PhoneNumber), c => c.PhoneNumber != null && c.PhoneNumber.Contains(filters!.PhoneNumber!))
+        .WhereIf(filters?.Address != null,
+            company => company.Address.PostalCode!.Contains(filters!.Address!.PostalCode!)
+                       || company.Address.Country!.Contains(filters!.Address!.Country!)
+                       || company.Address.Street!.Contains(filters!.Address!.Street!)
+                       || company.Address.City!.Contains(filters!.Address!.City!)
+                       || company.Address.StreetNumber!.Contains(filters!.Address!.StreetNumber!))
+        .OrderBy(c => c.Name)
+        .PageAsync(c => c.ToShortResponseDto(), pageSize: filters!.PageSize, pageNumber: filters!.PageNumber, cancellationToken: ct);
+
     return TypedResults.Ok(result);
   }
 
