@@ -4,7 +4,7 @@ using Adaptit.Training.JobVacancy.Data.Entities;
 using Adaptit.Training.JobVacancy.Web.Models.Dto.V2.Company;
 using Adaptit.Training.JobVacancy.Web.Server.Extensions.ObjectTransformations;
 
-using FluentAssertions;
+using Shouldly;
 
 public class CompanyTransformationTests
 {
@@ -14,7 +14,7 @@ public class CompanyTransformationTests
   {
     var dto = entity.ToResponseDto();
 
-    dto.Should().BeEquivalentTo(expectedResponseDto);
+    dto.ShouldBeEquivalentTo(expectedResponseDto);
   }
 
   public static IEnumerable<object[]> GetCompanyTestData()
