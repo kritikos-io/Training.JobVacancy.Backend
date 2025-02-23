@@ -1,6 +1,5 @@
 ﻿namespace Adaptit.Training.JobVacancy.Web.Server;
 
-using Adaptit.Training.JobVacancy.Backend.Helpers;
 using Adaptit.Training.JobVacancy.Data;
 using Adaptit.Training.JobVacancy.Web.Models;
 using Adaptit.Training.JobVacancy.Web.Server.Helpers;

@@ -1,7 +1,6 @@
 ﻿namespace Adaptit.Training.JobVacancy.Web.Server.Extensions;
 
 using Adaptit.Training.JobVacancy.Data.Entities;
-using Adaptit.Training.JobVacancy.Web.Models.Dto.V2;
 using Adaptit.Training.JobVacancy.Web.Models.Dto.V2.JobAd;
 using Adaptit.Training.JobVacancy.Web.Models.Enum;
 

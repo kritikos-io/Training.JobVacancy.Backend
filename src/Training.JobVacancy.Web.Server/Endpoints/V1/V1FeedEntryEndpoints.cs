@@ -1,12 +1,11 @@
 ﻿namespace Adaptit.Training.JobVacancy.Web.Server.Endpoints.V1;
 
-using global::Adaptit.Training.JobVacancy.Backend.Helpers;
-using global::Adaptit.Training.JobVacancy.Web.Models.Dto.NavJobVacancy;
-using global::Adaptit.Training.JobVacancy.Web.Server.Repositories;
+using Adaptit.Training.JobVacancy.Web.Models.Dto.NavJobVacancy;
+using Adaptit.Training.JobVacancy.Web.Server.Helpers;
+using Adaptit.Training.JobVacancy.Web.Server.Repositories;
 
 using Microsoft.AspNetCore.Http.HttpResults;
 
-using LogTemplates = Adaptit.Training.JobVacancy.Web.Server.Helpers.LogTemplates;
 
 public class V1FeedEntryEndpoints
 {
@@ -28,7 +27,7 @@ public class V1FeedEntryEndpoints
     var entry = repository.Entries.FirstOrDefault(x => x.Uuid == id);
     if (entry is null)
     {
-      LogTemplates.LogEntityNotFound(logger, nameof(EntryDto), id);
+      logger.LogEntityNotFound(nameof(EntryDto), id);
       return TypedResults.NotFound();
     }
 

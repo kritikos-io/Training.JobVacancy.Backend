@@ -3,10 +3,8 @@
 using System.ComponentModel;
 using System.Globalization;
 
-using Adaptit.Training.JobVacancy.Backend.Helpers;
 using Adaptit.Training.JobVacancy.Web.Models.Dto.NavJobVacancy;
 using Adaptit.Training.JobVacancy.Web.Server.Extensions;
-using Adaptit.Training.JobVacancy.Web.Server.Helpers;
 using Adaptit.Training.JobVacancy.Web.Server.Repositories;
 
 using Microsoft.AspNetCore.Http.HttpResults;
