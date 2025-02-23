@@ -11,6 +11,10 @@ public class JobVacancyDbContext(DbContextOptions<JobVacancyDbContext> options)
 
   public DbSet<JobAd> JobAds { get; set; }
 
+  public DbSet<User> Users { get; set; }
+
+  public DbSet<UserJobAd> UserFavoriteJobAd { get; set; }
+
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {
     modelBuilder.Entity<JobAd>(entity =>

@@ -1,7 +1,6 @@
 ﻿namespace Adaptit.Training.JobVacancy.Data.Entities;
 
 using System;
-using System.Collections.Generic;
 
 using Adaptit.Training.JobVacancy.Web.Models.Enum;
 
