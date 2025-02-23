@@ -5,16 +5,17 @@ using Adaptit.Training.JobVacancy.Web.Models.Dto.V2.JobAd;
 
 public static partial class Mapping
 {
-  public static JobAd ToEntity(this JobAdDto dto) => new()
+  public static JobAd ToEntity(this JobAdCreateDto dto, Company company) => new()
   {
-    Id = dto.Id,
+    Id = Guid.NewGuid(),
     Type = dto.Type,
     SalaryRange = dto.SalaryRange,
     Description = dto.Description,
     Location = dto.Location,
-    CreatedAt = dto.CreatedAt,
+    CreatedAt = DateTime.UtcNow,
     ExpiresAt = dto.ExpiresAt,
     Level = dto.Level,
+    Company = company,
   };
 
   public static JobAdDto ToDto(this JobAd jobAd) => new()
@@ -27,15 +28,28 @@ public static partial class Mapping
     CreatedAt = jobAd.CreatedAt,
     ExpiresAt = jobAd.ExpiresAt,
     Level = jobAd.Level,
+    Company = jobAd.Company.ToResponseDto(),
+  };
+
+  public static JobAddShortResponseDto ToShortResponseDto(this JobAd jobAd) => new()
+  {
+    Id = jobAd.Id,
+    Type = jobAd.Type,
+    SalaryRange = jobAd.SalaryRange,
+    Description = jobAd.Description,
+    Location = jobAd.Location,
+    CreatedAt = jobAd.CreatedAt,
+    ExpiresAt = jobAd.ExpiresAt,
+    Level = jobAd.Level,
   };
 
   public static void UpdateEntity(this JobAd jobAd, JobAdUpdateDto dto)
   {
-    jobAd.Type = dto.Type!;
+    jobAd.Type = dto.Type;
     jobAd.SalaryRange = dto.SalaryRange;
     jobAd.Description = dto.Description;
     jobAd.Location = dto.Location;
-    jobAd.ExpiresAt = dto.ExpiresAt!;
-    jobAd.Level = dto.Level!;
+    jobAd.ExpiresAt = dto.ExpiresAt;
+    jobAd.Level = dto.Level;
   }
 }

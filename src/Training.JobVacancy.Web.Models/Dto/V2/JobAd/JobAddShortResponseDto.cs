@@ -2,15 +2,21 @@
 
 using Adaptit.Training.JobVacancy.Web.Models.Enum;
 
-public class JobAdUpdateDto
+public class JobAddShortResponseDto
 {
+  public Guid Id { get; set; }
+
   public JobType Type { get; set; }
 
   public string SalaryRange { get; set; } = string.Empty;
 
   public string Description { get; set; } = string.Empty;
 
+  public bool Favorite { get; set; }
+
   public string Location { get; set; } = string.Empty;
+
+  public DateTime CreatedAt { get; set; }
 
   public DateTime ExpiresAt { get; set; }
 

@@ -24,7 +24,8 @@ public static partial class Mapping
       LogoUrl = entity.LogoUrl,
       Address = ToDto(entity.Address),
       Sponsored = entity.Sponsored,
-      PhoneNumber = entity.PhoneNumber
+      PhoneNumber = entity.PhoneNumber,
+      JobAds = [.. entity.JobAds.Select(x=>x.ToDto())],
     };
   }
 

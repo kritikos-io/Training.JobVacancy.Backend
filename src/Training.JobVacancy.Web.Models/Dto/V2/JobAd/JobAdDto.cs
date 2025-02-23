@@ -1,34 +1,27 @@
 ﻿namespace Adaptit.Training.JobVacancy.Web.Models.Dto.V2.JobAd;
 
-using System.Text.Json.Serialization;
-
+using Adaptit.Training.JobVacancy.Web.Models.Dto.V2.Company;
 using Adaptit.Training.JobVacancy.Web.Models.Enum;
 
 public class JobAdDto
 {
   public Guid Id { get; set; }
 
-  [JsonPropertyName("type")]
   public JobType Type { get; set; }
 
-  [JsonPropertyName("salary_range")]
-  public string SalaryRange { get; set; }
+  public string SalaryRange { get; set; } = string.Empty;
 
-  [JsonPropertyName("description")]
-  public string Description { get; set; }
+  public string Description { get; set; } = string.Empty;
 
-  [JsonPropertyName("favorite")]
   public bool Favorite { get; set; }
 
-  [JsonPropertyName("location")]
-  public string Location { get; set; }
+  public string Location { get; set; } = string.Empty;
 
-  [JsonPropertyName("created_at")]
   public DateTime CreatedAt { get; set; }
 
-  [JsonPropertyName("expires_at")]
   public DateTime ExpiresAt { get; set; }
 
-  [JsonPropertyName("level")]
   public JobExperienceLevel Level { get; set; }
+
+  public CompanyResponseDto Company { get; set; }
 }

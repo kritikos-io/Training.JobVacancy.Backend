@@ -37,10 +37,10 @@ public class V2CompanyEndpoints
         .WhereIf(!string.IsNullOrWhiteSpace(filters?.PhoneNumber), c => c.PhoneNumber != null && c.PhoneNumber.Contains(filters!.PhoneNumber!))
         .WhereIf(filters?.Address != null,
             company => company.Address.PostalCode!.Contains(filters!.Address!.PostalCode!)
-                       || company.Address.Country!.Contains(filters!.Address!.Country!)
-                       || company.Address.Street!.Contains(filters!.Address!.Street!)
-                       || company.Address.City!.Contains(filters!.Address!.City!)
-                       || company.Address.StreetNumber!.Contains(filters!.Address!.StreetNumber!))
+                       || company.Address.Country!.Contains(filters.Address.Country!)
+                       || company.Address.Street!.Contains(filters.Address.Street!)
+                       || company.Address.City!.Contains(filters.Address.City!)
+                       || company.Address.StreetNumber!.Contains(filters.Address.StreetNumber!))
         .OrderBy(c => c.Name)
         .ToPagedListAsync(c => c.ToShortResponseDto(), pageSize: filters!.PageSize, pageNumber: filters!.PageNumber, cancellationToken: ct);
 
