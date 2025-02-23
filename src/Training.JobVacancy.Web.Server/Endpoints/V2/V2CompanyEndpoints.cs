@@ -27,7 +27,7 @@ public class V2CompanyEndpoints
     return endpoint;
   }
 
-  public static async Task<Ok<PageList<CompanyShortResponseDto>>> Search([FromBody] CompanyFilters? filters, JobVacancyDbContext dbContext, CancellationToken ct)
+  public static async Task<Ok<PagedList<CompanyShortResponseDto>>> Search([FromBody] CompanyFilters? filters, JobVacancyDbContext dbContext, CancellationToken ct)
   {
     var result = await dbContext.Companies
         .WhereIf(!string.IsNullOrWhiteSpace(filters?.Name), c => c.Name.Contains(filters!.Name!))
@@ -40,7 +40,7 @@ public class V2CompanyEndpoints
                        || company.Address.City!.Contains(filters!.Address!.City!)
                        || company.Address.StreetNumber!.Contains(filters!.Address!.StreetNumber!))
         .OrderBy(c => c.Name)
-        .PageAsync(c => c.ToShortResponseDto(), pageSize: filters!.PageSize, pageNumber: filters!.PageNumber, cancellationToken: ct);
+        .ToPagedListAsync(c => c.ToShortResponseDto(), pageSize: filters!.PageSize, pageNumber: filters!.PageNumber, cancellationToken: ct);
 
     return TypedResults.Ok(result);
   }

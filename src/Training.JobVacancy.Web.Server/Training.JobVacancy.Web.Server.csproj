@@ -30,8 +30,4 @@
     <ProjectReference Include="..\Training.JobVacancy.Web.Models\Training.JobVacancy.Web.Models.csproj"/>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Endpoints\V1\" />
-  </ItemGroup>
-
 </Project>
