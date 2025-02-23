@@ -20,7 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\src\Training.JobVacancy.Web.Server\Training.JobVacancy.Web.Server.csproj" />
+      <ProjectReference Include="..\..\src\Training.JobVacancy.Web.Server\Training.JobVacancy.Web.Server.csproj" />
     </ItemGroup>
 
 </Project>
