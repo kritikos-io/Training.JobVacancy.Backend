@@ -31,6 +31,21 @@ public class JobVacancyDbContext(DbContextOptions<JobVacancyDbContext> options)
           .IsTsVectorExpressionIndex("english");
     });
 
+    modelBuilder.Entity<UserJobAd>(entity =>
+    {
+      entity.HasOne(e=>e.User)
+          .WithMany()
+          .HasForeignKey("UserId")
+          .OnDelete(DeleteBehavior.Restrict);
+
+      entity.HasOne(e=>e.JobAd)
+          .WithMany()
+          .HasForeignKey("JobAdId")
+          .OnDelete(DeleteBehavior.Restrict);
+
+      entity.HasKey("UserId", "JobAdId");
+    });
+
     modelBuilder
         .Entity<Company>(e =>
         {
