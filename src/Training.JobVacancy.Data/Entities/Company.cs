@@ -2,10 +2,13 @@
 namespace Adaptit.Training.JobVacancy.Data.Entities;
 
 using System;
+using System.Collections.Generic;
 
 public class Company
 {
   public Guid Id { get; set; }
+
+  public IReadOnlyCollection<JobAd> JobAds = [];
 
   public string Name { get; set; }
 
