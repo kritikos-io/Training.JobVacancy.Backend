@@ -1,4 +1,4 @@
-﻿namespace Adaptit.Training.JobVacancy.Backend.Helpers;
+﻿namespace Adaptit.Training.JobVacancy.Web.Server.OpenApi.DocumentTransformers;
 
 using Adaptit.Training.JobVacancy.Web.Server.Options;
 

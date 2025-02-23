@@ -6,6 +6,8 @@ using global::Adaptit.Training.JobVacancy.Web.Server.Repositories;
 
 using Microsoft.AspNetCore.Http.HttpResults;
 
+using LogTemplates = Adaptit.Training.JobVacancy.Web.Server.Helpers.LogTemplates;
+
 public class V1FeedEntryEndpoints
 {
   public static RouteGroupBuilder Map(RouteGroupBuilder endpoint)
@@ -26,7 +28,7 @@ public class V1FeedEntryEndpoints
     var entry = repository.Entries.FirstOrDefault(x => x.Uuid == id);
     if (entry is null)
     {
-      logger.LogEntityNotFound(nameof(EntryDto), id);
+      LogTemplates.LogEntityNotFound(logger, nameof(EntryDto), id);
       return TypedResults.NotFound();
     }
 

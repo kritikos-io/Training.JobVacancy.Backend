@@ -5,6 +5,7 @@ using Adaptit.Training.JobVacancy.Data;
 using Adaptit.Training.JobVacancy.Web.Models;
 using Adaptit.Training.JobVacancy.Web.Server.Helpers;
 using Adaptit.Training.JobVacancy.Web.Server.Middlewares;
+using Adaptit.Training.JobVacancy.Web.Server.OpenApi.DocumentTransformers;
 using Adaptit.Training.JobVacancy.Web.Server.OpenApi.OperationTransformers;
 using Adaptit.Training.JobVacancy.Web.Server.OpenApi.SchemaTransformers;
 using Adaptit.Training.JobVacancy.Web.Server.Options;

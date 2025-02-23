@@ -7,10 +7,13 @@ using Adaptit.Training.JobVacancy.Web.Models.Dto;
 using Adaptit.Training.JobVacancy.Web.Models.Dto.V2;
 using Adaptit.Training.JobVacancy.Web.Models.Dto.V2.JobAd;
 using Adaptit.Training.JobVacancy.Web.Server.Extensions;
+using Adaptit.Training.JobVacancy.Web.Server.Helpers;
 
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+
+using LogTemplates = Adaptit.Training.JobVacancy.Web.Server.Helpers.LogTemplates;
 
 public class V2JobAdEndpoints
 {
@@ -77,7 +80,7 @@ public class V2JobAdEndpoints
     if (jobAd != null)
       return TypedResults.Ok(jobAd.ToDto());
 
-    logger.LogEntityNotFound(nameof(JobAd), id);
+    LogTemplates.LogEntityNotFound(logger, nameof(JobAd), id);
     return TypedResults.NotFound();
   }
 
@@ -105,7 +108,7 @@ public class V2JobAdEndpoints
 
     if (jobAd == null)
     {
-      logger.LogEntityNotFound(nameof(JobAd), id);
+      LogTemplates.LogEntityNotFound(logger, nameof(JobAd), id);
       return TypedResults.NotFound();
     }
 
@@ -129,7 +132,7 @@ public class V2JobAdEndpoints
       return TypedResults.Ok();
     }
 
-    logger.LogEntityNotFound(nameof(JobAd), id);
+    LogTemplates.LogEntityNotFound(logger, nameof(JobAd), id);
     return TypedResults.NotFound();
   }
 

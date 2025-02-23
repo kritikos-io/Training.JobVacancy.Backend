@@ -6,10 +6,13 @@ using System.Globalization;
 using Adaptit.Training.JobVacancy.Backend.Helpers;
 using Adaptit.Training.JobVacancy.Web.Models.Dto.NavJobVacancy;
 using Adaptit.Training.JobVacancy.Web.Server.Extensions;
+using Adaptit.Training.JobVacancy.Web.Server.Helpers;
 using Adaptit.Training.JobVacancy.Web.Server.Repositories;
 
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+
+using LogTemplates = Adaptit.Training.JobVacancy.Web.Server.Helpers.LogTemplates;
 
 public class V1FeedEndpoints
 {
@@ -40,7 +43,7 @@ public class V1FeedEndpoints
             out var modifiedSince)
         && modifiedSinceHeader is not null)
     {
-      logger.LogApiValidationException(nameof(modifiedSinceHeader), nameof(GetLatestFeedPage));
+      LogTemplates.LogApiValidationException(logger, nameof(modifiedSinceHeader), nameof(GetLatestFeedPage));
       return TypedResults.ValidationProblem([new KeyValuePair<string, string[]>("If-Modified-Since", ["Valid dates should be in RFC1123"])]);
     }
 
@@ -68,7 +71,7 @@ public class V1FeedEndpoints
     var feed = repository.Feeds.FirstOrDefault(x => x.Id == id);
     if (feed is null)
     {
-      logger.LogEntityNotFound(nameof(FeedDto), id);
+      LogTemplates.LogEntityNotFound(logger, nameof(FeedDto), id);
       return TypedResults.NotFound();
     }
 

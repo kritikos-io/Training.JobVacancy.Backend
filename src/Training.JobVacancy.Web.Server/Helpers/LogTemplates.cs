@@ -1,4 +1,4 @@
-﻿namespace Adaptit.Training.JobVacancy.Backend.Helpers;
+﻿namespace Adaptit.Training.JobVacancy.Web.Server.Helpers;
 
 public static partial class LogTemplates
 {

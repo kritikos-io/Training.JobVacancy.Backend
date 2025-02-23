@@ -8,10 +8,13 @@ using Adaptit.Training.JobVacancy.Web.Models.Dto.V2;
 using Adaptit.Training.JobVacancy.Web.Models.Dto.V2.Company;
 using Adaptit.Training.JobVacancy.Web.Server.Extensions;
 using Adaptit.Training.JobVacancy.Web.Server.Extensions.ObjectTransformations;
+using Adaptit.Training.JobVacancy.Web.Server.Helpers;
 
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+
+using LogTemplates = Adaptit.Training.JobVacancy.Web.Server.Helpers.LogTemplates;
 
 public class V2CompanyEndpoints
 {
@@ -61,7 +64,7 @@ public class V2CompanyEndpoints
     }
     catch (DbUpdateException)
     {
-      logger.LogEntityNotCreated(nameof(Company), dto.Name);
+      LogTemplates.LogEntityNotCreated(logger, nameof(Company), dto.Name);
       return TypedResults.Conflict();
     }
 
@@ -82,7 +85,7 @@ public class V2CompanyEndpoints
 
     if (entity is null)
     {
-      logger.LogEntityNotFound(nameof(Company), companyId);
+      LogTemplates.LogEntityNotFound(logger, nameof(Company), companyId);
       return TypedResults.NotFound();
     }
 
@@ -94,7 +97,7 @@ public class V2CompanyEndpoints
     }
     catch (DbUpdateException)
     {
-      logger.LogEntityNotUpdated(nameof(Company), companyId);
+      LogTemplates.LogEntityNotUpdated(logger, nameof(Company), companyId);
       return TypedResults.Conflict();
     }
 
@@ -112,7 +115,7 @@ public class V2CompanyEndpoints
 
     if (dto is null)
     {
-      logger.LogEntityNotFound(nameof(Company), companyId);
+      LogTemplates.LogEntityNotFound(logger, nameof(Company), companyId);
       return TypedResults.NotFound();
     }
 
@@ -129,7 +132,7 @@ public class V2CompanyEndpoints
 
     if (entity is null)
     {
-      logger.LogEntityNotFound(nameof(Company), companyId);
+      LogTemplates.LogEntityNotFound(logger, nameof(Company), companyId);
       return TypedResults.NotFound();
     }
 
@@ -141,7 +144,7 @@ public class V2CompanyEndpoints
     }
     catch (DbUpdateException)
     {
-      logger.LogEntityNotDeleted(nameof(Company), companyId);
+      LogTemplates.LogEntityNotDeleted(logger, nameof(Company), companyId);
       return TypedResults.Conflict();
     }
 
