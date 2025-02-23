@@ -29,6 +29,7 @@ public class V2JobAdEndpoints
     group.MapPost("", CreateJobAd);
     group.MapPut("{id:guid}", UpdateJobAd);
     group.MapDelete("{id:guid}", DeleteJobAd);
+    group.MapPut("{id:guid}/favorite", FavoriteJobAd);
 
     return endpoint;
   }
@@ -141,5 +142,44 @@ public class V2JobAdEndpoints
     db.JobAds.Remove(jobAd);
     await db.SaveChangesAsync(CancellationToken.None);
     return TypedResults.Ok();
+  }
+
+  private static async Task<Results<NoContent, NotFound, UnprocessableEntity>> FavoriteJobAd(
+      Guid id,
+      JobVacancyDbContext ctx,
+      [FromServices] HttpContextAccessor accessor,
+      bool favorite = true,
+      CancellationToken cancellationToken = default)
+  {
+    var jobAd = await ctx.JobAds.FindAsync(id, cancellationToken);
+    if (jobAd is null)
+    {
+      return TypedResults.NotFound();
+    }
+
+    var userId = accessor.HttpContext?.User.Claims.GetUserIdFromClaims();
+    if (userId is null)
+    {
+      return TypedResults.UnprocessableEntity();
+    }
+
+    var user = await ctx.Users.FindAsync(userId, cancellationToken);
+    if (user is null)
+    {
+      user = accessor.HttpContext!.User.Claims.ToList().MapToUser();
+      ctx.Users.Add(user);
+      await ctx.SaveChangesAsync(cancellationToken);
+    }
+
+    var userFavorite = await ctx.UserFavoriteJobAd
+        .FirstOrDefaultAsync(x => x.JobAd.Id == id && x.User.Id == userId, cancellationToken);
+    if (userFavorite is null)
+    {
+      userFavorite = new UserJobAd() { User = user, JobAd = jobAd, IsFavorite = favorite };
+      ctx.UserFavoriteJobAd.Add(userFavorite);
+      await ctx.SaveChangesAsync(cancellationToken);
+    }
+
+    return TypedResults.NoContent();
   }
 }
