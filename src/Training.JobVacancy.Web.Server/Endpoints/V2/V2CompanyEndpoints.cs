@@ -110,7 +110,7 @@ public class V2CompanyEndpoints
     return TypedResults.Ok(dto);
   }
 
-  public static async Task<Results<NoContent, NotFound>> DeleteById(Guid companyId, JobVacancyDbContext dbContext,
+  public static async Task<Results<NoContent, NotFound, Conflict>> DeleteById(Guid companyId, JobVacancyDbContext dbContext,
     ILogger<V2CompanyEndpoints> logger, CancellationToken ct)
   {
     var entity = await dbContext.FindAsync<Company>([companyId], cancellationToken: ct);
@@ -130,6 +130,7 @@ public class V2CompanyEndpoints
     catch (DbUpdateException)
     {
       logger.LogEntityNotDeleted(nameof(Company), companyId);
+      return TypedResults.Conflict();
     }
 
     return TypedResults.NoContent();
