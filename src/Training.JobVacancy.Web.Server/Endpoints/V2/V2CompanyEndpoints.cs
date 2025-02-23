@@ -27,9 +27,8 @@ public class V2CompanyEndpoints
     return endpoint;
   }
 
-  public static async Task<Ok<PageList<CompanyShortResponseDto>>> Search([FromBody] CompanyFilters? filters, JobVacancyDbContext dbContext,CancellationToken ct)
+  public static async Task<Ok<PageList<CompanyShortResponseDto>>> Search([FromBody] CompanyFilters? filters, JobVacancyDbContext dbContext, CancellationToken ct)
   {
-
     var result = await dbContext.Companies
         .WhereIf(!string.IsNullOrWhiteSpace(filters?.Name), c => c.Name.Contains(filters!.Name!))
         .WhereIf(!string.IsNullOrWhiteSpace(filters?.Vat), c => c.Vat.Contains(filters!.Vat!))
@@ -46,8 +45,11 @@ public class V2CompanyEndpoints
     return TypedResults.Ok(result);
   }
 
-  public static async Task<Results<CreatedAtRoute<CompanyResponseDto>,Conflict>> CreateCompany([FromBody] CompanyRequestCreateDto dto, JobVacancyDbContext dbContext,
-    ILogger<V2CompanyEndpoints> logger, CancellationToken ct)
+  public static async Task<Results<CreatedAtRoute<CompanyResponseDto>, Conflict>> CreateCompany(
+      [FromBody] CompanyRequestCreateDto dto,
+      JobVacancyDbContext dbContext,
+      ILogger<V2CompanyEndpoints> logger,
+      CancellationToken ct)
   {
     var entity = dto.ToEntity();
     dbContext.Add(entity);
@@ -58,19 +60,22 @@ public class V2CompanyEndpoints
     }
     catch (DbUpdateException)
     {
-      logger.LogEntityNotCreated(nameof(Company),dto.Name);
+      logger.LogEntityNotCreated(nameof(Company), dto.Name);
       return TypedResults.Conflict();
     }
 
     return TypedResults.CreatedAtRoute(
-      entity.ToResponseDto(),
-      nameof(GetById),
-      new { companyId = entity.Id }
-    );
+        entity.ToResponseDto(),
+        nameof(GetById),
+        new { companyId = entity.Id });
   }
 
-  public static async Task<Results<Ok<CompanyResponseDto>, NotFound, Conflict>> UpdateCompanyById(Guid companyId, CompanyRequestUpdateDto dto,
-    JobVacancyDbContext dbContext, ILogger<V2CompanyEndpoints> logger, CancellationToken ct)
+  public static async Task<Results<Ok<CompanyResponseDto>, NotFound, Conflict>> UpdateCompanyById(
+      Guid companyId,
+      CompanyRequestUpdateDto dto,
+      JobVacancyDbContext dbContext,
+      ILogger<V2CompanyEndpoints> logger,
+      CancellationToken ct)
   {
     var entity = await dbContext.FindAsync<Company>([companyId], cancellationToken: ct);
 
@@ -95,11 +100,14 @@ public class V2CompanyEndpoints
     return TypedResults.Ok(entity.ToResponseDto());
   }
 
-  public static async Task<Results<Ok<CompanyResponseDto>, NotFound>> GetById(Guid companyId, JobVacancyDbContext dbContext,
-    ILogger<V2CompanyEndpoints> logger,CancellationToken ct)
+  public static async Task<Results<Ok<CompanyResponseDto>, NotFound>> GetById(
+      Guid companyId,
+      JobVacancyDbContext dbContext,
+      ILogger<V2CompanyEndpoints> logger,
+      CancellationToken ct)
   {
 
-    var dto = await dbContext.Companies.Where(c => c.Id==companyId).Select(c=>c.ToResponseDto()).FirstOrDefaultAsync(cancellationToken: ct);
+    var dto = await dbContext.Companies.Where(c => c.Id == companyId).Select(c => c.ToResponseDto()).FirstOrDefaultAsync(cancellationToken: ct);
 
     if (dto is null)
     {
@@ -110,8 +118,11 @@ public class V2CompanyEndpoints
     return TypedResults.Ok(dto);
   }
 
-  public static async Task<Results<NoContent, NotFound, Conflict>> DeleteById(Guid companyId, JobVacancyDbContext dbContext,
-    ILogger<V2CompanyEndpoints> logger, CancellationToken ct)
+  public static async Task<Results<NoContent, NotFound, Conflict>> DeleteById(
+      Guid companyId,
+      JobVacancyDbContext dbContext,
+      ILogger<V2CompanyEndpoints> logger,
+      CancellationToken ct)
   {
     var entity = await dbContext.FindAsync<Company>([companyId], cancellationToken: ct);
 
@@ -135,5 +146,4 @@ public class V2CompanyEndpoints
 
     return TypedResults.NoContent();
   }
-
 }
