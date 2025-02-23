@@ -56,9 +56,25 @@ public static class CompanyTransformation
     entity.Website = dto.Website;
     entity.Vat = dto.Vat;
     entity.LogoUrl = dto.LogoUrl;
-    entity.Address = dto.Address?.ToEntity() ?? new Address();
+    entity.Address = entity.Address?.Apply(dto.Address) ?? new Address();
     entity.Sponsored = dto.Sponsored;
     entity.PhoneNumber = dto.PhoneNumber;
+  }
+
+  public static Address? Apply(this Address? entity, AddressDto? dto)
+  {
+    if (entity is null)
+    {
+      return null;
+    }
+
+    entity.Country = dto?.Country;
+    entity.City = dto?.City;
+    entity.Street = dto?.Street;
+    entity.StreetNumber = dto?.StreetNumber;
+    entity.PostalCode = dto?.PostalCode;
+
+    return entity;
   }
 
   /// <summary>
