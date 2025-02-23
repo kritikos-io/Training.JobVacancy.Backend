@@ -69,7 +69,7 @@ public class V2CompanyEndpoints
     );
   }
 
-  public static async Task<Results<Ok<CompanyResponseDto>, NotFound>> UpdateCompanyById(Guid companyId, CompanyRequestUpdateDto dto,
+  public static async Task<Results<Ok<CompanyResponseDto>, NotFound, Conflict>> UpdateCompanyById(Guid companyId, CompanyRequestUpdateDto dto,
     JobVacancyDbContext dbContext, ILogger<V2CompanyEndpoints> logger, CancellationToken ct)
   {
     var entity = await dbContext.FindAsync<Company>([companyId], cancellationToken: ct);
@@ -89,7 +89,9 @@ public class V2CompanyEndpoints
     catch (DbUpdateException)
     {
       logger.LogEntityNotUpdated(nameof(Company), companyId);
+      return TypedResults.Conflict();
     }
+
     return TypedResults.Ok(entity.ToResponseDto());
   }
 
