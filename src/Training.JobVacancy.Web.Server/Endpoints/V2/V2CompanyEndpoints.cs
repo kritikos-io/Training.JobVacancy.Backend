@@ -18,11 +18,11 @@ public class V2CompanyEndpoints
   {
     var group = endpoint.MapGroup("company").WithTags("Company");
 
-    group.MapPost("/search", Search).WithName("Search");
-    group.MapGet("/{companyId:guid}", GetById).WithName("GetById");
+    group.MapPost("search", Search).WithName("Search");
+    group.MapGet("{companyId:guid}", GetById).WithName("GetById");
     group.MapPost("", CreateCompany).WithName("CreateCompany");
-    group.MapPut("/{companyId:guid}", UpdateCompanyById).WithName("UpdateCompanyById");
-    group.MapDelete("/{id:guid}", DeleteById).WithName("DeleteById");
+    group.MapPut("{companyId:guid}", UpdateCompanyById).WithName("UpdateCompanyById");
+    group.MapDelete("{companyId:guid}", DeleteById).WithName("DeleteById");
 
     return endpoint;
   }
