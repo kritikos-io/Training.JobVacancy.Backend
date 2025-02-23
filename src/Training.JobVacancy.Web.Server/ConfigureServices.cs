@@ -40,6 +40,7 @@ public static class ConfigureServices
 
   public static void AddJobVacancyAuthentication(this WebApplicationBuilder builder)
   {
+    builder.Services.AddHttpContextAccessor();
     builder.Services.AddOptionsWithValidateOnStart<JobVacancyAuthenticationOptions>()
       .BindConfiguration(JobVacancyAuthenticationOptions.Section)
       .ValidateDataAnnotations();
@@ -57,6 +58,7 @@ public static class ConfigureServices
 
           options.RequireHttpsMetadata = true;
           options.SaveToken = true;
+          options.MapInboundClaims = false;
 
           options.TokenValidationParameters = new TokenValidationParameters
           {
@@ -65,6 +67,8 @@ public static class ConfigureServices
             ValidIssuer = realmSettings.Authority,
             ValidAudience = "account",
             ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero,
+            RoleClaimType = "groups",
           };
         });
 
@@ -72,7 +76,10 @@ public static class ConfigureServices
       .AddDefaultPolicy("default",
         policy => policy
           .AddAuthenticationSchemes("openid")
-          .RequireAuthenticatedUser());
+          .RequireAuthenticatedUser())
+      .AddDefaultPolicy("admin",
+          policy=>policy
+              .RequireRole("Admin"));
   }
 
   public static void AddApiDocumentation(this WebApplicationBuilder builder)
