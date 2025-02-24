@@ -3,6 +3,8 @@ namespace Adaptit.Training.JobVacancy.Web.Server.Endpoints.V2;
 using Adaptit.Training.JobVacancy.Backend.Helpers;
 using Adaptit.Training.JobVacancy.Data;
 using Adaptit.Training.JobVacancy.Data.Entities;
+using Adaptit.Training.JobVacancy.Web.Models.Dto.Resume;
+using Adaptit.Training.JobVacancy.Web.Server.Extensions;
 using Adaptit.Training.JobVacancy.Web.Server.Services;
 
 using Azure;
@@ -23,6 +25,17 @@ public class V2ResumeEndpoints
     group.MapPut("{resumeId:int}", UpdateResumeUsage);
 
     return endpoint;
+  }
+
+  public static async Task<Ok<List<ResumeReturnDto>>> GetAllResumes(
+    JobVacancyDbContext dbContext,
+    CancellationToken cancellationToken)
+  {
+    var resumes = await dbContext.Resumes.ToListAsync(cancellationToken);
+    var dtos = resumes.Select(r => r.ToResumeReturnDto()).ToList();
+
+
+    return TypedResults.Ok(dtos);
   }
 
 
