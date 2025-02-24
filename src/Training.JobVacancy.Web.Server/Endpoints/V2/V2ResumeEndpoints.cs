@@ -64,9 +64,10 @@ public class V2ResumeEndpoints
       return TypedResults.InternalServerError();
     }
 
-    user.Resumes.Add(new Resume
+    dbContext.Resumes.Add(new Resume
     {
-      DownloadUrl = fileUrl
+      DownloadUrl = fileUrl,
+      User = user
     });
 
     await dbContext.SaveChangesAsync(cancellationToken);
@@ -141,7 +142,7 @@ public class V2ResumeEndpoints
       return TypedResults.Problem("Something went wrong when processing the file", statusCode: 500);
     }
 
-    var sasUri = blobStorageService.GetReadOnlySasUrl(fileName);
+    var sasUri = await blobStorageService.GetReadOnlySasUrlAsync(fileName);
 
     if (sasUri == null)
     {

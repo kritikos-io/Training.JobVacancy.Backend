@@ -29,7 +29,7 @@ public class BlobStorageService
   {
     var blobContainerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
 
-    if (!blobContainerClient.Exists())
+    if (!await blobContainerClient.ExistsAsync(cancellationToken))
     {
       _logger.LogBlobContainerDoesNotExist(_containerName);
 
@@ -56,7 +56,7 @@ public class BlobStorageService
   {
     var blobContainerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
 
-    if (!blobContainerClient.Exists())
+    if (!await blobContainerClient.ExistsAsync(cancellationToken))
     {
       _logger.LogBlobContainerDoesNotExist(_containerName);
 
@@ -70,11 +70,11 @@ public class BlobStorageService
     return isDeleted;
   }
 
-  public Uri? GetReadOnlySasUrl(string fileName)
+  public async Task<Uri?> GetReadOnlySasUrlAsync(string fileName)
   {
     var blobContainerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
 
-    if (!blobContainerClient.Exists())
+    if (!await blobContainerClient.ExistsAsync())
     {
       _logger.LogBlobContainerDoesNotExist(_containerName);
 
@@ -94,7 +94,7 @@ public class BlobStorageService
     sasBuilder.SetPermissions(BlobSasPermissions.Read);
 
     var sasUri = blobClient.GenerateSasUri(sasBuilder);
-
     return sasUri;
   }
+
 }

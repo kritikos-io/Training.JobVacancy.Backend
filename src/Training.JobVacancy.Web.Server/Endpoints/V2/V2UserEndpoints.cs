@@ -73,7 +73,7 @@ public class V2UserEndpoints()
     {
       var fileName = Path.GetFileName(resume.DownloadUrl.LocalPath);
 
-      var sasUrl = blobStorageService.GetReadOnlySasUrl(fileName);
+      var sasUrl = await blobStorageService.GetReadOnlySasUrlAsync(fileName);
       resume.DownloadUrl = sasUrl;
     }
 
