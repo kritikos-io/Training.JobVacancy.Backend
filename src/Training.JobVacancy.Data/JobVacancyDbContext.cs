@@ -15,6 +15,6 @@ public class JobVacancyDbContext(DbContextOptions<JobVacancyDbContext> options)
     modelBuilder.Entity<Resume>()
       .HasOne(r => r.User)
       .WithMany(u => u.Resumes)
-      .OnDelete(DeleteBehavior.Cascade);
+      .OnDelete(DeleteBehavior.Restrict);
   }
 }

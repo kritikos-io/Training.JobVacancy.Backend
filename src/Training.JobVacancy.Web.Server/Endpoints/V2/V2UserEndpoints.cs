@@ -17,7 +17,7 @@ public class V2UserEndpoints()
   {
     var group = endpoint.MapGroup("users").WithTags("User");
 
-    group.MapGet("", GetAllUsers);
+    group.MapGet(string.Empty, GetAllUsers);
     group.MapGet("{id:guid}", GetUserById).WithName("GetUserById");
     group.MapPost(string.Empty, CreateUser);
     group.MapPut("{id:guid}", UpdateUser);
@@ -141,6 +141,7 @@ public class V2UserEndpoints()
 
       return TypedResults.NotFound();
     }
+    dbContext.Resumes.RemoveRange(user.Resumes);
 
     foreach (var resume in user.Resumes)
     {
