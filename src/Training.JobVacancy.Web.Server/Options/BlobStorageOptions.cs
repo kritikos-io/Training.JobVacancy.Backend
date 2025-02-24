@@ -13,7 +13,6 @@ public class BlobStorageOptions
   [Required]
   public string ContainerName { get; set; } = "resumes";
 
-  [Required]
   public string ConnectionString { get; set; } = string.Empty;
 
 }

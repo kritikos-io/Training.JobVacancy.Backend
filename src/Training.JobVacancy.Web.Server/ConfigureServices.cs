@@ -14,6 +14,7 @@ using Adaptit.Training.JobVacancy.Web.Server.Services;
 using Asp.Versioning;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -156,11 +157,13 @@ public static class ConfigureServices
 
   public static void AddBlobStorageOptions(this WebApplicationBuilder builder)
   {
-    builder.Services.AddSingleton<BlobStorageService>();
-
     builder.Services.AddOptions<BlobStorageOptions>()
       .Bind(builder.Configuration.GetSection(BlobStorageOptions.Section))
       .ValidateDataAnnotations()
       .ValidateOnStart();
+
+    var options = builder.Configuration.GetSection(BlobStorageOptions.Section).Get<BlobStorageOptions>();
+    builder.Services.AddAzureClients(cb => cb.AddBlobServiceClient(options.ConnectionString));
+    builder.Services.AddScoped<BlobStorageService>();
   }
 }

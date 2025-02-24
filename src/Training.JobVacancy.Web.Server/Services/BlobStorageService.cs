@@ -16,10 +16,10 @@ public class BlobStorageService
   private readonly string _containerName;
   private readonly int _sasValidForMinutes;
 
-  public BlobStorageService(ILogger<BlobStorageService> logger, IOptions<BlobStorageOptions> options)
+  public BlobStorageService(BlobServiceClient blobServiceClient, ILogger<BlobStorageService> logger, IOptions<BlobStorageOptions> options)
   {
+    _blobServiceClient = blobServiceClient;
     _logger = logger;
-    _blobServiceClient = new BlobServiceClient(options.Value.ConnectionString);
     _containerName = options.Value.ContainerName;
     _sasValidForMinutes = options.Value.SasValidForMinutes;
   }
