@@ -4,6 +4,7 @@ using Adaptit.Training.JobVacancy.Backend.Helpers;
 using Adaptit.Training.JobVacancy.Data;
 using Adaptit.Training.JobVacancy.Data.Entities;
 using Adaptit.Training.JobVacancy.Web.Models.Dto;
+using Adaptit.Training.JobVacancy.Web.Models.Dto.Resume;
 using Adaptit.Training.JobVacancy.Web.Models.Dto.User;
 using Adaptit.Training.JobVacancy.Web.Server.Extensions;
 using Adaptit.Training.JobVacancy.Web.Server.Services;
@@ -43,8 +44,7 @@ public class V2UserEndpoints()
       {
         Id = u.Id,
         Name = u.Name,
-        Surname = u.Surname,
-        Resumes = u.Resumes.Where(r => r.IsInUse).Select(r => r.ToResumeReturnDto()).ToList()
+        Surname = u.Surname
       })
       .OrderBy(u => u.Id)
       .ToPagedListAsync(page, pageSize, cancellationToken);
@@ -59,7 +59,16 @@ public class V2UserEndpoints()
     ILogger<V2UserEndpoints> logger,
     CancellationToken cancellationToken)
   {
-    var user = await dbContext.Users.Include(u => u.Resumes).FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
+    var user = await dbContext.Users.Where(u => u.Id == id)
+      .Select(u => new UserReturnDto
+      {
+        Id = u.Id,
+        Name = u.Name,
+        Surname = u.Surname,
+        Resumes = u.Resumes.Select(r => r.ToResumeReturnDto()).ToList()
+      })
+      .FirstOrDefaultAsync(cancellationToken);
+
     if (user == null)
     {
       logger.LogEntityNotFound(nameof(user), id);
@@ -67,19 +76,7 @@ public class V2UserEndpoints()
       return TypedResults.NotFound();
     }
 
-    var activeResumes = user.Resumes.Where(r => r.IsInUse).ToList();
-
-    foreach (var resume in activeResumes)
-    {
-      var fileName = Path.GetFileName(resume.DownloadUrl.LocalPath);
-
-      var sasUrl = await blobStorageService.GetReadOnlySasUrlAsync(fileName);
-      resume.DownloadUrl = sasUrl;
-    }
-
-    var dto = user.ToUserReturnDto();
-
-    return TypedResults.Ok(dto);
+    return TypedResults.Ok(user);
   }
 
   public static async Task<Results<CreatedAtRoute<UserReturnDto>, BadRequest>> CreateUser(

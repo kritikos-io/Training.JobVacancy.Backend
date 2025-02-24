@@ -21,7 +21,7 @@ public class V2ResumeEndpoints
     group.MapGet(string.Empty, GetAllResumes);
     group.MapPost("{userId:guid}", UploadUserResume).DisableAntiforgery();
     group.MapDelete("{userId:guid}/{resumeId:int}", DeleteUserResume);
-    group.MapGet("{userId:guid}", GetUserLatestResumeSasUrl);
+    group.MapGet("{resumeId:int}", GetResumeSasUrl);
     group.MapPut("{resumeId:int}", UpdateResumeUsage);
 
     return endpoint;
@@ -130,24 +130,23 @@ public class V2ResumeEndpoints
     return TypedResults.Ok();
   }
 
-  public static async Task<Results<Ok<Uri>, NotFound<string>, ProblemHttpResult>> GetUserLatestResumeSasUrl(
-    Guid userId,
+  public static async Task<Results<Ok<Uri>, NotFound<string>, ProblemHttpResult>> GetResumeSasUrl(
+    int resumeId,
     JobVacancyDbContext dbContext,
     BlobStorageService blobStorageService,
     ILogger<V2ResumeEndpoints> logger,
     CancellationToken cancellationToken)
   {
-    var user = await dbContext.Users.Include(u => u.Resumes).FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
+    var resume = await dbContext.Resumes.Where(r => r.Id == resumeId).FirstOrDefaultAsync(cancellationToken);
 
-    if (user == null || user.Resumes.Count == 0)
+    if (resume == null)
     {
-      logger.LogEntityNotFound(nameof(user), userId);
+      logger.LogEntityNotFound(nameof(resume), resumeId);
 
       return TypedResults.NotFound("Resume not found.");
     }
 
-    var latestResume = user.Resumes.OrderByDescending(r => r.CreatedAt).FirstOrDefault();
-    var fileName = Path.GetFileName(latestResume.DownloadUrl.LocalPath);
+    var fileName = Path.GetFileName(resume.DownloadUrl.LocalPath);
 
     if (string.IsNullOrEmpty(fileName))
     {
