@@ -16,6 +16,7 @@ public class V2ResumeEndpoints
   {
     var group = endpoint.MapGroup("resumes").WithTags("Resume");
 
+    group.MapGet(string.Empty, GetAllResumes);
     group.MapPost("{userId:guid}", UploadUserResume).DisableAntiforgery();
     group.MapDelete("{userId:guid}/{resumeId:int}", DeleteUserResume);
     group.MapGet("{userId:guid}", GetUserLatestResumeSasUrl);
