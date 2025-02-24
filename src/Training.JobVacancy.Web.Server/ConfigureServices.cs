@@ -32,9 +32,7 @@ public static class ConfigureServices
     builder.AddApiDocumentation();
     builder.AddApiVersioning();
 
-    builder.AddSasUrlOptions();
-
-    builder.Services.AddSingleton<BlobStorageService>();
+    builder.AddBlobStorageOptions();
 
     builder.Services.AddDbContext<JobVacancyDbContext>(options => options
         .UseNpgsql(builder.Configuration.GetConnectionString("JobVacancyDatabase"))
@@ -156,10 +154,13 @@ public static class ConfigureServices
 
   public static void AddMiddlewareServices(this WebApplicationBuilder builder) => builder.Services.AddTransient<CorrelationIdMiddleware>();
 
-  public static void AddSasUrlOptions(this WebApplicationBuilder builder)
+  public static void AddBlobStorageOptions(this WebApplicationBuilder builder)
   {
-    builder.Services.AddOptionsWithValidateOnStart<SasUrlOptions>()
-      .BindConfiguration(SasUrlOptions.Section)
-      .ValidateDataAnnotations();
+    builder.Services.AddSingleton<BlobStorageService>();
+
+    builder.Services.AddOptions<BlobStorageOptions>()
+      .Bind(builder.Configuration.GetSection(BlobStorageOptions.Section))
+      .ValidateDataAnnotations()
+      .ValidateOnStart();
   }
 }

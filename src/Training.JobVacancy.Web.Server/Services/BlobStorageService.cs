@@ -12,17 +12,16 @@ using Microsoft.Extensions.Options;
 public class BlobStorageService
 {
   private readonly BlobServiceClient _blobServiceClient;
-  private readonly string _containerName;
   private readonly ILogger<BlobStorageService> _logger;
-  private readonly SasUrlOptions _sasUrlOptions;
+  private readonly string _containerName;
+  private readonly int _sasValidForMinutes;
 
-  public BlobStorageService(IConfiguration configuration, ILogger<BlobStorageService> logger, IOptions<SasUrlOptions> options)
+  public BlobStorageService(ILogger<BlobStorageService> logger, IOptions<BlobStorageOptions> options)
   {
     _logger = logger;
-    _sasUrlOptions = options.Value;
-    var connectionString = Environment.GetEnvironmentVariable("AzureBlobStorage__ConnectionString");
-    _blobServiceClient = new BlobServiceClient(connectionString);
-    _containerName = configuration["AzureBlobStorage:ContainerName"] ?? "resumes";
+    _blobServiceClient = new BlobServiceClient(options.Value.ConnectionString);
+    _containerName = options.Value.ContainerName;
+    _sasValidForMinutes = options.Value.SasValidForMinutes;
   }
 
   public async Task<Uri?> UploadFileAsync(Stream fileStream, string fileName, CancellationToken cancellationToken)
@@ -88,7 +87,7 @@ public class BlobStorageService
       BlobContainerName = _containerName,
       BlobName = fileName,
       Resource = "b",
-      ExpiresOn = DateTimeOffset.UtcNow.AddMinutes(_sasUrlOptions.ValidForMinutes)
+      ExpiresOn = DateTimeOffset.UtcNow.AddMinutes(_sasValidForMinutes)
     };
 
     sasBuilder.SetPermissions(BlobSasPermissions.Read);
