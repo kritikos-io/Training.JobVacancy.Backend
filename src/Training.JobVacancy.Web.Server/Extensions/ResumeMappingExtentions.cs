@@ -17,11 +17,4 @@ public static class ResumeMappingExtentions
 
     return dto;
   }
-
-  public static List<ResumeReturnDto> ToResumeReturnDtos(this List<Resume> resumes)
-  {
-    var dtos = resumes.Select(r => r.ToResumeReturnDto()).ToList();
-
-    return dtos;
-  }
 }
