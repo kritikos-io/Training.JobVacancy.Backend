@@ -55,6 +55,11 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release
 
+      - name: Debug GitVersion
+        run: |
+          echo "VERSION is ${{ env.GitVersion.SemVer }}"
+          echo "VERSION is ${{ env.VERSION }}"
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
