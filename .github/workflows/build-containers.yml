@@ -15,6 +15,7 @@ on:
 
 env:
   GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  ACTIONS_STEP_DEBUG: true
 #  AZURE_CONTAINER_REGISTRY: ${{ secrets.AZURE_CONTAINER_REGISTRY }}
 #  CONTAINER_APP_NAME: ${{ secrets.CONTAINER_APP_NAME }}
 #  RESOURCE_GROUP: ${{ secrets.RESOURCE_GROUP }}
@@ -33,7 +34,11 @@ jobs:
         run: dotnet tool install --global GitVersion.Tool
 
       - name: Determine Version
-        run: dotnet-gitversion /output buildserver
+        id: determine-version
+        run: |
+          echo "VERSION<<EOF" >> $GITHUB_OUTPUT
+          dotnet-gitversion /output buildserver >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
   build-app-container:
     needs: determine-version
