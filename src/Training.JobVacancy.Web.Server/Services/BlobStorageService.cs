@@ -25,7 +25,7 @@ public class BlobStorageService
     _sasValidForMinutes = options.Value.SasValidForMinutes;
   }
 
-  public async Task<Uri?> UploadFileAsync(Stream fileStream, string fileName, Dictionary<string, string> metadata, CancellationToken cancellationToken)
+  public async Task<Uri?> UploadFileAsync(Stream fileStream, string fileName, Dictionary<string, string> tags, CancellationToken cancellationToken)
   {
     var blobContainerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
 
@@ -43,7 +43,7 @@ public class BlobStorageService
     var blobUploadOptions = new BlobUploadOptions
     {
       HttpHeaders = blobHttpHeaders,
-      Metadata = metadata
+      Tags = tags
     };
 
     try

@@ -68,12 +68,12 @@ public class V2ResumeEndpoints
 
     await using var stream = file.OpenReadStream();
 
-    var metadata = new Dictionary<string, string>
+    var tags = new Dictionary<string, string>
     {
       { "UserId", userId.ToString() }
     };
 
-    var fileUrl = await blobStorageService.UploadFileAsync(stream, uniqueFileName, metadata, cancellationToken);
+    var fileUrl = await blobStorageService.UploadFileAsync(stream, uniqueFileName, tags, cancellationToken);
 
     if (fileUrl == null)
     {
