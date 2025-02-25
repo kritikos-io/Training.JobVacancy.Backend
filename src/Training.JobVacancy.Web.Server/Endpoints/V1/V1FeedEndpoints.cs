@@ -9,6 +9,7 @@ using Adaptit.Training.JobVacancy.Web.Server.Repositories;
 
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Hybrid;
 
 using LogTemplates = Adaptit.Training.JobVacancy.Web.Server.Helpers.LogTemplates;
 
@@ -61,12 +62,16 @@ public class V1FeedEndpoints
     return TypedResults.Ok(feed);
   }
 
-  public static Results<Ok<FeedDto>, NotFound> GetFeedPage(
+  public async static Task<Results<Ok<FeedDto>, NotFound>> GetFeedPage(
       Guid id,
       NavJobVacancyRepo repository,
-      ILogger<V1FeedEndpoints> logger)
+      ILogger<V1FeedEndpoints> logger,
+      HybridCache cache)
   {
-    var feed = repository.Feeds.FirstOrDefault(x => x.Id == id);
+    var feed = await cache.GetOrCreateAsync<FeedDto?>(
+      $"{nameof(FeedDto)}:{id}",
+      _ => ValueTask.FromResult(repository.Feeds.FirstOrDefault(x => x.Id == id)));
+
     if (feed is null)
     {
       LogTemplates.LogEntityNotFound(logger, nameof(FeedDto), id);

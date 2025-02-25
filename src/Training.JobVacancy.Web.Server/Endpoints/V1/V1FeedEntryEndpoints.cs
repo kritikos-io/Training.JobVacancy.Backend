@@ -13,7 +13,7 @@ public class V1FeedEntryEndpoints
   public static RouteGroupBuilder Map(RouteGroupBuilder endpoint)
   {
     var group = endpoint.MapGroup("feedentry")
-        .WithTags("Feed Entries");
+      .WithTags("Feed Entries");
 
     group.MapGet("{id:guid}", GetFeedEntry);
 
@@ -21,15 +21,15 @@ public class V1FeedEntryEndpoints
   }
 
   public static async Task<Results<Ok<EntryDto>, NotFound>> GetFeedEntry(
-      Guid id,
-      NavJobVacancyRepo repository,
-      ILogger<V1FeedEntryEndpoints> logger,
-      HybridCache cache,
-      CancellationToken ct)
+    Guid id,
+    NavJobVacancyRepo repository,
+    ILogger<V1FeedEntryEndpoints> logger,
+    HybridCache cache,
+    CancellationToken ct)
   {
     var entry = await cache.GetOrCreateAsync<EntryDto?>(
       $"{nameof(EntryDto)}:{id}",
-       _ => ValueTask.FromResult(repository.Entries.FirstOrDefault(x => x.Uuid == id)),
+      _ => ValueTask.FromResult(repository.Entries.FirstOrDefault(x => x.Uuid == id)),
       cancellationToken: ct);
 
     if (entry is not null)
