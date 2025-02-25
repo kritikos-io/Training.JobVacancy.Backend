@@ -69,8 +69,8 @@ jobs:
         with:
           push: true
           tags: |
-            training.jobVacancy.web.server:${{ env.GitVersion_SemVer }}
-            training.jobVacancy.web.server:latest
+            training.jobvacancy.web.server:${{ env.GitVersion_SemVer }}
+            training.jobvacancy.web.server:latest
           file: src/Training.JobVacancy.Web.Server/Dockerfile
 
   build-migrations-container:
@@ -104,8 +104,8 @@ jobs:
         with:
           push: true
           tags: |
-            training.jobVacancy.web.server:${{ env.GitVersion_SemVer }}
-            training.jobVacancy.web.server:latest
+            training.jobvacancy.web.server:${{ env.GitVersion_SemVer }}
+            training.jobvacancy.web.server:latest
           file: src/Training.JobVacancy.Data/Dockerfile
 
   deploy-development:
