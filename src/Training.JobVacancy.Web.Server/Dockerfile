@@ -13,6 +13,7 @@ COPY "src/Training.JobVacancy.Data/Training.JobVacancy.Data.csproj" "src/Trainin
 COPY "src/Training.JobVacancy.Web.Models/Training.JobVacancy.Web.Models.csproj" "src/Training.JobVacancy.Web.Models/"
 COPY "Directory.Packages.props" "."
 COPY "Directory.Build.props" "."
+COPY .git .git
 RUN dotnet restore "src/Training.JobVacancy.Web.Server/Training.JobVacancy.Web.Server.csproj"
 
 COPY . .
