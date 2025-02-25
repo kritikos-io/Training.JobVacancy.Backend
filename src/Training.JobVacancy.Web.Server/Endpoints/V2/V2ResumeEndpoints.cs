@@ -1,10 +1,10 @@
 namespace Adaptit.Training.JobVacancy.Web.Server.Endpoints.V2;
 
-using Adaptit.Training.JobVacancy.Backend.Helpers;
 using Adaptit.Training.JobVacancy.Data;
 using Adaptit.Training.JobVacancy.Data.Entities;
 using Adaptit.Training.JobVacancy.Web.Models.Dto.Resume;
 using Adaptit.Training.JobVacancy.Web.Server.Extensions;
+using Adaptit.Training.JobVacancy.Web.Server.Helpers;
 using Adaptit.Training.JobVacancy.Web.Server.Services;
 
 using Microsoft.AspNetCore.Http.HttpResults;
