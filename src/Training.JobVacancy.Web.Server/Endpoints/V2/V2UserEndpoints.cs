@@ -4,7 +4,6 @@ using Adaptit.Training.JobVacancy.Backend.Helpers;
 using Adaptit.Training.JobVacancy.Data;
 using Adaptit.Training.JobVacancy.Data.Entities;
 using Adaptit.Training.JobVacancy.Web.Models.Dto;
-using Adaptit.Training.JobVacancy.Web.Models.Dto.Resume;
 using Adaptit.Training.JobVacancy.Web.Models.Dto.User;
 using Adaptit.Training.JobVacancy.Web.Server.Extensions;
 using Adaptit.Training.JobVacancy.Web.Server.Services;
@@ -123,7 +122,7 @@ public class V2UserEndpoints()
     return TypedResults.Ok(dto);
   }
 
-  public static async Task<Results<NoContent, NotFound>> DeleteUser(
+  public static async Task<Results<NoContent, NotFound, InternalServerError>> DeleteUser(
     Guid id,
     JobVacancyDbContext dbContext,
     ILogger<V2UserEndpoints> logger,
@@ -138,17 +137,17 @@ public class V2UserEndpoints()
 
       return TypedResults.NotFound();
     }
-    dbContext.Resumes.RemoveRange(user.Resumes);
 
-    foreach (var resume in user.Resumes)
+    if (user.Resumes.Count > 0)
     {
-      var fileName = Path.GetFileName(resume.DownloadUrl.LocalPath);
-      var deleted = await blobStorageService.DeleteFileAsync(fileName, cancellationToken);
+      var deleted = await blobStorageService.DeleteAllResumesAsync(id, cancellationToken);
 
       if (!deleted)
       {
-        logger.LogCouldNotDeleteEntityOfTypeWithId(nameof(resume), resume.Id);
+        return TypedResults.InternalServerError();
       }
+
+      dbContext.Resumes.RemoveRange(user.Resumes);
     }
 
     dbContext.Users.Remove(user);
