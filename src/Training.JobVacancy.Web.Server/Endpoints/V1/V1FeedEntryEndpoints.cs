@@ -1,11 +1,12 @@
 ﻿namespace Adaptit.Training.JobVacancy.Web.Server.Endpoints.V1;
 
-using Adaptit.Training.JobVacancy.Backend.Helpers;
 using Adaptit.Training.JobVacancy.Web.Models.Dto.NavJobVacancy;
+using Adaptit.Training.JobVacancy.Web.Server.Helpers;
 using Adaptit.Training.JobVacancy.Web.Server.Repositories;
 
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.Caching.Hybrid;
+
 
 public class V1FeedEntryEndpoints
 {

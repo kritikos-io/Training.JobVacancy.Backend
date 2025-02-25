@@ -1,32 +1,37 @@
 ﻿namespace Adaptit.Training.JobVacancy.Web.Server.Extensions;
 
 using System.ComponentModel;
+using System.Linq.Expressions;
+
+using Adaptit.Training.JobVacancy.Web.Models.Dto;
+
+using Microsoft.EntityFrameworkCore;
 
 public static class LinqExtensions
 {
-  public static IEnumerable<T> WhereIf<T>(this IEnumerable<T> source, bool condition, Func<T, bool> predicate)
+  public static IQueryable<T> WhereIf<T>(this IQueryable<T> source, bool condition, Expression<Func<T, bool>> predicate)
     => condition
-        ? source.Where(predicate)
-        : source;
+      ? source.Where(predicate)
+      : source;
 
-  public static IEnumerable<TSource> OrderBy<TSource, TKey>(this IEnumerable<TSource> source, ListSortDirection direction, Func<TSource, TKey> selector)
+  public static IOrderedQueryable<TSource> OrderBy<TSource, TKey>(this IQueryable<TSource> source, ListSortDirection direction, Expression<Func<TSource, TKey>> selector)
     => direction == ListSortDirection.Ascending
         ? source.OrderBy(selector)
         : source.OrderByDescending(selector);
 
-  public static IEnumerable<TSource> OrderByIf<TSource, TKey>(this IEnumerable<TSource> source, bool condition, Func<TSource, TKey> selector)
+  public static IQueryable<TSource> OrderByIf<TSource, TKey>(this IQueryable<TSource> source, bool condition, Expression<Func<TSource, TKey>> selector)
     => condition
         ? source.OrderBy(selector)
         : source;
 
-  public static IEnumerable<TSource> OrderByIf<TSource, TKey>(this IEnumerable<TSource> source, bool condition, ListSortDirection direction, Func<TSource, TKey> selector)
+  public static IQueryable<TSource> OrderByIf<TSource, TKey>(this IQueryable<TSource> source, bool condition, ListSortDirection direction, Expression<Func<TSource, TKey>> selector)
     => !condition
         ? source
         : direction == ListSortDirection.Ascending
             ? source.OrderBy(selector)
             : source.OrderByDescending(selector);
 
-  public static IEnumerable<T> TakeIf<T>(this IEnumerable<T> source, bool condition, int amount)
+  public static IQueryable<T> TakeIf<T>(this IQueryable<T> source, bool condition, int amount)
     => condition
         ? source.Take(amount)
         : source;
@@ -35,4 +40,56 @@ public static class LinqExtensions
     => condition
         ? source.Skip(amount)
         : source;
+
+  public static async Task<PagedList<TDestination>> ToPagedListAsync<TSource, TDestination>(
+      this IOrderedQueryable<TSource> source,
+      Expression<Func<TSource, TDestination>> mapper,
+      int pageNumber,
+      int pageSize,
+      CancellationToken cancellationToken = default)
+  {
+    if (!source.TryGetNonEnumeratedCount(out var count))
+    {
+      count = await source.CountAsync(cancellationToken);
+    }
+
+    var result = new PagedList<TDestination>
+    {
+      Items = await source
+          .Skip((pageNumber - 1) * pageSize)
+          .Take(pageSize)
+          .Select(mapper)
+          .ToListAsync(cancellationToken),
+      TotalItems = count,
+      CurrentPage = pageNumber,
+      TotalPages = (int)Math.Ceiling(count / (double)pageSize),
+    };
+
+    return result;
+  }
+
+  public static async Task<PagedList<TSource>> ToPagedListAsync<TSource>(
+      this IOrderedQueryable<TSource> source,
+      int pageNumber,
+      int pageSize,
+      CancellationToken cancellationToken = default)
+  {
+    if (!source.TryGetNonEnumeratedCount(out var count))
+    {
+      count = await source.CountAsync(cancellationToken);
+    }
+
+    var result = new PagedList<TSource>
+    {
+      Items = await source
+          .Skip((pageNumber - 1) * pageSize)
+          .Take(pageSize)
+          .ToListAsync(cancellationToken),
+      TotalItems = count,
+      CurrentPage = pageNumber,
+      TotalPages = (int)Math.Ceiling(count / (double)pageSize),
+    };
+
+    return result;
+  }
 }
