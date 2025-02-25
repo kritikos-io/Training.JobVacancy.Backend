@@ -36,9 +36,10 @@ jobs:
       - name: Determine Version
         id: determine-version
         run: |
-          echo "VERSION<<EOF" >> $GITHUB_OUTPUT
-          dotnet-gitversion /output buildserver >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          echo "VERSION<<EOF" >> $GITHUB_ENV
+          dotnet-gitversion /output buildserver >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
 
   build-app-container:
     needs: determine-version
