@@ -33,7 +33,10 @@ jobs:
         run: dotnet tool install --global GitVersion.Tool
 
       - name: Determine Version
-        run: VERSION=$(dotnet-gitversion /output buildserver) && echo "VERSION=$VERSION" >> $GITHUB_ENV
+        run: dotnet-gitversion /output buildserver /showvariable SemVer > version.txt
+
+      - name: Set version environment variable
+        run: echo "VERSION=$(cat version.txt)" >> $GITHUB_ENV
 
   build-app-container:
     needs: determine-version
