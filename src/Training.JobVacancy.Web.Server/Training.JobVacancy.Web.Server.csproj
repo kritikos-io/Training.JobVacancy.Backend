@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer"/>
     <PackageReference Include="Azure.Storage.Blobs" />
+    <PackageReference Include="Azure.Storage.Blobs.Batch" />
     <PackageReference Include="Bogus"/>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer"/>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect"/>

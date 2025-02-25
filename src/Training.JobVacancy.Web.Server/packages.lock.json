@@ -21,6 +21,16 @@
           "System.Text.Json": "6.0.10"
         }
       },
+      "Azure.Storage.Blobs.Batch": {
+        "type": "Direct",
+        "requested": "[12.20.0, )",
+        "resolved": "12.20.0",
+        "contentHash": "HYof3mEj9dciQQRDAHyQ02PPRcPmDBgDSid2luQR0amhFbMvZuWTZeXosNCW8YN6cmgscmHFJPA3jMrlLWCmuA==",
+        "dependencies": {
+          "Azure.Storage.Blobs": "12.23.0",
+          "Azure.Storage.Common": "12.22.0"
+        }
+      },
       "Bogus": {
         "type": "Direct",
         "requested": "[35.6.1, )",
