@@ -1,6 +1,6 @@
 namespace Adaptit.Training.JobVacancy.Web.Server.Services;
 
-using Adaptit.Training.JobVacancy.Backend.Helpers;
+using Adaptit.Training.JobVacancy.Web.Server.Helpers;
 using Adaptit.Training.JobVacancy.Web.Server.Options;
 
 using Azure;
