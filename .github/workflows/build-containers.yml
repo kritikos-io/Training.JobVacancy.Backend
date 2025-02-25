@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - develop
+      - feature/24.create-cicd-pipelines
     paths:
       - 'src/*'
       - 'tests/*'
