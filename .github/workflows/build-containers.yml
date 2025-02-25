@@ -54,9 +54,6 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release
 
-      - name: Debug Info
-        run: echo "VERSION is ${{ env.VERSION }}"
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -72,8 +69,8 @@ jobs:
         with:
           push: true
           tags: |
-            Training.JobVacancy.Web.Server:${{ env.GitVersion_SemVer }}
-            Training.JobVacancy.Web.Server:latest
+            training.jobVacancy.web.server:${{ env.GitVersion_SemVer }}
+            training.jobVacancy.web.server:latest
           file: src/Training.JobVacancy.Web.Server/Dockerfile
 
   build-migrations-container:
@@ -107,8 +104,8 @@ jobs:
         with:
           push: true
           tags: |
-            ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ secrets.MIGRATIONS_CONTAINER_NAME }}:${{ env.VERSION }}
-            ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ secrets.MIGRATIONS_CONTAINER_NAME }}:latest
+            training.jobVacancy.web.server:${{ env.GitVersion_SemVer }}
+            training.jobVacancy.web.server:latest
           file: src/Training.JobVacancy.Data/Dockerfile
 
   deploy-development:
