@@ -18,6 +18,8 @@ public static partial class LogTemplates
 
   public const string FailedToUploadFile = "Failed to upload file {FileName}";
 
+  public const string AzureRequestFailed = "Azure request failed with message {message}";
+
 
   [LoggerMessage(LogLevel.Information, UnhandledException)]
   public static partial void LogUnhandledException(this ILogger logger);
@@ -42,5 +44,8 @@ public static partial class LogTemplates
 
   [LoggerMessage(LogLevel.Warning, FailedToUploadFile)]
   public static partial void LogFailedToUploadFile(this ILogger logger, string fileName);
+
+  [LoggerMessage(LogLevel.Error, AzureRequestFailed)]
+  public static partial void LogAzureRequestFailed(this ILogger logger, string message);
 
 }
