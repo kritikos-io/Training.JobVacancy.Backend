@@ -7,8 +7,6 @@ using Adaptit.Training.JobVacancy.Web.Models.Dto.Resume;
 using Adaptit.Training.JobVacancy.Web.Server.Extensions;
 using Adaptit.Training.JobVacancy.Web.Server.Services;
 
-using Azure;
-
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
@@ -150,7 +148,7 @@ public class V2ResumeEndpoints
       return TypedResults.Problem("Something went wrong when processing the file", statusCode: 500);
     }
 
-    var sasUri = await blobStorageService.GetReadOnlySasUrlAsync(fileName);
+    var sasUri = await blobStorageService.GetReadOnlySasUrlAsync(fileName, cancellationToken);
 
     if (sasUri == null)
     {

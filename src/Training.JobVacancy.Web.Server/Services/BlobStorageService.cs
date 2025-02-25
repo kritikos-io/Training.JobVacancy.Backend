@@ -79,10 +79,11 @@ public class BlobStorageService
   }
 
   public async Task<Uri?> GetReadOnlySasUrlAsync(string fileName)
+  public async Task<Uri?> GetReadOnlySasUrlAsync(string fileName, CancellationToken cancellationToken)
   {
     var blobContainerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
 
-    if (!await blobContainerClient.ExistsAsync())
+    if (!await blobContainerClient.ExistsAsync(cancellationToken))
     {
       _logger.LogBlobContainerDoesNotExist(_containerName);
 
