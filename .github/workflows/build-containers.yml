@@ -24,8 +24,6 @@ env:
 jobs:
   determine-version:
     runs-on: ubuntu-latest
-    outputs:
-      VERSION: ${{ steps.gitversion.outputs.VERSION }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -39,8 +37,6 @@ jobs:
 
   build-app-container:
     needs: determine-version
-    env:
-      VERSION: ${{ needs.determine-version.outputs.VERSION }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -70,15 +66,13 @@ jobs:
         with:
           push: true
           tags: |
-            ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ secrets.CONTAINER_APP_NAME }}:${{ GITHUB_ENV }}
+            ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ secrets.CONTAINER_APP_NAME }}:${{ env.VERSION }}
             ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ secrets.CONTAINER_APP_NAME }}:latest
           file: src/Training.JobVacancy.Web.Server/Dockerfile
 
   build-migrations-container:
     runs-on: ubuntu-latest
     needs: determine-version
-    env:
-      VERSION: ${{ needs.determine-version.outputs.VERSION }}
     steps:
       - uses: actions/checkout@v4
         with:
