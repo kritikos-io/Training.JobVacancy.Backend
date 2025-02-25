@@ -20,7 +20,7 @@ public class V2ResumeEndpoints
 
     group.MapGet(string.Empty, GetAllResumes);
     group.MapPost("{userId:guid}", UploadUserResume).DisableAntiforgery();
-    group.MapDelete("{userId:guid}/{resumeId:int}", DeleteUserResume);
+    group.MapDelete("{resumeId:int}", DeleteResume);
     group.MapGet("{resumeId:int}", GetResumeSasUrl);
     group.MapPut("{resumeId:int}", UpdateResumeUsage);
 
@@ -93,23 +93,14 @@ public class V2ResumeEndpoints
     return TypedResults.Ok(fileUrl);
   }
 
-  public static async Task<Results<Ok, NotFound<string>>> DeleteUserResume(
-    Guid userId,
+  public static async Task<Results<Ok, NotFound<string>>> DeleteResume(
     int resumeId,
     JobVacancyDbContext dbContext,
     BlobStorageService blobStorageService,
     CancellationToken cancellationToken,
     ILogger<V2UserEndpoints> logger)
   {
-    var user = await dbContext.Users.Include(u => u.Resumes).FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
-    var resumeToDelete = user.Resumes.FirstOrDefault(r => r.Id == resumeId);
-
-    if (user == null)
-    {
-      logger.LogEntityNotFound(nameof(user), userId);
-
-      return TypedResults.NotFound("Resume not found.");
-    }
+    var resumeToDelete = dbContext.Resumes.FirstOrDefault(r => r.Id == resumeId);
 
     if (resumeToDelete == null)
     {
@@ -128,7 +119,7 @@ public class V2ResumeEndpoints
       return TypedResults.NotFound("File not found or already deleted.");
     }
 
-    user.Resumes.Remove(resumeToDelete);
+    dbContext.Resumes.Remove(resumeToDelete);
     await dbContext.SaveChangesAsync(cancellationToken);
 
     return TypedResults.Ok();
