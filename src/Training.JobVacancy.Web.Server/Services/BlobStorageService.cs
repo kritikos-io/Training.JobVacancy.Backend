@@ -5,6 +5,7 @@ using Adaptit.Training.JobVacancy.Web.Server.Options;
 
 using Azure;
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using Azure.Storage.Sas;
 
 using Microsoft.Extensions.Options;
@@ -24,7 +25,7 @@ public class BlobStorageService
     _sasValidForMinutes = options.Value.SasValidForMinutes;
   }
 
-  public async Task<Uri?> UploadFileAsync(Stream fileStream, string fileName, CancellationToken cancellationToken)
+  public async Task<Uri?> UploadFileAsync(Stream fileStream, string fileName, Dictionary<string, string> metadata, CancellationToken cancellationToken)
   {
     var blobContainerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
 
@@ -37,9 +38,17 @@ public class BlobStorageService
 
     var blobClient = blobContainerClient.GetBlobClient(fileName);
 
+    var blobHttpHeaders = new BlobHttpHeaders { ContentType = "application/pdf" };
+
+    var blobUploadOptions = new BlobUploadOptions
+    {
+      HttpHeaders = blobHttpHeaders,
+      Metadata = metadata
+    };
+
     try
     {
-      await blobClient.UploadAsync(fileStream, cancellationToken);
+      await blobClient.UploadAsync(fileStream, blobUploadOptions, cancellationToken);
 
       return blobClient.Uri;
     }

@@ -67,7 +67,13 @@ public class V2ResumeEndpoints
     var uniqueFileName = $"{userId}_{DateTime.UtcNow:yyyyMMddHHmmssfff}{fileExtension}";
 
     await using var stream = file.OpenReadStream();
-    var fileUrl = await blobStorageService.UploadFileAsync(stream, uniqueFileName, cancellationToken);
+
+    var metadata = new Dictionary<string, string>
+    {
+      { "UserId", userId.ToString() }
+    };
+
+    var fileUrl = await blobStorageService.UploadFileAsync(stream, uniqueFileName, metadata, cancellationToken);
 
     if (fileUrl == null)
     {
