@@ -11,7 +11,7 @@ public static class UserMappingExtentions
     {
       Id = user.Id,
       Name = user.Name,
-      Surname = user.Surname,
+      Surname = user.LastName,
       Resumes = user.Resumes.Select(r => r.ToResumeReturnDto()).ToList(),
     };
 
@@ -23,7 +23,7 @@ public static class UserMappingExtentions
     var user = new User
     {
       Name = userCreateDto.Name,
-      Surname = userCreateDto.Surname,
+      LastName = userCreateDto.Surname,
     };
 
     return user;
