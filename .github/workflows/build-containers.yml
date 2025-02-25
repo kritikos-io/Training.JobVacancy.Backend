@@ -33,7 +33,7 @@ jobs:
         run: dotnet tool install --global GitVersion.Tool
 
       - name: Determine Version
-        run: VERSION=$(dotnet-gitversion /output buildserver)
+        run: dotnet-gitversion /output buildserver
 
   build-app-container:
     needs: determine-version
