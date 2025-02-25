@@ -61,13 +61,13 @@ jobs:
 #          username: ${{ github.actor }}
 #          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push app container
+      - name: Build and push app container to GCR
         uses: docker/build-push-action@v6
         with:
           push: true
           tags: |
-            ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ secrets.CONTAINER_APP_NAME }}:${{ env.VERSION }}
-            ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ secrets.CONTAINER_APP_NAME }}:latest
+            Training.JobVacancy.Web.Server:${{ env.VERSION }}
+            Training.JobVacancy.Web.Server:latest
           file: src/Training.JobVacancy.Web.Server/Dockerfile
 
   build-migrations-container:
