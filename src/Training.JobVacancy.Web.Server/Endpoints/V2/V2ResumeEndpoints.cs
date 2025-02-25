@@ -31,11 +31,9 @@ public class V2ResumeEndpoints
     JobVacancyDbContext dbContext,
     CancellationToken cancellationToken)
   {
-    var resumes = await dbContext.Resumes.ToListAsync(cancellationToken);
-    var dtos = resumes.Select(r => r.ToResumeReturnDto()).ToList();
+    var resumes = await dbContext.Resumes.Select(r => r.ToResumeReturnDto()).ToListAsync(cancellationToken);
 
-
-    return TypedResults.Ok(dtos);
+    return TypedResults.Ok(resumes);
   }
 
 
