@@ -36,10 +36,8 @@ jobs:
       - name: Determine Version
         id: determine-version
         run: |
-          echo "VERSION<<EOF" >> $GITHUB_ENV
-          dotnet-gitversion /output buildserver >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-
+          dotnet-gitversion /output buildserver
+          echo "VERSION=${{ env.GitVersion_SemVer }}" >> $GITHUB_ENV
 
   build-app-container:
     needs: determine-version
