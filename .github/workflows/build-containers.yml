@@ -70,7 +70,7 @@ jobs:
         with:
           push: true
           tags: |
-            ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ secrets.CONTAINER_APP_NAME }}:${{ env.VERSION }}
+            ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ secrets.CONTAINER_APP_NAME }}:${{ GITHUB_ENV }}
             ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ secrets.CONTAINER_APP_NAME }}:latest
           file: src/Training.JobVacancy.Web.Server/Dockerfile
 
