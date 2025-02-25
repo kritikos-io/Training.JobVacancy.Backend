@@ -35,9 +35,8 @@ jobs:
 
       - name: Determine Version
         id: determine-version
-        run: |
-          dotnet-gitversion /output buildserver
-          echo "VERSION=$env.GitVersion_SemVer" >> $GITHUB_ENV
+        run: dotnet-gitversion /output buildserver
+
 
   build-app-container:
     needs: determine-version
@@ -73,7 +72,7 @@ jobs:
         with:
           push: true
           tags: |
-            Training.JobVacancy.Web.Server:${{ env.VERSION }}
+            Training.JobVacancy.Web.Server:${{ env.GitVersion_SemVer }}
             Training.JobVacancy.Web.Server:latest
           file: src/Training.JobVacancy.Web.Server/Dockerfile
 
