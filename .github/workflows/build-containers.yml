@@ -15,6 +15,7 @@ on:
 
 env:
   GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GITHUB_ENV: ${{ env.GITHUB_ENV }}
 #  AZURE_CONTAINER_REGISTRY: ${{ secrets.AZURE_CONTAINER_REGISTRY }}
 #  CONTAINER_APP_NAME: ${{ secrets.CONTAINER_APP_NAME }}
 #  RESOURCE_GROUP: ${{ secrets.RESOURCE_GROUP }}
@@ -66,7 +67,7 @@ jobs:
         with:
           push: true
           tags: |
-            ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ secrets.CONTAINER_APP_NAME }}:${{ env.VERSION }}
+            ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ secrets.CONTAINER_APP_NAME }}:${{ GI }}
             ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ secrets.CONTAINER_APP_NAME }}:latest
           file: src/Training.JobVacancy.Web.Server/Dockerfile
 
@@ -101,7 +102,7 @@ jobs:
         with:
           push: true
           tags: |
-            ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ secrets.MIGRATIONS_CONTAINER_NAME }}:${{ env.VERSION }}
+            ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ secrets.MIGRATIONS_CONTAINER_NAME }}:GITHUB_ENV
             ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ secrets.MIGRATIONS_CONTAINER_NAME }}:latest
           file: src/Training.JobVacancy.Data/Dockerfile
 
