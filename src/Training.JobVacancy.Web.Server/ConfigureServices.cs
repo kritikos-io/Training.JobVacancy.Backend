@@ -1,5 +1,6 @@
 ﻿namespace Adaptit.Training.JobVacancy.Web.Server;
 
+using Adaptit.Training.JobVacancy.Backend.Helpers;
 using Adaptit.Training.JobVacancy.Data;
 using Adaptit.Training.JobVacancy.Web.Models;
 using Adaptit.Training.JobVacancy.Web.Server.Helpers;
@@ -9,10 +10,12 @@ using Adaptit.Training.JobVacancy.Web.Server.OpenApi.OperationTransformers;
 using Adaptit.Training.JobVacancy.Web.Server.OpenApi.SchemaTransformers;
 using Adaptit.Training.JobVacancy.Web.Server.Options;
 using Adaptit.Training.JobVacancy.Web.Server.Repositories;
+using Adaptit.Training.JobVacancy.Web.Server.Services;
 
 using Asp.Versioning;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -33,9 +36,11 @@ public static class ConfigureServices
 
     builder.AddCentralizedLogging();
 
+    builder.AddBlobStorageOptions();
+
     builder.Services.AddDbContext<JobVacancyDbContext>(options => options
-      .UseNpgsql(builder.Configuration.GetConnectionString("JobVacancyDatabase"))
-      .EnableSensitiveDataLogging());
+        .UseNpgsql(builder.Configuration.GetConnectionString("JobVacancyDatabase"))
+        .EnableSensitiveDataLogging());
   }
 
   public static void AddJobVacancyAuthentication(this WebApplicationBuilder builder)
@@ -161,8 +166,19 @@ public static class ConfigureServices
     });
   }
 
-  public static void AddMiddlewareServices(this WebApplicationBuilder builder) =>
-    builder.Services.AddTransient<CorrelationIdMiddleware>();
+  public static void AddMiddlewareServices(this WebApplicationBuilder builder) => builder.Services.AddTransient<CorrelationIdMiddleware>();
+
+  public static void AddBlobStorageOptions(this WebApplicationBuilder builder)
+  {
+    builder.Services.AddOptions<BlobStorageOptions>()
+      .Bind(builder.Configuration.GetSection(BlobStorageOptions.Section))
+      .ValidateDataAnnotations()
+      .ValidateOnStart();
+
+    var options = builder.Configuration.GetSection(BlobStorageOptions.Section).Get<BlobStorageOptions>();
+    builder.Services.AddAzureClients(cb => cb.AddBlobServiceClient(options.ConnectionString));
+    builder.Services.AddScoped<BlobStorageService>();
+  }
 
   public static void AddCentralizedLogging(this WebApplicationBuilder builder)
   {

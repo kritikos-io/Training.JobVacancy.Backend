@@ -14,6 +14,19 @@ public static partial class LogTemplates
 
   public const string EntityNotDeleted = "Requested entity {Entity} with id {Id} was not deleted.";
 
+  public const string DeletingEntityOfTypeWithId = "Deleting entity of type {Entity} with id {Id}";
+
+  public const string CouldNotDeleteEntityOfTypeWithId = "Could not delete entity of type {Entity} with id {Id}";
+
+  public const string CouldNotExtractFileName = "Could not extract file name from {FileName}";
+
+  public const string BlobContainerDoesNotExist = "Blob container {ContainerName} does not exist";
+
+  public const string FailedToUploadFile = "Failed to upload file {FileName}";
+
+  public const string AzureRequestFailed = "Azure request failed with message {message}";
+
+
   [LoggerMessage(LogLevel.Information, UnhandledException)]
   public static partial void LogUnhandledException(this ILogger logger);
 
@@ -31,5 +44,24 @@ public static partial class LogTemplates
 
   [LoggerMessage(LogLevel.Warning, EntityNotDeleted)]
   public static partial void LogEntityNotDeleted(this ILogger logger, string entity, object id);
+
+
+  [LoggerMessage(LogLevel.Information, DeletingEntityOfTypeWithId)]
+  public static partial void LogDeletingEntityOfTypeWithId(this ILogger logger, string entity, object id);
+
+  [LoggerMessage(LogLevel.Warning, CouldNotDeleteEntityOfTypeWithId)]
+  public static partial void LogCouldNotDeleteEntityOfTypeWithId(this ILogger logger, string entity, object id);
+
+  [LoggerMessage(LogLevel.Warning, CouldNotExtractFileName)]
+  public static partial void LogCouldNotExtractFileName(this ILogger logger, string fileName);
+
+  [LoggerMessage(LogLevel.Warning, BlobContainerDoesNotExist)]
+  public static partial void LogBlobContainerDoesNotExist(this ILogger logger, string containerName);
+
+  [LoggerMessage(LogLevel.Warning, FailedToUploadFile)]
+  public static partial void LogFailedToUploadFile(this ILogger logger, string fileName);
+
+  [LoggerMessage(LogLevel.Error, AzureRequestFailed)]
+  public static partial void LogAzureRequestFailed(this ILogger logger, string message);
 
 }
