@@ -11,12 +11,9 @@
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" />
     <PackageReference Include="Azure.Storage.Blobs" />
     <PackageReference Include="Azure.Storage.Blobs.Batch" />
-<<<<<<< HEAD
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" />
-=======
     <PackageReference Include="Azure.Storage.Blobs" />
     <PackageReference Include="Azure.Storage.Blobs.Batch" />
->>>>>>> feature/2.user-profile-actions
     <PackageReference Include="Bogus"/>
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer"/>
@@ -30,12 +27,9 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-<<<<<<< HEAD
     <PackageReference Include="Microsoft.Extensions.Logging.ApplicationInsights" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
-=======
     <PackageReference Include="Microsoft.Extensions.Azure" />
->>>>>>> feature/2.user-profile-actions
     <PackageReference Include="Refit.HttpClientFactory"/>
     <PackageReference Include="Scalar.AspNetCore"/>
     <PackageReference Include="Seq.Extensions.Logging"/>
