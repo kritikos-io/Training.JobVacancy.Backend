@@ -36,8 +36,8 @@ jobs:
       - name: Determine Version
         id: determine-version
         run: |
-          VERSION=$(dotnet-gitversion /output buildserver)
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          dotnet-gitversion /output buildserver
+          echo "VERSION=${GitVersion_SemVer}" >> $GITHUB_ENV
 
   build-app-container:
     needs: determine-version
@@ -55,9 +55,8 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release
 
-      - name: Debug GitVersion
-        run: |
-          echo "VERSION is ${{ env.VERSION }}"
+      - name: Debug Info
+        run: echo "VERSION is ${{ env.VERSION }}"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
