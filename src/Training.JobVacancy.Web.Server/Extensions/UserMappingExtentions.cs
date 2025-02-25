@@ -12,17 +12,10 @@ public static class UserMappingExtentions
       Id = user.Id,
       Name = user.Name,
       Surname = user.Surname,
-      Resume = user.Resume,
+      Resumes = user.Resumes.Select(r => r.ToResumeReturnDto()).ToList(),
     };
 
     return dto;
-  }
-
-  public static List<UserReturnDto> ToUserReturnDtoList(this List<User> users)
-  {
-    var dtos = users.Select(u => u.ToUserReturnDto()).ToList();
-
-    return dtos;
   }
 
   public static User ToUser(this UserCreateDto userCreateDto)

@@ -6,10 +6,9 @@ using Adaptit.Training.JobVacancy.Data.Entities;
 using Adaptit.Training.JobVacancy.Web.Models.Dto;
 using Adaptit.Training.JobVacancy.Web.Models.Dto.User;
 using Adaptit.Training.JobVacancy.Web.Server.Extensions;
-using Adaptit.Training.JobVacancy.Web.Server.Helpers;
+using Adaptit.Training.JobVacancy.Web.Server.Services;
 
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 public class V2UserEndpoints()
@@ -18,31 +17,25 @@ public class V2UserEndpoints()
   {
     var group = endpoint.MapGroup("users").WithTags("User");
 
-    group.MapGet("", GetAllUsers);
+    group.MapGet(string.Empty, GetAllUsers);
     group.MapGet("{id:guid}", GetUserById).WithName("GetUserById");
     group.MapPost(string.Empty, CreateUser);
-    group.MapPost("upload-resume/{id:guid}", UploadUserResume).DisableAntiforgery();
     group.MapPut("{id:guid}", UpdateUser);
     group.MapDelete("{id:guid}", DeleteUser);
 
     return endpoint;
   }
 
-  public static async Task<Ok<PagedList<UserReturnDto>>> GetAllUsers(
+  public static async Task<Results<Ok<PagedList<UserReturnDto>>, BadRequest<string>>> GetAllUsers(
     JobVacancyDbContext dbContext,
     ILogger<V2UserEndpoints> logger,
     CancellationToken cancellationToken,
     int page = 1,
     int pageSize = 10)
   {
-    if (page < 1)
+    if (page < 1 || pageSize < 1 || pageSize > 100)
     {
-      page = 1;
-    }
-
-    if (pageSize is < 1 or > 100)
-    {
-      pageSize = 100;
+      return TypedResults.BadRequest("Invalid page or pageSize");
     }
 
     var query = await dbContext.Users
@@ -50,8 +43,7 @@ public class V2UserEndpoints()
       {
         Id = u.Id,
         Name = u.Name,
-        Surname = u.Surname,
-        Resume = u.Resume
+        Surname = u.Surname
       })
       .OrderBy(u => u.Id)
       .ToPagedListAsync(page, pageSize, cancellationToken);
@@ -62,10 +54,20 @@ public class V2UserEndpoints()
   public static async Task<Results<Ok<UserReturnDto>, NotFound>> GetUserById(
     Guid id,
     JobVacancyDbContext dbContext,
+    BlobStorageService blobStorageService,
     ILogger<V2UserEndpoints> logger,
     CancellationToken cancellationToken)
   {
-    var user = await dbContext.Users.TagWith("Fetching user by ID in V2UserEndpoints").FirstOrDefaultAsync(u => u.Id == id, cancellationToken);;
+    var user = await dbContext.Users.Where(u => u.Id == id)
+      .Select(u => new UserReturnDto
+      {
+        Id = u.Id,
+        Name = u.Name,
+        Surname = u.Surname,
+        Resumes = u.Resumes.Select(r => r.ToResumeReturnDto()).ToList()
+      })
+      .FirstOrDefaultAsync(cancellationToken);
+
     if (user == null)
     {
       logger.LogEntityNotFound(nameof(user), id);
@@ -73,9 +75,7 @@ public class V2UserEndpoints()
       return TypedResults.NotFound();
     }
 
-    var dto = user.ToUserReturnDto();
-
-    return TypedResults.Ok(dto);
+    return TypedResults.Ok(user);
   }
 
   public static async Task<Results<CreatedAtRoute<UserReturnDto>, BadRequest>> CreateUser(
@@ -122,14 +122,15 @@ public class V2UserEndpoints()
     return TypedResults.Ok(dto);
   }
 
-  public static async Task<Results<NoContent, NotFound>> DeleteUser(
+  public static async Task<Results<NoContent, NotFound, InternalServerError>> DeleteUser(
     Guid id,
     JobVacancyDbContext dbContext,
     ILogger<V2UserEndpoints> logger,
+    BlobStorageService blobStorageService,
     CancellationToken cancellationToken)
   {
     logger.LogDeletingEntityOfTypeWithId(nameof(User), id);
-    var user = await dbContext.Users.FindAsync(id, cancellationToken);
+    var user = await dbContext.Users.Include(u => u.Resumes).FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
     if (user == null)
     {
       logger.LogEntityNotFound(nameof(user), id);
@@ -137,27 +138,21 @@ public class V2UserEndpoints()
       return TypedResults.NotFound();
     }
 
+    if (user.Resumes.Count > 0)
+    {
+      var deleted = await blobStorageService.DeleteAllResumesAsync(id, cancellationToken);
+
+      if (!deleted)
+      {
+        return TypedResults.InternalServerError();
+      }
+
+      dbContext.Resumes.RemoveRange(user.Resumes);
+    }
+
     dbContext.Users.Remove(user);
     await dbContext.SaveChangesAsync(cancellationToken);
 
     return TypedResults.NoContent();
   }
-
-  public static async Task<Results<Ok, BadRequest<string>>> UploadUserResume(
-    IFormFile file,
-    ILogger<V2UserEndpoints> logger,
-    CancellationToken cancellationToken)
-  {
-    const long fileSize = 5 * 1024 * 1024;
-
-    if (file.Length == 0 || file.Length > fileSize || file.ContentType != "application/pdf")
-    {
-      logger.LogInformation("Rejected a file of type {fileType} that user tried to upload", file.ContentType);
-
-      return TypedResults.BadRequest("Need a pdf file less than 5Mb");
-    }
-
-    return TypedResults.Ok();
-  }
 }
-

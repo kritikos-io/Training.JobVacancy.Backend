@@ -9,10 +9,12 @@ using Adaptit.Training.JobVacancy.Web.Server.OpenApi.OperationTransformers;
 using Adaptit.Training.JobVacancy.Web.Server.OpenApi.SchemaTransformers;
 using Adaptit.Training.JobVacancy.Web.Server.Options;
 using Adaptit.Training.JobVacancy.Web.Server.Repositories;
+using Adaptit.Training.JobVacancy.Web.Server.Services;
 
 using Asp.Versioning;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -30,6 +32,8 @@ public static class ConfigureServices
 
     builder.AddApiDocumentation();
     builder.AddApiVersioning();
+
+    builder.AddBlobStorageOptions();
 
     builder.Services.AddDbContext<JobVacancyDbContext>(options => options
         .UseNpgsql(builder.Configuration.GetConnectionString("JobVacancyDatabase"))
@@ -150,4 +154,16 @@ public static class ConfigureServices
   }
 
   public static void AddMiddlewareServices(this WebApplicationBuilder builder) => builder.Services.AddTransient<CorrelationIdMiddleware>();
+
+  public static void AddBlobStorageOptions(this WebApplicationBuilder builder)
+  {
+    builder.Services.AddOptions<BlobStorageOptions>()
+      .Bind(builder.Configuration.GetSection(BlobStorageOptions.Section))
+      .ValidateDataAnnotations()
+      .ValidateOnStart();
+
+    var options = builder.Configuration.GetSection(BlobStorageOptions.Section).Get<BlobStorageOptions>();
+    builder.Services.AddAzureClients(cb => cb.AddBlobServiceClient(options.ConnectionString));
+    builder.Services.AddScoped<BlobStorageService>();
+  }
 }
