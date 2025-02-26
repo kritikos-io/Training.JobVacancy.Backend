@@ -39,14 +39,8 @@ public class V2UserEndpoints()
     }
 
     var query = await dbContext.Users
-      .Select(u => new UserReturnDto
-      {
-        Id = u.Id,
-        Name = u.Name,
-        Surname = u.LastName
-      })
       .OrderBy(u => u.Id)
-      .ToPagedListAsync(page, pageSize, cancellationToken);
+      .ToPagedListAsync(u => u.ToUserReturnDto(),page, pageSize, cancellationToken);
 
     return TypedResults.Ok(query);
   }
@@ -59,13 +53,8 @@ public class V2UserEndpoints()
     CancellationToken cancellationToken)
   {
     var user = await dbContext.Users.Where(u => u.Id == id)
-      .Select(u => new UserReturnDto
-      {
-        Id = u.Id,
-        Name = u.Name,
-        Surname = u.LastName,
-        Resumes = u.Resumes.Select(r => r.ToResumeReturnDto()).ToList()
-      })
+      .Include(u => u.Resumes)
+      .Select(u => u.ToUserReturnDto())
       .FirstOrDefaultAsync(cancellationToken);
 
     if (user == null)
@@ -115,6 +104,7 @@ public class V2UserEndpoints()
 
     user.Name = userUpdateDto.Name;
     user.LastName = userUpdateDto.Surname;
+    user.Email = userUpdateDto.Email;
 
     await dbContext.SaveChangesAsync(cancellationToken);
     var dto = user.ToUserReturnDto();
