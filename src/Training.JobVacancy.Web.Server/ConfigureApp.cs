@@ -44,6 +44,8 @@ public static class ConfigureApp
 
     var group = endpoint.MapToApiVersion(2);
 
+    V2UserEndpoints.Map(group);
+    V2ResumeEndpoints.Map(group);
     V2CompanyEndpoints.Map(group);
     V2JobAdEndpoints.Map(group);
 

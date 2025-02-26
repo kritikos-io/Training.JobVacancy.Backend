@@ -1,4 +1,4 @@
-﻿namespace Adaptit.Training.JobVacancy.Web.Models.Dto;
+namespace Adaptit.Training.JobVacancy.Web.Models.Dto;
 
 public class PagedList<TSource>
 {

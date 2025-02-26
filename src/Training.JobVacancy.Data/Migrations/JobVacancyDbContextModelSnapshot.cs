@@ -102,6 +102,33 @@ namespace Adaptit.Training.JobVacancy.Data.Migrations
                     b.ToTable("JobAd", (string)null);
                 });
 
+            modelBuilder.Entity("Adaptit.Training.JobVacancy.Data.Entities.Resume", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DownloadUrl")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsInUse")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Resumes");
+                });
+
             modelBuilder.Entity("Adaptit.Training.JobVacancy.Data.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -109,12 +136,15 @@ namespace Adaptit.Training.JobVacancy.Data.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("LastName")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -183,6 +213,16 @@ namespace Adaptit.Training.JobVacancy.Data.Migrations
                     b.Navigation("Company");
                 });
 
+            modelBuilder.Entity("Adaptit.Training.JobVacancy.Data.Entities.Resume", b =>
+                {
+                    b.HasOne("Adaptit.Training.JobVacancy.Data.Entities.User", "User")
+                        .WithMany("Resumes")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Adaptit.Training.JobVacancy.Data.Entities.UserJobAd", b =>
                 {
                     b.HasOne("Adaptit.Training.JobVacancy.Data.Entities.JobAd", "JobAd")
@@ -200,6 +240,11 @@ namespace Adaptit.Training.JobVacancy.Data.Migrations
                     b.Navigation("JobAd");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Adaptit.Training.JobVacancy.Data.Entities.User", b =>
+                {
+                    b.Navigation("Resumes");
                 });
 #pragma warning restore 612, 618
         }
