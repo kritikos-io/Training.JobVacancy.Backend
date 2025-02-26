@@ -1,6 +1,7 @@
 ﻿namespace Adaptit.Training.JobVacancy.Web.Server.Endpoints.V2;
 
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 
 using Adaptit.Training.JobVacancy.Data;
 using Adaptit.Training.JobVacancy.Data.Entities;
@@ -50,18 +51,26 @@ public class V2JobAdEndpoints
 
   private static async Task<Results<Ok<PagedList<JobAddShortResponseDto>>, BadRequest>> SearchJobAds(
       JobAdFilters filters,
+      IHttpContextAccessor accessor,
       JobVacancyDbContext db,
       CancellationToken cancellationToken,
       [FromQuery] int page = 1,
       [FromQuery] int size = 20)
   {
+
+    var userId = accessor.HttpContext?.User.Claims.GetUserIdFromClaims();
+
     var jobAds = await db.JobAds
         .WhereIf(filters.Type != null, j => j.Type == filters.Type)
         .WhereIf(filters.Created != null, j => j.CreatedAt >= filters.Created)
         .WhereIf(filters.Expires != null, j => j.ExpiresAt <= filters.Expires)
         .WhereIf(filters.Description != null, j => EF.Functions.ToTsVector("english", j.Description).Matches(filters.Description!))
+        .WhereIf(filters.favorite != null && userId !=null, j => db.UserFavoriteJobAd.Any(
+          f => f.JobAd.Id == j.Id
+               && f.User.Id == userId
+               && f.IsFavorite == filters.favorite!.Value))
         .OrderBy(x => x.Id)
-        .ToPagedListAsync(x=>x.ToShortResponseDto(), page, size, cancellationToken);
+        .ToPagedListAsync(x=> x.ToShortResponseDto(), page, size, cancellationToken);
 
     return TypedResults.Ok(jobAds);
   }
@@ -147,7 +156,7 @@ public class V2JobAdEndpoints
   private static async Task<Results<NoContent, NotFound, UnprocessableEntity>> FavoriteJobAd(
       Guid id,
       JobVacancyDbContext ctx,
-      [FromServices] HttpContextAccessor accessor,
+      IHttpContextAccessor accessor,
       bool favorite = true,
       CancellationToken cancellationToken = default)
   {
@@ -157,13 +166,8 @@ public class V2JobAdEndpoints
       return TypedResults.NotFound();
     }
 
-    var userId = accessor.HttpContext?.User.Claims.GetUserIdFromClaims();
-    if (userId is null)
-    {
-      return TypedResults.UnprocessableEntity();
-    }
+    var user = await GetUser(accessor, ctx);
 
-    var user = await ctx.Users.FindAsync(userId, cancellationToken);
     if (user is null)
     {
       user = accessor.HttpContext!.User.Claims.ToList().MapToUser();
@@ -172,7 +176,7 @@ public class V2JobAdEndpoints
     }
 
     var userFavorite = await ctx.UserFavoriteJobAd
-        .FirstOrDefaultAsync(x => x.JobAd.Id == id && x.User.Id == userId, cancellationToken);
+        .FirstOrDefaultAsync(x => x.JobAd.Id == id && x.User.Id == user.Id, cancellationToken);
     if (userFavorite is null)
     {
       userFavorite = new UserJobAd() { User = user, JobAd = jobAd, IsFavorite = favorite };
@@ -181,5 +185,16 @@ public class V2JobAdEndpoints
     }
 
     return TypedResults.NoContent();
+  }
+
+  private static async Task<User?> GetUser(
+    IHttpContextAccessor accessor,
+    JobVacancyDbContext ctx,
+    CancellationToken cancellationToken = default)
+  {
+    var userId = accessor.HttpContext?.User.Claims.GetUserIdFromClaims();
+
+    return userId is null ?
+      null : await ctx.Users.FindAsync(userId, cancellationToken);
   }
 }

@@ -12,4 +12,6 @@ public class JobAdFilters
   public DateTime? Created { get; set; }
   public DateTime? Expires { get; set; }
   public string? Description { get; set; }
+
+  public bool? favorite { get; set; }
 }

@@ -8,11 +8,13 @@ public static partial class LogTemplates
 
   private const string EntityNotFound = "Requested entity {Entity} with id {Id} was not found.";
 
-  public const string EntityNotCreated = "Requested entity {Entity} with name {Id} was not created.";
+  private const string EntityNotCreated = "Requested entity {Entity} with name {Id} was not created.";
 
-  public const string EntityNotUpdated = "Requested entity {Entity} with id {Id} was not created.";
+  private const string EntityNotUpdated = "Requested entity {Entity} with id {Id} was not created.";
 
-  public const string EntityNotDeleted = "Requested entity {Entity} with id {Id} was not deleted.";
+  private const string EntityNotDeleted = "Requested entity {Entity} with id {Id} was not deleted.";
+
+  private const string CacheFailure = "Cache failure on {Endpoint} for {Entity}. Possibility for non deterministic software.";
 
   [LoggerMessage(LogLevel.Information, UnhandledException)]
   public static partial void LogUnhandledException(this ILogger logger);
@@ -31,5 +33,4 @@ public static partial class LogTemplates
 
   [LoggerMessage(LogLevel.Warning, EntityNotDeleted)]
   public static partial void LogEntityNotDeleted(this ILogger logger, string entity, object id);
-
 }
