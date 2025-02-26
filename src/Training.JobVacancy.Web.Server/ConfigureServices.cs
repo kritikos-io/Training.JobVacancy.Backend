@@ -174,8 +174,7 @@ public static class ConfigureServices
       .ValidateDataAnnotations()
       .ValidateOnStart();
 
-    var options = builder.Configuration.GetSection(BlobStorageOptions.Section).Get<BlobStorageOptions>();
-    builder.Services.AddAzureClients(cb => cb.AddBlobServiceClient(options.ConnectionString));
+    builder.Services.AddAzureClients(cb => cb.AddBlobServiceClient(builder.Configuration.GetConnectionString("StorageAccount")));
     builder.Services.AddScoped<BlobStorageService>();
   }
 
