@@ -1,8 +1,5 @@
 ﻿namespace Adaptit.Training.JobVacancy.Web.Server.Middlewares;
 
-using Microsoft.EntityFrameworkCore.Query;
-using Microsoft.IdentityModel.Logging;
-
 public class CorrelationIdMiddleware(ILogger<CorrelationIdMiddleware> logger) : IMiddleware
 {
   private readonly string header = "X-Correlation-Id";

@@ -1,10 +1,10 @@
 ﻿namespace Adaptit.Training.JobVacancy.Web.Server;
 
-using Adaptit.Training.JobVacancy.Backend.Helpers;
 using Adaptit.Training.JobVacancy.Data;
 using Adaptit.Training.JobVacancy.Web.Models;
 using Adaptit.Training.JobVacancy.Web.Server.Helpers;
 using Adaptit.Training.JobVacancy.Web.Server.Middlewares;
+using Adaptit.Training.JobVacancy.Web.Server.OpenApi.DocumentTransformers;
 using Adaptit.Training.JobVacancy.Web.Server.OpenApi.OperationTransformers;
 using Adaptit.Training.JobVacancy.Web.Server.OpenApi.SchemaTransformers;
 using Adaptit.Training.JobVacancy.Web.Server.Options;
@@ -40,6 +40,7 @@ public static class ConfigureServices
 
   public static void AddJobVacancyAuthentication(this WebApplicationBuilder builder)
   {
+    builder.Services.AddHttpContextAccessor();
     builder.Services.AddOptionsWithValidateOnStart<JobVacancyAuthenticationOptions>()
       .BindConfiguration(JobVacancyAuthenticationOptions.Section)
       .ValidateDataAnnotations();
@@ -52,19 +53,22 @@ public static class ConfigureServices
           builder.Configuration.GetRequiredSection(JobVacancyAuthenticationOptions.Section)
             .Bind(realmSettings);
 
-          options.Authority = realmSettings.Authority.ToString();
+          options.Authority = realmSettings.Authority;
           options.MetadataAddress = $"{options.Authority}/.well-known/openid-configuration";
 
           options.RequireHttpsMetadata = true;
           options.SaveToken = true;
+          options.MapInboundClaims = false;
 
           options.TokenValidationParameters = new TokenValidationParameters
           {
             ValidateIssuer = true,
             ValidateAudience = true,
-            ValidIssuer = realmSettings.Authority.ToString(),
+            ValidIssuer = realmSettings.Authority,
             ValidAudience = "account",
             ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero,
+            RoleClaimType = "groups",
           };
         });
 
@@ -72,7 +76,10 @@ public static class ConfigureServices
       .AddDefaultPolicy("default",
         policy => policy
           .AddAuthenticationSchemes("openid")
-          .RequireAuthenticatedUser());
+          .RequireAuthenticatedUser())
+      .AddDefaultPolicy("admin",
+          policy=>policy
+              .RequireRole("Admin"));
   }
 
   public static void AddApiDocumentation(this WebApplicationBuilder builder)

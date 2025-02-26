@@ -1,4 +1,4 @@
-﻿namespace Adaptit.Training.JobVacancy.Backend.Helpers;
+﻿namespace Adaptit.Training.JobVacancy.Web.Server.OpenApi.DocumentTransformers;
 
 using Adaptit.Training.JobVacancy.Web.Server.Options;
 
@@ -34,6 +34,6 @@ internal sealed class SecuritySchemeTransformer(IOptions<JobVacancyAuthenticatio
 
     document.Components.SecuritySchemes.TryAdd("openid", oidcScheme);
 
-    document.SecurityRequirements.Add(new OpenApiSecurityRequirement() { [new OpenApiSecurityScheme { Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "openid" } }] = new[] { "openid", "profile", "email" } });
+    document.SecurityRequirements.Add(new OpenApiSecurityRequirement() { [new OpenApiSecurityScheme { Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "openid" } }] = ["openid", "profile", "email"] });
   }
 }
