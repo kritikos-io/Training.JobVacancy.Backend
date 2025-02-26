@@ -17,7 +17,7 @@ RUN dotnet restore "src/Training.JobVacancy.Web.Server/Training.JobVacancy.Web.S
 
 COPY . .
 WORKDIR "/src/src/Training.JobVacancy.Web.Server"
-RUN dotnet build --no-restore "Training.JobVacancy.Web.Server.csproj" -c $BUILD_CONFIGURATION /p:Version=$VERSION
+RUN dotnet build --no-restore "Training.JobVacancy.Web.Server.csproj" -c $BUILD_CONFIGURATION
 
 FROM build AS test
 ARG BUILD_CONFIGURATION=Release
@@ -27,7 +27,7 @@ RUN dotnet test --no-build -c $BUILD_CONFIGURATION
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
 WORKDIR "/src/src/Training.JobVacancy.Web.Server"
-RUN dotnet publish --no-build "Training.JobVacancy.Web.Server.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false /p:Version=$VERSION
+RUN dotnet publish --no-build "Training.JobVacancy.Web.Server.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 USER root
