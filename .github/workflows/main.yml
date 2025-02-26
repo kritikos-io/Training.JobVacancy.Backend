@@ -1,8 +1,5 @@
 name: Publish
 
-env:
-  Authentication__OpenId__Authority: ${{ secrets.AUTHENTICATION__OPENID__AUTHORITY }}
-
 on:
   workflow_dispatch:
   pull_request:
@@ -18,7 +15,8 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
-
+    env:
+      Authentication__OpenId__Authority: ${{ secrets.AUTHENTICATION__OPENID__AUTHORITY }}
     steps:
       - uses: actions/checkout@v4
 
