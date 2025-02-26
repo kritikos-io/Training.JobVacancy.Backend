@@ -65,10 +65,10 @@ public class V2JobAdEndpoints
         .WhereIf(filters.Created != null, j => j.CreatedAt >= filters.Created)
         .WhereIf(filters.Expires != null, j => j.ExpiresAt <= filters.Expires)
         .WhereIf(filters.Description != null, j => EF.Functions.ToTsVector("english", j.Description).Matches(filters.Description!))
-        .WhereIf(filters.favorite != null && userId !=null, j => db.UserFavoriteJobAd.Any(
+        .WhereIf(filters.Favorite != null && userId !=null, j => db.UserFavoriteJobAd.Any(
           f => f.JobAd.Id == j.Id
                && f.User.Id == userId
-               && f.IsFavorite == filters.favorite!.Value))
+               && f.IsFavorite == filters.Favorite!.Value))
         .OrderBy(x => x.Id)
         .ToPagedListAsync(x=> x.ToShortResponseDto(), page, size, cancellationToken);
 
