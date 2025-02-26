@@ -9,10 +9,8 @@
   <ItemGroup>
     <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer"/>
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" />
-    <PackageReference Include="Azure.Storage.Blobs" />
     <PackageReference Include="Azure.Storage.Blobs.Batch" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" />
-    <PackageReference Include="Azure.Storage.Blobs" />
     <PackageReference Include="Azure.Storage.Blobs.Batch" />
     <PackageReference Include="Bogus"/>
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" />

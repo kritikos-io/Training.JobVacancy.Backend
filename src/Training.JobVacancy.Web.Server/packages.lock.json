@@ -20,16 +20,6 @@
           "AspNetCore.HealthChecks.UI.Core": "9.0.0"
         }
       },
-      "Azure.Storage.Blobs": {
-        "type": "Direct",
-        "requested": "[12.23.0, )",
-        "resolved": "12.23.0",
-        "contentHash": "wokJ5KX/iViQQ32xyCu69+Ter0aR4B9QQ+oR9NCpc/WPIanxnDErrmFfdmE7K8ZdccjHkvE/wEnqJxaF1+5wFg==",
-        "dependencies": {
-          "Azure.Storage.Common": "12.22.0",
-          "System.Text.Json": "6.0.10"
-        }
-      },
       "Azure.Storage.Blobs.Batch": {
         "type": "Direct",
         "requested": "[12.20.0, )",
@@ -38,15 +28,6 @@
         "dependencies": {
           "Azure.Storage.Blobs": "12.23.0",
           "Azure.Storage.Common": "12.22.0"
-        }
-      },
-      "AspNetCore.HealthChecks.UI.Client": {
-        "type": "Direct",
-        "requested": "[9.0.0, )",
-        "resolved": "9.0.0",
-        "contentHash": "1Ub3Wvvbz7CMuFNWgLEc9qqQibiMoovDML/WHrwr5J83RPgtI20giCR92s/ipLgu7IIuqw+W/y7WpIeHqAICxg==",
-        "dependencies": {
-          "AspNetCore.HealthChecks.UI.Core": "9.0.0"
         }
       },
       "Bogus": {
@@ -254,6 +235,15 @@
           "System.Memory": "4.5.5",
           "System.Text.Json": "6.0.10",
           "System.Threading.Tasks.Extensions": "4.5.4"
+        }
+      },
+      "Azure.Storage.Blobs": {
+        "type": "Transitive",
+        "resolved": "12.23.0",
+        "contentHash": "wokJ5KX/iViQQ32xyCu69+Ter0aR4B9QQ+oR9NCpc/WPIanxnDErrmFfdmE7K8ZdccjHkvE/wEnqJxaF1+5wFg==",
+        "dependencies": {
+          "Azure.Storage.Common": "12.22.0",
+          "System.Text.Json": "6.0.10"
         }
       },
       "Azure.Storage.Common": {
