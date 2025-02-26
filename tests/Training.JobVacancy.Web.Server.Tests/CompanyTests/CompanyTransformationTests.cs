@@ -2,6 +2,7 @@
 
 using Adaptit.Training.JobVacancy.Data.Entities;
 using Adaptit.Training.JobVacancy.Web.Models.Dto.V2.Company;
+using Adaptit.Training.JobVacancy.Web.Models.Dto.V2.JobAd;
 using Adaptit.Training.JobVacancy.Web.Server.Extensions.Mappings.V2;
 
 using Shouldly;
@@ -28,6 +29,7 @@ public class CompanyTransformationTests
         Website = new Uri("https://www.techcorp.com"),
         Vat = "123456789",
         LogoUrl = new Uri("https://www.techcorp.com/logo.png"),
+        JobAds = new List<JobAd>().AsReadOnly(),
         Address = new Address
         {
           Country = "USA",
@@ -46,6 +48,7 @@ public class CompanyTransformationTests
         Website = new Uri("https://www.techcorp.com"),
         Vat = "123456789",
         LogoUrl = new Uri("https://www.techcorp.com/logo.png"),
+        JobAds = new List<JobAdDto>().AsReadOnly(),
         Address = new AddressDto
         {
           Country = "USA",
@@ -69,6 +72,7 @@ public class CompanyTransformationTests
         Website = null,
         Vat = string.Empty,
         LogoUrl = null,
+        JobAds = new List<JobAd>().AsReadOnly(),
         Address = new Address
         {
           Country = string.Empty,
@@ -87,6 +91,7 @@ public class CompanyTransformationTests
         Website = null,
         Vat = string.Empty,
         LogoUrl = null,
+        JobAds = new List<JobAdDto>().AsReadOnly(),
         Address = new AddressDto
         {
           Country = string.Empty,
@@ -110,6 +115,7 @@ public class CompanyTransformationTests
         Website = null,
         Vat = "987654321",
         LogoUrl = null,
+        JobAds = new List<JobAd>().AsReadOnly(),
         Address = new Address
         {
           Country = "Canada",
@@ -128,6 +134,7 @@ public class CompanyTransformationTests
         Website = null,
         Vat = "987654321",
         LogoUrl = null,
+        JobAds = new List<JobAdDto>().AsReadOnly(),
         Address = new AddressDto
         {
           Country = "Canada",
