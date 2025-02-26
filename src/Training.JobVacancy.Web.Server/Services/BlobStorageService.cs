@@ -105,17 +105,10 @@ public class BlobStorageService
         blobUrisToDelete.Add(blobClient.Uri);
       }
 
-      if (blobUrisToDelete.Count is > 0 and <= 256)
+      var chunks = blobUrisToDelete.Chunk(256).ToList();
+      foreach (var chunk in chunks)
       {
-        await blobBatchClient.DeleteBlobsAsync(blobUrisToDelete.ToArray(), cancellationToken: cancellationToken);
-      }
-      else
-      {
-        for (var i = 0; i < blobUrisToDelete.Count; i += 256)
-        {
-          var chunk = blobUrisToDelete.Skip(i).Take(256).ToList();
-          await blobBatchClient.DeleteBlobsAsync(chunk.ToArray(), cancellationToken: cancellationToken);
-        }
+        await blobBatchClient.DeleteBlobsAsync(chunk, DeleteSnapshotsOption.IncludeSnapshots, cancellationToken);
       }
 
       return true;
