@@ -92,8 +92,8 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release
 
-      - name: Debug Environment Variables
-        run: env | sort
+      - name: Print Authority (Debug)
+        run: echo "Authority is ${{Authentication__OpenId__Authority}}"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
