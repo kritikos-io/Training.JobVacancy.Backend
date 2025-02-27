@@ -92,9 +92,6 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release
 
-      - name: Print Authority (Debug)
-        run: echo "Authority is ${{secrets.Authentication__OpenId__Authority}}"
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -113,6 +110,8 @@ jobs:
             training.jobvacancy.web.server:${{ env.GitVersion_SemVer }}
             training.jobvacancy.web.server:latest
           file: src/Training.JobVacancy.Data/Dockerfile
+          build-args: |
+            AUTHORITY=${{ secrets.AUTHENTICATION__OPENID__AUTHORITY }}
 
   deploy-development:
     runs-on: ubuntu-latest
