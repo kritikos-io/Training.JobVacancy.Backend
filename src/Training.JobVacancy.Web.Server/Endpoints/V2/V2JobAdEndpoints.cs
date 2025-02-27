@@ -65,12 +65,14 @@ public class V2JobAdEndpoints
         .WhereIf(filters.Created != null, j => j.CreatedAt >= filters.Created)
         .WhereIf(filters.Expires != null, j => j.ExpiresAt <= filters.Expires)
         .WhereIf(filters.Description != null, j => EF.Functions.ToTsVector("english", j.Description).Matches(filters.Description!))
-        .WhereIf(filters.Favorite != null && userId !=null, j => db.UserFavoriteJobAd.Any(
-          f => f.JobAd.Id == j.Id
-               && f.User.Id == userId
-               && f.IsFavorite == filters.Favorite!.Value))
-        .OrderBy(x => x.Id)
-        .ToPagedListAsync(x=> x.ToShortResponseDto(), page, size, cancellationToken);
+        .SelectIf(userId !=null,j => new
+        {
+          JobAd = j,
+          IsFavorite = db.UserFavoriteJobAd.Any(f => f.JobAd.Id == j.Id && f.User.Id == userId)
+        })
+        .WhereIf(filters.Favorite != null && userId !=null, j => j.IsFavorite == filters.Favorite!.Value)
+        .OrderBy(x => x.JobAd.Id)
+        .ToPagedListAsync(x=> x.JobAd.ToShortResponseDto(x.IsFavorite), page, size, cancellationToken);
 
     return TypedResults.Ok(jobAds);
   }
@@ -78,9 +80,11 @@ public class V2JobAdEndpoints
   private static async Task<Results<Ok<JobAdDto>, NotFound>> GetJobAd(
       [FromRoute] Guid id,
       JobVacancyDbContext db,
+      IHttpContextAccessor accessor,
       ILogger<V2JobAdEndpoints> logger,
       CancellationToken cancellationToken)
   {
+
     var jobAd = await db.JobAds
         .Include(x => x.Company)
         .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
@@ -91,7 +95,9 @@ public class V2JobAdEndpoints
       return TypedResults.NotFound();
     }
 
-    return TypedResults.Ok(jobAd.ToDto());
+    var userId = accessor.HttpContext?.User.Claims.GetUserIdFromClaims();
+
+    return TypedResults.Ok(jobAd.ToResponseDto(await IsFavorite(jobAd.Id, userId, db, cancellationToken)));
   }
 
   private static async Task<Results<CreatedAtRoute<JobAdDto>, ValidationProblem>> CreateJobAd(
@@ -197,4 +203,7 @@ public class V2JobAdEndpoints
     return userId is null ?
       null : await ctx.Users.FindAsync(userId, cancellationToken);
   }
+
+  private static async Task<bool> IsFavorite(Guid jobAdId, Guid? userId, JobVacancyDbContext ctx, CancellationToken ct = default) =>
+    await ctx.UserFavoriteJobAd.AnyAsync(f => userId != null && f.User.Id == userId && f.JobAd.Id == jobAdId, ct);
 }

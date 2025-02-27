@@ -31,7 +31,21 @@ public static partial class Mapping
     Company = jobAd.Company.ToResponseDto(),
   };
 
-  public static JobAddShortResponseDto ToShortResponseDto(this JobAd jobAd) => new()
+  public static JobAdDto ToResponseDto(this JobAd jobAd, bool isFavorite) => new()
+  {
+    Id = Guid.NewGuid(),
+    Type = jobAd.Type,
+    SalaryRange = jobAd.SalaryRange,
+    Description = jobAd.Description,
+    Location = jobAd.Location,
+    CreatedAt = jobAd.CreatedAt,
+    ExpiresAt = jobAd.ExpiresAt,
+    Favorite = isFavorite,
+    Level = jobAd.Level,
+    Company = jobAd.Company.ToResponseDto(),
+  };
+
+  public static JobAddShortResponseDto ToShortResponseDto(this JobAd jobAd, bool isFavorite) => new()
   {
     Id = jobAd.Id,
     Type = jobAd.Type,
@@ -40,6 +54,7 @@ public static partial class Mapping
     Location = jobAd.Location,
     CreatedAt = jobAd.CreatedAt,
     ExpiresAt = jobAd.ExpiresAt,
+    Favorite = isFavorite,
     Level = jobAd.Level,
   };
 

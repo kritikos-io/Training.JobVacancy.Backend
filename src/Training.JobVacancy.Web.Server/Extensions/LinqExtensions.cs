@@ -14,6 +14,14 @@ public static class LinqExtensions
       ? source.Where(predicate)
       : source;
 
+  public static IQueryable<TResult> SelectIf<TSource, TResult>(
+    this IQueryable<TSource> source,
+    bool condition,
+    Expression<Func<TSource, TResult>> selector)
+  {
+    return condition ? source.Select(selector) : source.Cast<TResult>();
+  }
+
   public static IOrderedQueryable<TSource> OrderBy<TSource, TKey>(this IQueryable<TSource> source, ListSortDirection direction, Expression<Func<TSource, TKey>> selector)
     => direction == ListSortDirection.Ascending
         ? source.OrderBy(selector)
