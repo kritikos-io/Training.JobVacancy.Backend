@@ -75,6 +75,7 @@ jobs:
             training.jobvacancy.web.server:latest
           file: src/Training.JobVacancy.Web.Server/Dockerfile
 
+
   build-migrations-container:
     runs-on: ubuntu-latest
     needs: determine-version
