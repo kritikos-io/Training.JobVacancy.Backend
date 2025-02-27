@@ -20,7 +20,6 @@ env:
 #  CONTAINER_APP_NAME: ${{ secrets.CONTAINER_APP_NAME }}
 #  RESOURCE_GROUP: ${{ secrets.RESOURCE_GROUP }}
 #  MIGRATIONS_CONTAINER_NAME: ${{ secrets.MIGRATIONS_CONTAINER_NAME }}
-  Authentication__OpenId__Authority: ${{ secrets.AUTHENTICATION__OPENID__AUTHORITY }}
 
 jobs:
   determine-version:
@@ -39,6 +38,8 @@ jobs:
 
   build-app-container:
     needs: determine-version
+    env:
+      Authentication__OpenId__Authority: ${{ secrets.AUTHENTICATION__OPENID__AUTHORITY }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
