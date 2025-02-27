@@ -38,6 +38,7 @@ jobs:
         run: dotnet-gitversion /output buildserver
 
 
+
   build-app-container:
     needs: determine-version
     runs-on: ubuntu-latest
