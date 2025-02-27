@@ -128,8 +128,6 @@ jobs:
             --resource-group ${{ secrets.RESOURCE_GROUP }} \
             --image ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ secrets.CONTAINER_APP_NAME }}:develop \
             --image ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ secrets.MIGRATIONS_CONTAINER_NAME }}:develop \
-        with:
-          slot-name: develop
 
   deploy-staging:
     runs-on: ubuntu-latest
