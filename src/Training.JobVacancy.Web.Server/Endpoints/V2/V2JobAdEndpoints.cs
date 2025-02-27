@@ -22,7 +22,6 @@ public class V2JobAdEndpoints
     var group = endpoint.MapGroup("jobad")
         .WithTags("JobAd");
 
-    group.MapGet("", ListAllJobAds);
     group.MapGet("{id:guid}", GetJobAd)
         .WithName(nameof(GetJobAd));
 
@@ -35,22 +34,8 @@ public class V2JobAdEndpoints
     return endpoint;
   }
 
-  private static async Task<Ok<PagedList<JobAdDto>>> ListAllJobAds(
-      JobVacancyDbContext db,
-      ILogger<V2JobAdEndpoints> logger,
-      CancellationToken cancellationToken,
-      [FromQuery][Range(1, int.MaxValue)] int page = 1,
-      [FromQuery][Range(1, 50)] int size = 20)
-  {
-    var jobs = await db.JobAds
-        .OrderBy(x => x.Id)
-        .ToPagedListAsync(x => x.ToDto(), page, size, cancellationToken);
-
-    return TypedResults.Ok(jobs);
-  }
-
   private static async Task<Results<Ok<PagedList<JobAddShortResponseDto>>, BadRequest>> SearchJobAds(
-      JobAdFilters filters,
+      JobAdFilters? filters,
       IHttpContextAccessor accessor,
       JobVacancyDbContext db,
       CancellationToken cancellationToken,
