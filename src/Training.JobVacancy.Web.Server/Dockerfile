@@ -4,6 +4,10 @@ WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
+ARG AUTHORITY
+
+ENV Authentication__OpenId__Authority=$AUTHORITY
+
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 ENV ContinuousIntegrationBuild=true
@@ -15,6 +19,7 @@ COPY "Directory.Packages.props" "."
 COPY "Directory.Build.props" "."
 RUN dotnet restore "src/Training.JobVacancy.Web.Server/Training.JobVacancy.Web.Server.csproj"
 
+COPY .git/ .git/
 COPY . .
 WORKDIR "/src/src/Training.JobVacancy.Web.Server"
 RUN dotnet build --no-restore "Training.JobVacancy.Web.Server.csproj" -c $BUILD_CONFIGURATION

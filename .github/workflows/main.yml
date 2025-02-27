@@ -1,8 +1,5 @@
 name: Publish
 
-env:
-  Authentication__OpenId__Authority: ${{ secrets.AUTHENTICATION__OPENID__AUTHORITY }}
-
 on:
   workflow_dispatch:
   pull_request:
@@ -18,7 +15,8 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
-
+    env:
+      Authentication__OpenId__Authority: ${{ secrets.AUTHENTICATION__OPENID__AUTHORITY }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -47,7 +45,7 @@ jobs:
         run: spectral lint src/Training.JobVacancy.Web.Server/OpenApi/Training.JobVacancy.Web.Server.json --ruleset src/Training.JobVacancy.Web.Server/OpenApi/.spectral.yaml
 
       - name: Test
-        run: dotnet test ./Training.JobVacancy.Backend.slnx --no-build
+        run: dotnet test ./Training.JobVacancy.Backend.slnx --configuration Release --no-build
 
       - name: Publish
         run: dotnet publish ./Training.JobVacancy.Backend.slnx --configuration Release --no-build
