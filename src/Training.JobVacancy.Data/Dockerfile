@@ -1,10 +1,6 @@
 ﻿FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /app
-COPY src/Training.JobVacancy.slnx .
-COPY src/Training.JobVacancy.Data/*.csproj src/Training.JobVacancy.Data/
-COPY src/Training.JobVacancy.Web.Server/*.csproj src/Training.JobVacancy.Web.Server/
 
-RUN dotnet restore
 COPY . .
 
 WORKDIR /app/src/Training.JobVacancy.Data
