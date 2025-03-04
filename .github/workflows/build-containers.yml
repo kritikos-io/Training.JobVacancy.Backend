@@ -70,8 +70,8 @@ jobs:
           push: true
           context: .
           tags: |
-            ghcr.io/${{ github.repository }}/training.jobvacancy.web.server:${{ env.GitVersion_SemVer }}
-            ghcr.io/${{ github.repository }}/training.jobvacancy.web.server::latest
+            ghcr.io/training.jobvacancy.web.server:${{ env.GitVersion_SemVer }}
+            ghcr.io/training.jobvacancy.web.server::latest
           file: src/Training.JobVacancy.Web.Server/Dockerfile
 
   build-migrations-container:
