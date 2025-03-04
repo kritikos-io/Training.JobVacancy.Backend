@@ -4,6 +4,8 @@ COPY . .
 
 RUN dotnet tool install --global dotnet-ef && export PATH="$PATH:/root/.dotnet/tools"
 
+RUN dotnet tool restore
+
 RUN dotnet-ef migrations bundle --startup-project ../Training.JobVacancy.Web.Server --project . --context TrainingJobVacancyDbContext --output /migrations-bundle
 
 ENTRYPOINT ["/migrations-bundle", "--connection", "$DATABASE_CONNECTION_STRING"]
