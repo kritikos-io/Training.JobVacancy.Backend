@@ -75,6 +75,7 @@ jobs:
           file: src/Training.JobVacancy.Web.Server/Dockerfile
           build-args: Authentication__OpenId__Authority=${{ secrets.AUTHENTICATION__OPENID__AUTHORITY }}
 
+
   build-migrations-container:
     runs-on: ubuntu-latest
     needs: determine-version
