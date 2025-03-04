@@ -106,9 +106,10 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
+          context: .
           tags: |
-            training.jobvacancy.web.server:${{ env.GitVersion_SemVer }}
-            training.jobvacancy.web.server:latest
+            ghcr.io/training.jobvacancy.web.server:${{ env.GitVersion_SemVer }}
+            ghcr.io/training.jobvacancy.web.server:latest
           file: src/Training.JobVacancy.Data/Dockerfile
 
   deploy-development:
