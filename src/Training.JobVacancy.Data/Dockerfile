@@ -2,10 +2,8 @@
 WORKDIR /app
 COPY . .
 
-RUN dotnet tool install --global dotnet-ef
+RUN dotnet tool install --global dotnet-ef && export PATH="$PATH:/root/.dotnet/tools"
 
-ENV PATH="${PATH}:/root/.dotnet/tools"
-
-RUN dotnet-ef migrations bundle --startup-project src/Training.JobVacancy.Web.Server/Training.JobVacancy.Web.Server.csproj --project src/Training.JobVacancy.Data/Training.JobVacancy.Data.csproj --context TrainingJobVacancyDbContext --output /migrations-bundle
+RUN dotnet-ef migrations bundle --startup-project ../Training.JobVacancy.Web.Server --project . --context JobVacancyDbContext --output /migrations-bundle
 
 ENTRYPOINT ["/migrations-bundle", "--connection", "$DATABASE_CONNECTION_STRING"]
