@@ -110,8 +110,6 @@ jobs:
             training.jobvacancy.web.server:${{ env.GitVersion_SemVer }}
             training.jobvacancy.web.server:latest
           file: src/Training.JobVacancy.Data/Dockerfile
-          build-args: |
-            AUTHORITY=${{ secrets.AUTHENTICATION__OPENID__AUTHORITY }}
 
   deploy-development:
     runs-on: ubuntu-latest

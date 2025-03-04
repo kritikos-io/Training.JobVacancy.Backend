@@ -4,10 +4,6 @@ WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
-ARG AUTHORITY
-
-ENV Authentication__OpenId__Authority=$AUTHORITY
-
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 ENV ContinuousIntegrationBuild=true
