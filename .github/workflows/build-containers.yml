@@ -39,8 +39,6 @@ jobs:
   build-app-container:
     needs: determine-version
     runs-on: ubuntu-latest
-    env:
-      Authentication__OpenId__Authority: ${{ secrets.AUTHENTICATION__OPENID__AUTHORITY }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -50,17 +48,6 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '9.0.x'
-
-      - name: Check if Secret is Empty
-        run: |
-          set -x
-          if [ -z "$MY_SECRET" ]; then
-            echo "Secret is EMPTY!"
-          else
-            echo "Secret is SET!"
-          fi
-        env:
-          MY_SECRET: ${{ secrets.AUTHENTICATION__OPENID__AUTHORITY }}
 
       - name: Build
         run: dotnet build --configuration Release
@@ -77,6 +64,8 @@ jobs:
 
       - name: Build and push app container to GCR
         uses: docker/build-push-action@v6
+        env:
+          Authentication__OpenId__Authority: ${{ secrets.AUTHENTICATION__OPENID__AUTHORITY }}
         with:
           push: true
           context: .
