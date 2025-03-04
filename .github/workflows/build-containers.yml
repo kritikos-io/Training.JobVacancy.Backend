@@ -112,6 +112,7 @@ jobs:
             ghcr.io/training.jobvacancy.web.server:latest
           file: src/Training.JobVacancy.Data/Dockerfile
 
+
   deploy-development:
     runs-on: ubuntu-latest
     needs: [build-app-container, build-migrations-container]
