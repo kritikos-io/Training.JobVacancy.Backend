@@ -51,9 +51,14 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
-      - name: Debug Secret
+      - name: Check if Secret is Empty
         run: |
-          echo "Secret is set: ${MY_SECRET:+Yes}"
+          set -x
+          if [ -z "$MY_SECRET" ]; then
+            echo "Secret is EMPTY!"
+          else
+            echo "Secret is SET!"
+          fi
         env:
           MY_SECRET: ${{ secrets.AUTHENTICATION__OPENID__AUTHORITY }}
 
