@@ -40,7 +40,7 @@ jobs:
     needs: determine-version
     runs-on: ubuntu-latest
     env:
-      Authentication__OpenId__Authority: ${{ secrets.AUTHENTICATION__OPENID__AUTHORITY }}
+      Authentication__OpenId__Authority: "https://auth.kritikos.io/realms/iot/.well-known/openid-configuration"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -53,6 +53,12 @@ jobs:
 
       - name: Build
         run: dotnet build --configuration Release
+
+      - name: Debug Secret
+        run: |
+          echo "Secret is set: ${MY_SECRET:+Yes}"
+        env:
+          MY_SECRET: ${{ secrets.MY_SECRET_NAME }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
