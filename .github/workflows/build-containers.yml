@@ -63,8 +63,8 @@ jobs:
           push: true
           context: .
           tags: |
-            ghcr.io/${{ secrets.GITHUB_REPOSITORY }}:${{ env.GitVersion_SemVer }}
-            ghcr.io/${{ secrets.GITHUB_REPOSITORY }}:latest
+            ghcr.io/${{ github.repository }}:${{ env.GitVersion_SemVer }}
+            ghcr.io/${{ github.repository }}:latest
           file: src/Training.JobVacancy.Web.Server/Dockerfile
 
   build-migrations-container:
