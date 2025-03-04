@@ -70,11 +70,9 @@ jobs:
           push: true
           context: .
           tags: |
-            training.jobvacancy.web.server:${{ env.GitVersion_SemVer }}
-            training.jobvacancy.web.server:latest
+            ghcr.io/${{ github.repository }}/training.jobvacancy.web.server:${{ env.GitVersion_SemVer }}
+            ghcr.io/${{ github.repository }}/training.jobvacancy.web.server::latest
           file: src/Training.JobVacancy.Web.Server/Dockerfile
-          build-args: Authentication__OpenId__Authority=${{ secrets.AUTHENTICATION__OPENID__AUTHORITY }}
-
 
   build-migrations-container:
     runs-on: ubuntu-latest
