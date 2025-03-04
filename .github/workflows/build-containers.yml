@@ -63,8 +63,8 @@ jobs:
           push: true
           context: .
           tags: |
-            ghcr.io/${{ github.repository_owner }}/$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]'):${{ env.GitVersion_SemVer }}
-            ghcr.io/${{ github.repository_owner }}/$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]'):latest
+            ghcr.io/training.jobvacancy.backend:${{ env.GitVersion_SemVer }}
+            ghcr.io/training.jobvacancy.backend:latest
           file: src/Training.JobVacancy.Web.Server/Dockerfile
 
   build-migrations-container:
