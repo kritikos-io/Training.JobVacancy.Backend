@@ -39,6 +39,8 @@ jobs:
   build-app-container:
     needs: determine-version
     runs-on: ubuntu-latest
+    env:
+      Authentication__OpenId__Authority: ${{ secrets.AUTHENTICATION__OPENID__AUTHORITY }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -64,8 +66,6 @@ jobs:
 
       - name: Build and push app container to GCR
         uses: docker/build-push-action@v6
-        env:
-          Authentication__OpenId__Authority: ${{ secrets.AUTHENTICATION__OPENID__AUTHORITY }}
         with:
           push: true
           context: .
@@ -73,6 +73,7 @@ jobs:
             training.jobvacancy.web.server:${{ env.GitVersion_SemVer }}
             training.jobvacancy.web.server:latest
           file: src/Training.JobVacancy.Web.Server/Dockerfile
+          build-args: Authentication__OpenId__Authority=${{ secrets.AUTHENTICATION__OPENID__AUTHORITY }}
 
   build-migrations-container:
     runs-on: ubuntu-latest
