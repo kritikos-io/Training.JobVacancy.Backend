@@ -57,15 +57,14 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build and push app container to GCR
+      - name: Build and push app container to GHCR
         uses: docker/build-push-action@v6
         with:
           push: true
-          context: .
+          context: src/Training.JobVacancy.Web.Server
           tags: |
-            ghcr.io/training.jobvacancy.backend:${{ env.GitVersion_SemVer }}
-            ghcr.io/training.jobvacancy.backend:latest
-          file: src/Training.JobVacancy.Web.Server/Dockerfile
+            kritikos-io/training-jobvacancy-backend:${{ env.GitVersion_SemVer }}
+            kritikos-io/training-jobvacancy-backend:latest
 
   build-migrations-container:
     runs-on: ubuntu-latest
@@ -88,16 +87,14 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build and push migrations container
+      - name: Build and push migrations container to GHCR
         uses: docker/build-push-action@v6
         with:
           push: true
-          context: .
+          context: src/Training.JobVacancy.Data
           tags: |
-            ghcr.io/training.jobvacancy.web.server:${{ env.GitVersion_SemVer }}
-            ghcr.io/training.jobvacancy.web.server:latest
-          file: src/Training.JobVacancy.Data/Dockerfile
-
+            kritikos-io/training-jobvacancy-backend:${{ env.GitVersion_SemVer }}
+            kritikos-io/training-jobvacancy-backend:latest
 
   deploy-development:
     runs-on: ubuntu-latest
