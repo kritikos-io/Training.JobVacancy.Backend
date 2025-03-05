@@ -6,6 +6,6 @@ RUN dotnet tool install --global dotnet-ef
 
 ENV PATH="${PATH}:/root/.dotnet/tools"
 
-RUN dotnet-ef migrations bundle --startup-project /app/src/Training.JobVacancy.Web.Server --project /app/src/Training.JobVacancy.Data --context JobVacancyDbContext --output /migrations-bundle
+RUN dotnet ef migrations bundle --startup-project /app/src/Training.JobVacancy.Web.Server --project /app/src/Training.JobVacancy.Data --context JobVacancyDbContext --output /migrations-bundle
 
 ENTRYPOINT ["/migrations-bundle", "--connection", "$DATABASE_CONNECTION_STRING"]
