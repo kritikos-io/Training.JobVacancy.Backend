@@ -61,7 +61,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          context: ./src/Training.JobVacancy.Web.Server
+          context: .
           tags: |
             kritikos-io/training-jobvacancy-backend:${{ env.GitVersion_SemVer }}
             kritikos-io/training-jobvacancy-backend:latest
@@ -91,7 +91,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          context: ./src/Training.JobVacancy.Data
+          context: .
           tags: |
             kritikos-io/training-jobvacancy-backend:${{ env.GitVersion_SemVer }}
             kritikos-io/training-jobvacancy-backend:latest
