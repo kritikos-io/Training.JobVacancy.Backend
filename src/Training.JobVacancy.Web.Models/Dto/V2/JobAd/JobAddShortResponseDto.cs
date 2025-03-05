@@ -1,5 +1,6 @@
 ﻿namespace Adaptit.Training.JobVacancy.Web.Models.Dto.V2.JobAd;
 
+using Adaptit.Training.JobVacancy.Web.Models.Dto.V2.Company;
 using Adaptit.Training.JobVacancy.Web.Models.Enum;
 
 public class JobAddShortResponseDto
@@ -21,4 +22,6 @@ public class JobAddShortResponseDto
   public DateTime ExpiresAt { get; set; }
 
   public JobExperienceLevel Level { get; set; }
+
+  public Guid CompanyId { get; set; }
 }

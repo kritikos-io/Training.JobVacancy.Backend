@@ -1,7 +1,9 @@
 ﻿namespace Adaptit.Training.JobVacancy.Web.Server.Extensions.Mappings.V2;
 
+using Adaptit.Training.JobVacancy.Data;
 using Adaptit.Training.JobVacancy.Data.Entities;
 using Adaptit.Training.JobVacancy.Web.Models.Dto.V2.Company;
+using Adaptit.Training.JobVacancy.Web.Server.Endpoints.V2;
 
 /// <summary>
 /// Provides extension methods for transforming between Entity and DTO objects.
@@ -15,7 +17,7 @@ public static partial class Mapping
   /// <returns>A DTO containing detailed company information.</returns>
   public static CompanyResponseDto ToResponseDto(this Company entity)
   {
-    return new CompanyResponseDto
+    var response = new CompanyResponseDto
     {
       Id = entity.Id,
       Name = entity.Name,
@@ -25,8 +27,10 @@ public static partial class Mapping
       Address = ToDto(entity.Address),
       Sponsored = entity.Sponsored,
       PhoneNumber = entity.PhoneNumber,
-      JobAds = [.. entity.JobAds.Select(x=>x.ToDto())],
+      JobAds = [.. entity.JobAds.Select(x=>x.ToResponseDto(false))],
     };
+
+    return response;
   }
 
   /// <summary>

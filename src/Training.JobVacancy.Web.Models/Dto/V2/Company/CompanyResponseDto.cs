@@ -18,7 +18,7 @@ public class CompanyResponseDto
 
   public bool? Sponsored { get; set; }
 
-  public IReadOnlyList<JobAdDto> JobAds { get; set; } = [];
+  public IReadOnlyList<JobAdResponseDto> JobAds { get; set; } = [];
 
   public string? PhoneNumber { get; set; }
 

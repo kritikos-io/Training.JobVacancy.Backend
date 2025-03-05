@@ -8,7 +8,7 @@ public class Company
 {
   public Guid Id { get; set; }
 
-  public IReadOnlyCollection<JobAd> JobAds = [];
+  public List<JobAd> JobAds { get; set; } = [];
 
   public string Name { get; set; }
 

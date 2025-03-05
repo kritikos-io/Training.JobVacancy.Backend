@@ -15,23 +15,11 @@ public static partial class Mapping
     CreatedAt = DateTime.UtcNow,
     ExpiresAt = dto.ExpiresAt,
     Level = dto.Level,
-    Company = company,
+    Company = company
   };
 
-  public static JobAdDto ToDto(this JobAd jobAd) => new()
-  {
-    Id = Guid.NewGuid(),
-    Type = jobAd.Type,
-    SalaryRange = jobAd.SalaryRange,
-    Description = jobAd.Description,
-    Location = jobAd.Location,
-    CreatedAt = jobAd.CreatedAt,
-    ExpiresAt = jobAd.ExpiresAt,
-    Level = jobAd.Level,
-    Company = jobAd.Company.ToResponseDto(),
-  };
 
-  public static JobAdDto ToResponseDto(this JobAd jobAd, bool isFavorite) => new()
+  public static JobAdResponseDto ToResponseDto(this JobAd jobAd, bool isFavorite) => new()
   {
     Id = Guid.NewGuid(),
     Type = jobAd.Type,
@@ -42,7 +30,7 @@ public static partial class Mapping
     ExpiresAt = jobAd.ExpiresAt,
     Favorite = isFavorite,
     Level = jobAd.Level,
-    Company = jobAd.Company.ToResponseDto(),
+    //Company = jobAd.Company.ToResponseDto(),
   };
 
   public static JobAddShortResponseDto ToShortResponseDto(this JobAd jobAd, bool isFavorite) => new()
@@ -50,12 +38,11 @@ public static partial class Mapping
     Id = jobAd.Id,
     Type = jobAd.Type,
     SalaryRange = jobAd.SalaryRange,
-    Description = jobAd.Description,
     Location = jobAd.Location,
-    CreatedAt = jobAd.CreatedAt,
     ExpiresAt = jobAd.ExpiresAt,
     Favorite = isFavorite,
     Level = jobAd.Level,
+    CompanyId = jobAd.Company.Id
   };
 
   public static void UpdateEntity(this JobAd jobAd, JobAdUpdateDto dto)

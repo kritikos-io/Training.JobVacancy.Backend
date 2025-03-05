@@ -108,7 +108,11 @@ public class V2CompanyEndpoints
       CancellationToken ct)
   {
 
-    var dto = await dbContext.Companies.Where(c => c.Id == companyId).Select(c => c.ToResponseDto()).FirstOrDefaultAsync(cancellationToken: ct);
+    var dto = await dbContext.Companies
+      .Where(c => c.Id == companyId)
+      .Include(x => x.JobAds)
+      .Select(c => c.ToResponseDto())
+      .FirstOrDefaultAsync(cancellationToken: ct);
 
     if (dto is null)
     {

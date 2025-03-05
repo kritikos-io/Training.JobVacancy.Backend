@@ -3,7 +3,7 @@
 using Adaptit.Training.JobVacancy.Web.Models.Dto.V2.Company;
 using Adaptit.Training.JobVacancy.Web.Models.Enum;
 
-public class JobAdDto
+public class JobAdRequestDto
 {
   public Guid Id { get; set; }
 
