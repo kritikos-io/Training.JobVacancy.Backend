@@ -61,10 +61,10 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          context: .
           tags: |
             kritikos-io/training-jobvacancy-backend:${{ env.GitVersion_SemVer }}
             kritikos-io/training-jobvacancy-backend:latest
+            file: ./src/Training.JobVacancy.Web.Server/Dockerfile
 
   build-migrations-container:
     runs-on: ubuntu-latest
@@ -91,10 +91,10 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          context: .
           tags: |
             kritikos-io/training-jobvacancy-backend:${{ env.GitVersion_SemVer }}
             kritikos-io/training-jobvacancy-backend:latest
+          file: ./src/Training.JobVacancy.Data/Dockerfile
 
   deploy-development:
     runs-on: ubuntu-latest
