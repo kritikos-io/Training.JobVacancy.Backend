@@ -31,7 +31,7 @@ public class V2JobAdEndpoints
     return endpoint;
   }
 
-  private static async Task<Results<Ok<PagedList<JobAddShortResponseDto>>, BadRequest>> SearchJobAds(
+  private static async Task<Ok<PagedList<JobAddShortResponseDto>>> SearchJobAds(
       JobAdFilters? filters,
       IHttpContextAccessor accessor,
       JobVacancyDbContext db,
@@ -67,17 +67,15 @@ public class V2JobAdEndpoints
       CancellationToken cancellationToken = default)
   {
 
-    var jobAd = await db.JobAds
-        .Include(x => x.Company)
-        .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+    var jobAdAndUser = await GetUserJobAdMapped(id, accessor, db, cancellationToken);
 
-    if (jobAd is null)
+    if (jobAdAndUser.JobAd is null)
     {
-      logger.LogEntityNotFound(nameof(jobAd), id);
+      logger.LogEntityNotFound(nameof(jobAdAndUser), id);
       return TypedResults.NotFound();
     }
 
-    return TypedResults.Ok(jobAd.ToResponseDto(await IsFavorite(jobAd.Id, accessor, db, cancellationToken)));
+    return TypedResults.Ok(jobAdAndUser.ToResponseDto());
   }
 
   private static async Task<Results<CreatedAtRoute<JobAdResponseDto>, ValidationProblem>> CreateJobAd(
@@ -89,6 +87,7 @@ public class V2JobAdEndpoints
   {
     var company = await db.Companies
       .FirstOrDefaultAsync(x => x.Id == ad.CompanyId, cancellationToken);
+
     if (company is null)
     {
       logger.LogEntityNotFound(nameof(Company), ad.CompanyId);
@@ -96,11 +95,12 @@ public class V2JobAdEndpoints
     }
 
     var jobAd = ad.ToEntity(company);
-
     db.JobAds.Add(jobAd);
     await db.SaveChangesAsync(cancellationToken);
 
-    return TypedResults.CreatedAtRoute(jobAd.ToResponseDto(await IsFavorite(jobAd.Id,accessor,db,cancellationToken)), nameof(GetJobAd), new { id = jobAd.Id });
+    var jobAdAndUser = await GetUserJobAdMapped(jobAd.Id, accessor, db, cancellationToken);
+
+    return TypedResults.CreatedAtRoute(jobAdAndUser.ToResponseDto(), nameof(GetJobAd), new { id = jobAd.Id });
   }
 
   private static async Task<Results<Ok<JobAdResponseDto>, NotFound>> UpdateJobAd(
@@ -111,18 +111,18 @@ public class V2JobAdEndpoints
       ILogger<V2JobAdEndpoints> logger,
       CancellationToken cancellationToken = default)
   {
-    var jobAd = await db.JobAds.FindAsync([id], CancellationToken.None);
+    var jobAdAndUser = await GetUserJobAdMapped(id, accessor, db, cancellationToken);
 
-    if (jobAd is null)
+    if (jobAdAndUser.JobAd is null)
     {
       logger.LogEntityNotFound(nameof(JobAd), id);
       return TypedResults.NotFound();
     }
 
-    jobAd.UpdateEntity(dto);
+    jobAdAndUser.JobAd.Apply(dto);
     await db.SaveChangesAsync(cancellationToken);
 
-    return TypedResults.Ok(jobAd.ToResponseDto(await IsFavorite(jobAd.Id,accessor,db,cancellationToken)));
+    return TypedResults.Ok(jobAdAndUser.ToResponseDto());
   }
 
   private static async Task<Results<Ok, NotFound>> DeleteJobAd(
@@ -189,13 +189,23 @@ public class V2JobAdEndpoints
       null : await ctx.Users.FindAsync(userId, cancellationToken);
   }
 
-  public static async Task<bool> IsFavorite(
+  private static async Task<UserJobAd> GetUserJobAdMapped(
     Guid jobAdId,
     IHttpContextAccessor accessor,
-    JobVacancyDbContext ctx,
+    JobVacancyDbContext db,
     CancellationToken ct = default)
   {
     var userId = accessor.HttpContext?.User.Claims.GetUserIdFromClaims();
-    return await ctx.UserFavoriteJobAd.AnyAsync(f => userId != null && f.User.Id == userId && f.JobAd.Id == jobAdId, ct);
+    var userJobAd = await db.UserFavoriteJobAd
+      .Include(x => x.JobAd.Company)
+      .FirstOrDefaultAsync(x => x.JobAd.Id == jobAdId && x.User.Id == userId, ct);
+
+    return userJobAd ?? new UserJobAd
+    {
+      User = await db.Users.FindAsync(userId),
+      JobAd = await db.JobAds.FindAsync(jobAdId),
+      IsFavorite = false
+    };
   }
+
 }

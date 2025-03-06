@@ -3,6 +3,7 @@
 using Adaptit.Training.JobVacancy.Data.Entities;
 using Adaptit.Training.JobVacancy.Web.Models.Dto.V2.JobAd;
 
+
 public static partial class Mapping
 {
   public static JobAd ToEntity(this JobAdCreateDto dto, Company company) => new()
@@ -19,18 +20,18 @@ public static partial class Mapping
   };
 
 
-  public static JobAdResponseDto ToResponseDto(this JobAd jobAd, bool isFavorite) => new()
+  public static JobAdResponseDto ToResponseDto(this UserJobAd userJobAd) => new()
   {
-    Id = Guid.NewGuid(),
-    Type = jobAd.Type,
-    SalaryRange = jobAd.SalaryRange,
-    Description = jobAd.Description,
-    Location = jobAd.Location,
-    CreatedAt = jobAd.CreatedAt,
-    ExpiresAt = jobAd.ExpiresAt,
-    Favorite = isFavorite,
-    Level = jobAd.Level,
-    //Company = jobAd.Company.ToResponseDto(),
+    Id = userJobAd.JobAd.Id,
+    Type = userJobAd.JobAd.Type,
+    SalaryRange = userJobAd.JobAd.SalaryRange,
+    Description = userJobAd.JobAd.Description,
+    Location = userJobAd.JobAd.Location,
+    CreatedAt = userJobAd.JobAd.CreatedAt,
+    ExpiresAt = userJobAd.JobAd.ExpiresAt,
+    Favorite = userJobAd.IsFavorite,
+    Level = userJobAd.JobAd.Level,
+    Company = userJobAd.JobAd.Company.ToResponseDto(),
   };
 
   public static JobAddShortResponseDto ToShortResponseDto(this JobAd jobAd, bool isFavorite) => new()
@@ -45,7 +46,7 @@ public static partial class Mapping
     CompanyId = jobAd.Company.Id
   };
 
-  public static void UpdateEntity(this JobAd jobAd, JobAdUpdateDto dto)
+  public static void Apply(this JobAd jobAd, JobAdUpdateDto dto)
   {
     jobAd.Type = dto.Type;
     jobAd.SalaryRange = dto.SalaryRange;
