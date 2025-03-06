@@ -14,8 +14,6 @@ public static partial class LogTemplates
 
   private const string EntityNotDeleted = "Requested entity {Entity} with id {Id} was not deleted.";
 
-  private const string CacheFailure = "Cache failure on {Endpoint} for {Entity}. Possibility for non deterministic software.";
-
   [LoggerMessage(LogLevel.Information, UnhandledException)]
   public static partial void LogUnhandledException(this ILogger logger);
 
