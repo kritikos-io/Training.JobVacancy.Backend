@@ -132,7 +132,7 @@ public class V2JobAdEndpoints
       ILogger<V2JobAdEndpoints> logger,
       CancellationToken cancellationToken = default)
   {
-    var jobAd = await db.JobAds.FindAsync(id);
+    var jobAd = await db.JobAds.FindAsync(id,cancellationToken);
 
     if (jobAd is null)
     {
@@ -158,7 +158,7 @@ public class V2JobAdEndpoints
       return TypedResults.NotFound();
     }
 
-    var user = await GetUser(accessor, ctx);
+    var user = await GetUser(accessor, ctx, cancellationToken);
 
     if (user is null)
     {
@@ -171,7 +171,7 @@ public class V2JobAdEndpoints
         .FirstOrDefaultAsync(x => x.JobAd.Id == id && x.User.Id == user.Id, cancellationToken);
     if (userFavorite is null)
     {
-      userFavorite = new UserJobAd() { User = user, JobAd = jobAd, IsFavorite = favorite };
+      userFavorite = new UserJobAd{ User = user, JobAd = jobAd, IsFavorite = favorite };
       ctx.UserFavoriteJobAd.Add(userFavorite);
       await ctx.SaveChangesAsync(cancellationToken);
     }
@@ -203,8 +203,11 @@ public class V2JobAdEndpoints
 
     return userJobAd ?? new UserJobAd
     {
-      User = await db.Users.FindAsync(userId),
-      JobAd = await db.JobAds.FindAsync(jobAdId),
+      User = await db.Users.FindAsync(userId, ct),
+      JobAd = await db.JobAds
+        .Include(x=>x.Company)
+        .Where(x=> x.Id == jobAdId)
+        .FirstOrDefaultAsync(ct),
       IsFavorite = false
     };
   }

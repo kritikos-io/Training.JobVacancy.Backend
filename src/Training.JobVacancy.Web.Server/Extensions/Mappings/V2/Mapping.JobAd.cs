@@ -31,7 +31,7 @@ public static partial class Mapping
     ExpiresAt = userJobAd.JobAd.ExpiresAt,
     Favorite = userJobAd.IsFavorite,
     Level = userJobAd.JobAd.Level,
-    Company = userJobAd.JobAd.Company.ToResponseDto(),
+    CompanyId = userJobAd.JobAd.Company.Id,
   };
 
   public static JobAddShortResponseDto ToShortResponseDto(this JobAd jobAd, bool isFavorite) => new()

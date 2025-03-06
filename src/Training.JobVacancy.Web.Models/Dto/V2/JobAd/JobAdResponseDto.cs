@@ -25,5 +25,5 @@ public class JobAdResponseDto
 
   public bool IsFavorite { get; set; }
 
-  public CompanyResponseDto Company { get; set; }
+  public Guid CompanyId { get; set; }
 }
