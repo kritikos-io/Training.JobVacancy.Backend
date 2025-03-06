@@ -2,7 +2,6 @@
 
 using Adaptit.Training.JobVacancy.Data.Entities;
 using Adaptit.Training.JobVacancy.Web.Models.Dto.V2.Company;
-using Adaptit.Training.JobVacancy.Web.Models.Dto.V2.JobAd;
 
 /// <summary>
 /// Provides extension methods for transforming between Entity and DTO objects.
