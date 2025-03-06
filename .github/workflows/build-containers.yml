@@ -129,7 +129,7 @@ jobs:
           tags: |
             ghcr.io/kritikos-io/training.jobvacancy.backend:${{ env.GitVersion_SemVer }}
             ghcr.io/kritikos-io/training.jobvacancy.backend:latest
-          file: ./src/Training.JobVacancy.Web.Server/Dockerfile
+          file: ./src/Training.JobVacancy.Data/Dockerfile
 
       - name: Cache Migrations Bundle
         uses: actions/cache@v4
