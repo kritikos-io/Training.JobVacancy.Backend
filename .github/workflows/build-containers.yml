@@ -54,7 +54,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
-          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+          key: nuget-${{ runner.os }}-${{ hashFiles('src/**/*.csproj') }}
           restore-keys: |
             nuget-${{ runner.os }}-
 
@@ -102,7 +102,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
-          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+          key: nuget-${{ runner.os }}-${{ hashFiles('src/**/*.csproj') }}
           restore-keys: |
             nuget-${{ runner.os }}-
 
@@ -123,7 +123,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ./migration-bundle
-          key: ef-migrations-${{ runner.os }}-${{ hashFiles('src/Training.JobVacancy.Data/Migrations/*.cs') }}
+          key: ef-migrations-${{ runner.os }}-${{ hashFiles('src/Training.JobVacancy.Data/Migrations/') }}
           restore-keys: |
             ef-migrations-${{ runner.os }}-
 
