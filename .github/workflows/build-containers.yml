@@ -50,6 +50,14 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-
+
       - name: Build
         run: dotnet build --configuration Release
 
@@ -67,6 +75,8 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           context: .
           tags: |
             ghcr.io/kritikos-io/training.jobvacancy.backend:${{ env.GitVersion_SemVer }}
@@ -88,6 +98,14 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-
+
       - name: Build
         run: dotnet build --configuration Release
 
@@ -101,15 +119,25 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Cache Migrations Bundle
+        uses: actions/cache@v4
+        with:
+          path: ./migration-bundle
+          key: ef-migrations-${{ runner.os }}-${{ hashFiles('src/Training.JobVacancy.Data/Migrations/*.cs') }}
+          restore-keys: |
+            ef-migrations-${{ runner.os }}-
+
       - name: Build and push migrations container to GHCR
         uses: docker/build-push-action@v6
         with:
           push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           context: .
           tags: |
             ghcr.io/kritikos-io/training.jobvacancy.backend:${{ env.GitVersion_SemVer }}
             ghcr.io/kritikos-io/training.jobvacancy.backend:latest
-          file: ./src/Training.JobVacancy.Data/Dockerfile
+          file: ./src/Training.JobVacancy.Web.Server/Dockerfile
 
       - name: Upload EF Migrations Bundle Artifact
         uses: actions/upload-artifact@v4
