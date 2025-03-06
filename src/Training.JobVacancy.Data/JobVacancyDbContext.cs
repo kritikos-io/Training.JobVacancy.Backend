@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 public class JobVacancyDbContext(DbContextOptions<JobVacancyDbContext> options)
     : DbContext(options)
 {
+  public DbSet<Resume> Resumes { get; set; }
+
   public DbSet<Company> Companies { get; set; }
 
   public DbSet<JobAd> JobAds { get; set; }
@@ -64,5 +66,10 @@ public class JobVacancyDbContext(DbContextOptions<JobVacancyDbContext> options)
           e.OwnsOne(c => c.Address);
 
         });
+
+    modelBuilder.Entity<Resume>()
+        .HasOne(r => r.User)
+        .WithMany(u => u.Resumes)
+        .OnDelete(DeleteBehavior.Restrict);
   }
 }

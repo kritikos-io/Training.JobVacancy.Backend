@@ -15,6 +15,7 @@ COPY "Directory.Packages.props" "."
 COPY "Directory.Build.props" "."
 RUN dotnet restore "src/Training.JobVacancy.Web.Server/Training.JobVacancy.Web.Server.csproj"
 
+COPY .git/ .git/
 COPY . .
 WORKDIR "/src/src/Training.JobVacancy.Web.Server"
 RUN dotnet build --no-restore "Training.JobVacancy.Web.Server.csproj" -c $BUILD_CONFIGURATION

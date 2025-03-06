@@ -1,0 +1,166 @@
+name: Build and Deploy Container App to Azure with Sidecar
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - develop
+      - feature/24.create-cicd-pipelines
+    paths:
+      - 'src/*'
+      - 'tests/*'
+      - 'Directory.Packages.props'
+      - '.github/workflows/build-containers.yml'
+
+env:
+  GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  ACTIONS_STEP_DEBUG: true
+#  AZURE_CONTAINER_REGISTRY: ${{ secrets.AZURE_CONTAINER_REGISTRY }}
+#  CONTAINER_APP_NAME: ${{ secrets.CONTAINER_APP_NAME }}
+#  RESOURCE_GROUP: ${{ secrets.RESOURCE_GROUP }}
+#  MIGRATIONS_CONTAINER_NAME: ${{ secrets.MIGRATIONS_CONTAINER_NAME }}
+
+permissions:
+  packages: write
+  contents: read
+
+jobs:
+  determine-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install GitVersion
+        run: dotnet tool install --global GitVersion.Tool
+
+      - name: Determine Version
+        id: determine-version
+        run: dotnet-gitversion /output buildserver
+
+  build-app-container:
+    needs: determine-version
+    runs-on: ubuntu-latest
+    env:
+      Authentication__OpenId__Authority: ${{ secrets.AUTHENTICATION__OPENID__AUTHORITY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Build
+        run: dotnet build --configuration Release
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push app container to GHCR
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          context: .
+          tags: |
+            kritikos-io/training.jobvacancy.backend:${{ env.GitVersion_SemVer }}
+            kritikos-io/training.jobvacancy.backend:latest
+          file: ./src/Training.JobVacancy.Web.Server/Dockerfile
+
+  build-migrations-container:
+    runs-on: ubuntu-latest
+    needs: determine-version
+    env:
+      Authentication__OpenId__Authority: ${{ secrets.AUTHENTICATION__OPENID__AUTHORITY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Build
+        run: dotnet build --configuration Release
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push migrations container to GHCR
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          context: .
+          tags: |
+            ghcr.io/kritikos-io/training.jobvacancy.backend:${{ env.GitVersion_SemVer }}
+            ghcr.io/kritikos-io/training.jobvacancy.backend:latest
+          file: ./src/Training.JobVacancy.Data/Dockerfile
+
+  deploy-development:
+    runs-on: ubuntu-latest
+    needs: [build-app-container, build-migrations-container]
+    if: github.ref == 'refs/heads/develop'
+    steps:
+      - name: Pull image from GitHub Container Registry
+        run: docker pull ghcr.io/${{ secrets.GITHUB_REPOSITORY }}/training.jobvacancy.web.server:latest
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy to Deployment Slot
+        run: |
+          az container app up\
+            --name ${{ secrets.CONTAINER_APP_NAME }} \
+            --resource-group ${{ secrets.RESOURCE_GROUP }} \
+            --image ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ secrets.CONTAINER_APP_NAME }}:develop \
+            --image ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ secrets.MIGRATIONS_CONTAINER_NAME }}:develop \
+
+  deploy-staging:
+    runs-on: ubuntu-latest
+    needs: [build-app-container, build-migrations-container]
+    if: github.ref == 'refs/heads/main'
+    environment: staging
+    steps:
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy to Deployment Slot
+        run: |
+          az containerapp up\
+            --name ${{ secrets.CONTAINER_APP_NAME }} \
+            --resource-group ${{ secrets.RESOURCE_GROUP }} \
+            --slot staging \
+            --image ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ secrets.CONTAINER_APP_NAME }}:latest \
+            --image ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ secrets.MIGRATIONS_CONTAINER_NAME }}:latest \
+
+  swap-staging-to-production:
+    runs-on: ubuntu-latest
+    needs: deploy-staging
+    environment: production
+    steps:
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Swap Staging to Production
+        run: |
+          az containerapp swap \
+            --name ${{ secrets.CONTAINER_APP_NAME }} \
+            --resource-group ${{ secrets.RESOURCE_GROUP }} \
+            --slot staging \
+            --target-slot production
+
