@@ -2,7 +2,6 @@
 
 using Adaptit.Training.JobVacancy.Data.Entities;
 using Adaptit.Training.JobVacancy.Web.Models.Dto.V2.Company;
-using Adaptit.Training.JobVacancy.Web.Models.Dto.V2.JobAd;
 
 /// <summary>
 /// Provides extension methods for transforming between Entity and DTO objects.
@@ -16,10 +15,7 @@ public static partial class Mapping
   /// <returns>A DTO containing detailed company information.</returns>
   public static CompanyResponseDto ToResponseDto(this Company entity)
   {
-
-    var test = new List<JobAdDto>(entity.JobAds.Select(x => x.ToDto())).AsReadOnly();
-
-    return new CompanyResponseDto
+    var response = new CompanyResponseDto
     {
       Id = entity.Id,
       Name = entity.Name,
@@ -28,9 +24,10 @@ public static partial class Mapping
       LogoUrl = entity.LogoUrl,
       Address = ToDto(entity.Address),
       Sponsored = entity.Sponsored,
-      PhoneNumber = entity.PhoneNumber,
-      JobAds = new List<JobAdDto>(entity.JobAds.Select(x=>x.ToDto())).AsReadOnly(),
+      PhoneNumber = entity.PhoneNumber
     };
+
+    return response;
   }
 
   /// <summary>
@@ -55,18 +52,18 @@ public static partial class Mapping
   /// </summary>
   /// <param name="entity">The company entity to be updated.</param>
   /// <param name="dto">The DTO containing the new values.</param>
-  public static void UpdateEntity(this Company entity, CompanyRequestUpdateDto dto)
+  public static void Apply(this Company entity, CompanyRequestUpdateDto dto)
   {
     entity.Name = dto.Name;
     entity.Website = dto.Website;
     entity.Vat = dto.Vat;
     entity.LogoUrl = dto.LogoUrl;
-    entity.Address = entity.Address?.UpdateEntity(dto.Address) ?? new Address();
+    entity.Address = entity.Address?.Apply(dto.Address) ?? new Address();
     entity.Sponsored = dto.Sponsored;
     entity.PhoneNumber = dto.PhoneNumber;
   }
 
-  public static Address? UpdateEntity(this Address? entity, AddressDto? dto)
+  public static Address? Apply(this Address? entity, AddressDto? dto)
   {
     if (entity is null)
     {

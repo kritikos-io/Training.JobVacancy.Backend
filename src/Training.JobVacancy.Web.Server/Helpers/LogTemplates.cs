@@ -8,11 +8,11 @@ public static partial class LogTemplates
 
   private const string EntityNotFound = "Requested entity {Entity} with id {Id} was not found.";
 
-  public const string EntityNotCreated = "Requested entity {Entity} with name {Id} was not created.";
+  private const string EntityNotCreated = "Requested entity {Entity} with name {Id} was not created.";
 
-  public const string EntityNotUpdated = "Requested entity {Entity} with id {Id} was not created.";
+  private const string EntityNotUpdated = "Requested entity {Entity} with id {Id} was not created.";
 
-  public const string EntityNotDeleted = "Requested entity {Entity} with id {Id} was not deleted.";
+  private const string EntityNotDeleted = "Requested entity {Entity} with id {Id} was not deleted.";
 
   public const string DeletingEntityOfTypeWithId = "Deleting entity of type {Entity} with id {Id}";
 

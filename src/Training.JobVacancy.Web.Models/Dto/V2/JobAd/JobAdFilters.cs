@@ -9,7 +9,11 @@ public class JobAdFilters
   public bool? Favorite { get; set; }
 
   public double? Salary { get; set; }
+
   public DateTime? Created { get; set; }
+
   public DateTime? Expires { get; set; }
+
   public string? Description { get; set; }
+
 }

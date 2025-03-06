@@ -64,6 +64,7 @@ public class JobVacancyDbContext(DbContextOptions<JobVacancyDbContext> options)
               .HasMaxLength(10);
 
           e.OwnsOne(c => c.Address);
+
         });
 
     modelBuilder.Entity<Resume>()

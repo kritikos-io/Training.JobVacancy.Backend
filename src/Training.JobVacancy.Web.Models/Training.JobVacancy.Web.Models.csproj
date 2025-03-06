@@ -10,4 +10,10 @@
       <PackageReference Include="Refit" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Reference Include="Training.JobVacancy.Data">
+        <HintPath>..\..\tests\Training.JobVacancy.Web.Server.Tests\bin\Debug\net9.0\Training.JobVacancy.Data.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
 </Project>

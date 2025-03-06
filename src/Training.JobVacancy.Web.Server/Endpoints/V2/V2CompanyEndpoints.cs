@@ -31,6 +31,7 @@ public class V2CompanyEndpoints
   public static async Task<Ok<PagedList<CompanyShortResponseDto>>> Search([FromBody] CompanyFilters? filters, JobVacancyDbContext dbContext, CancellationToken ct)
   {
     var result = await dbContext.Companies
+      .Include(x => x.JobAds)
         .WhereIf(!string.IsNullOrWhiteSpace(filters?.Name), c => c.Name.Contains(filters!.Name!))
         .WhereIf(!string.IsNullOrWhiteSpace(filters?.Vat), c => c.Vat.Contains(filters!.Vat!))
         .WhereIf(!string.IsNullOrWhiteSpace(filters?.PhoneNumber), c => c.PhoneNumber != null && c.PhoneNumber.Contains(filters!.PhoneNumber!))
@@ -78,7 +79,10 @@ public class V2CompanyEndpoints
       ILogger<V2CompanyEndpoints> logger,
       CancellationToken ct)
   {
-    var entity = await dbContext.FindAsync<Company>([companyId], cancellationToken: ct);
+    var entity = await dbContext.Companies
+      .Where(c => c.Id == companyId)
+      .Include(x => x.JobAds)
+      .FirstOrDefaultAsync(cancellationToken: ct);
 
     if (entity is null)
     {
@@ -86,7 +90,7 @@ public class V2CompanyEndpoints
       return TypedResults.NotFound();
     }
 
-    entity.UpdateEntity(dto);
+    entity.Apply(dto);
 
     try
     {
@@ -108,7 +112,11 @@ public class V2CompanyEndpoints
       CancellationToken ct)
   {
 
-    var dto = await dbContext.Companies.Where(c => c.Id == companyId).Select(c => c.ToResponseDto()).FirstOrDefaultAsync(cancellationToken: ct);
+    var dto = await dbContext.Companies
+      .Where(c => c.Id == companyId)
+      .Include(x => x.JobAds)
+      .Select(c => c.ToResponseDto())
+      .FirstOrDefaultAsync(cancellationToken: ct);
 
     if (dto is null)
     {

@@ -1,7 +1,5 @@
 ﻿namespace Adaptit.Training.JobVacancy.Web.Models.Dto.V2.Company;
 
-using Adaptit.Training.JobVacancy.Web.Models.Dto.V2.JobAd;
-
 public class CompanyResponseDto
 {
   public Guid Id { get; set; }
@@ -17,8 +15,6 @@ public class CompanyResponseDto
   public AddressDto? Address { get; set; }
 
   public bool? Sponsored { get; set; }
-
-  public IReadOnlyList<JobAdDto> JobAds { get; set; } = [];
 
   public string? PhoneNumber { get; set; }
 

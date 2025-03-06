@@ -20,7 +20,6 @@ public class CompanyRequestCreateDto
   [Required(AllowEmptyStrings = false)]
   public bool Sponsored { get; set; }
 
-
   public string? PhoneNumber { get; set; }
 
 }

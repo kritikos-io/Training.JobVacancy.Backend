@@ -3,7 +3,7 @@
 using Adaptit.Training.JobVacancy.Web.Models.Dto.V2.Company;
 using Adaptit.Training.JobVacancy.Web.Models.Enum;
 
-public class JobAddShortResponseDto
+public class JobAdRequestDto
 {
   public Guid Id { get; set; }
 
@@ -23,5 +23,5 @@ public class JobAddShortResponseDto
 
   public JobExperienceLevel Level { get; set; }
 
-  public Guid CompanyId { get; set; }
+  public CompanyResponseDto Company { get; set; }
 }
