@@ -1,9 +1,7 @@
 ﻿namespace Adaptit.Training.JobVacancy.Web.Server.Extensions.Mappings.V2;
 
-using Adaptit.Training.JobVacancy.Data;
 using Adaptit.Training.JobVacancy.Data.Entities;
 using Adaptit.Training.JobVacancy.Web.Models.Dto.V2.Company;
-using Adaptit.Training.JobVacancy.Web.Server.Endpoints.V2;
 
 /// <summary>
 /// Provides extension methods for transforming between Entity and DTO objects.
