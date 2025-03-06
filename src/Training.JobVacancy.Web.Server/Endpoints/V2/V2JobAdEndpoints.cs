@@ -43,18 +43,19 @@ public class V2JobAdEndpoints
     var userId = accessor.HttpContext?.User.Claims.GetUserIdFromClaims();
 
     var jobAds = await db.JobAds
+      .Include(x => x.Company)
         .WhereIf(filters?.Type != null, j => j.Type == filters!.Type)
         .WhereIf(filters?.Created != null, j => j.CreatedAt >= filters!.Created)
         .WhereIf(filters?.Expires != null, j => j.ExpiresAt <= filters!.Expires)
         .WhereIf(filters?.Description != null, j => EF.Functions.ToTsVector("english", j.Description).Matches(filters!.Description!))
-        .SelectIf(userId !=null,j => new
+        .Select(j => new
         {
           JobAd = j,
-          IsFavorite = db.UserFavoriteJobAd.Any(f => f.JobAd.Id == j.Id && f.User.Id == userId)
+          IsFavorite = userId != null && db.UserFavoriteJobAd.Any(f => f.JobAd.Id == j.Id && f.User.Id == userId)
         })
         .WhereIf(filters?.Favorite != null && userId !=null, j => j.IsFavorite == filters!.Favorite!.Value)
         .OrderBy(x => x.JobAd.Id)
-        .ToPagedListAsync(x=> x.JobAd.ToShortResponseDto(x.IsFavorite), page, size, cancellationToken);
+        .ToPagedListAsync(x => x.JobAd.ToShortResponseDto(x.IsFavorite), page, size, cancellationToken);
 
     return TypedResults.Ok(jobAds);
   }
