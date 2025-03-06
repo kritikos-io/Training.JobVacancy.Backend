@@ -2,6 +2,8 @@
 WORKDIR /app
 COPY . .
 
+COPY src/Training.JobVacancy.Web.Server/appsettings.json /app/appsettings.json
+
 RUN dotnet tool install --global dotnet-ef
 
 ENV PATH="${PATH}:/root/.dotnet/tools"
