@@ -75,8 +75,8 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=registry,ref=ghcr.io/kritikos-io/training.jobvacancy.backend:latest
+          cache-to: type=registry,ref=ghcr.io/kritikos-io/training.jobvacancy.backend:latest,mode=max
           context: .
           tags: |
             ghcr.io/kritikos-io/training.jobvacancy.backend:${{ env.GitVersion_SemVer }}
@@ -123,21 +123,13 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=registry,ref=ghcr.io/kritikos-io/training.jobvacancy.backend:latest
+          cache-to: type=registry,ref=ghcr.io/kritikos-io/training.jobvacancy.backend:latest,mode=max
           context: .
           tags: |
             ghcr.io/kritikos-io/training.jobvacancy.backend:${{ env.GitVersion_SemVer }}
             ghcr.io/kritikos-io/training.jobvacancy.backend:latest
           file: ./src/Training.JobVacancy.Data/Dockerfile
-
-      - name: Cache Migrations Bundle
-        uses: actions/cache@v4
-        with:
-          path: ./migration-bundle
-          key: ef-migrations-${{ runner.os }}-${{ hashFiles('src/Training.JobVacancy.Data/Migrations/') }}
-          restore-keys: |
-            ef-migrations-${{ runner.os }}-
 
       - name: Upload EF Migrations Bundle Artifact
         uses: actions/upload-artifact@v4
