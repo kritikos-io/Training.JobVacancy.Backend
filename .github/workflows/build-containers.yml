@@ -75,8 +75,8 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          cache-from: type=gha, scope=image, source=ghcr.io/kritikos-io/training.jobvacancy.backend
-          cache-to: type=gha, scope=image, target=ghcr.io/kritikos-io/training.jobvacancy.backend, mode=max
+          cache-from: type=registry, ref=kritikos-io/training.jobvacancy.backend:buildcache
+          cache-to: type=registry, ref=kritikos-io/training.jobvacancy.backend:buildcache,mode=max
           context: .
           tags: |
             ghcr.io/kritikos-io/training.jobvacancy.backend:${{ env.GitVersion_SemVer }}
@@ -123,8 +123,8 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          cache-from: type=gha, scope=image, source=ghcr.io/kritikos-io/training.jobvacancy.backend
-          cache-to: type=gha, scope=image, target=ghcr.io/kritikos-io/training.jobvacancy.backend, mode=max
+          cache-from: type=gha
+          cache-to: type=gha, mode=max
           context: .
           tags: |
             ghcr.io/kritikos-io/training.jobvacancy.backend:${{ env.GitVersion_SemVer }}
