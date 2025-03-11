@@ -75,8 +75,8 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          cache-from: type=registry, ref=ghcr.io/kritikos-io/training.jobvacancy.backend:buildcache
-          cache-to: type=registry, ref=ghcr.io/kritikos-io/training.jobvacancy.backend:buildcache,mode=max
+          cache-from: type=gha
+          cache-to: type=gha, mode=max
           context: .
           tags: |
             ghcr.io/kritikos-io/training.jobvacancy.backend:${{ env.GitVersion_SemVer }}
