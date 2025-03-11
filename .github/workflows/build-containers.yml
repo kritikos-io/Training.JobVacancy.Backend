@@ -127,10 +127,9 @@ jobs:
           cache-to: type=gha, mode=max
           context: .
           tags: |
-            ghcr.io/kritikos-io/training.jobvacancy.backend:${{ env.GitVersion_SemVer }}
-            ghcr.io/kritikos-io/training.jobvacancy.backend:latest
+            ghcr.io/kritikos-io/training.jobvacancy.backend-migrations:${{ env.GitVersion_SemVer }}
+            ghcr.io/kritikos-io/training.jobvacancy.backend-migrations:latest
           file: ./src/Training.JobVacancy.Data/Dockerfile
-
 
       - name: Upload EF Migrations Bundle Artifact
         uses: actions/upload-artifact@v4
